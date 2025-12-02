@@ -1,0 +1,72 @@
+# ------------------------
+# Python
+# ------------------------
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+
+# ------------------------
+# Virtual Environment
+# ------------------------
+.venv/
+venv/
+env/
+
+# ------------------------
+# Django & Cache
+# ------------------------
+*.log
+*.pot
+*.pyc
+*.mo
+*.db
+*.sqlite3
+*.bak
+local_settings.py
+db.sqlite3
+
+# Django compiled files
+staticfiles/
+media/
+
+# ------------------------
+# Environment variables
+# ------------------------
+.env
+.env.* 
+*.env
+
+# ------------------------
+# System files
+# ------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------
+# IDE files
+# ------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ------------------------
+# Coverage / Testing
+# ------------------------
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+pytest.xml
+
+# ------------------------
+# Node / Frontend (if added later)
+# ------------------------
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
