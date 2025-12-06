@@ -107,6 +107,11 @@ DATABASES = {
     }
 }
 
+# --- Session settings for "Remember Me" functionality ---
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+# Must be False so sessions can persist beyond a browser closing event.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
