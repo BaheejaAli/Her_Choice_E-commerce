@@ -1,0 +1,46 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Password Reset Successful{% endblock %}
+
+{% block content %}
+
+<!-- Green Tick Icon -->
+<div class="text-center mb-4">
+    <div class="success-icon">
+        <i class="fa-solid fa-check"></i>
+    </div>
+</div>
+
+<!-- Title -->
+<h4 class="fw-bold text-center mb-2">Password Reset Successful!</h4>
+
+<!-- Description -->
+<p class="text-muted text-center mb-4" style="font-size:15px;">
+    Your password has been successfully reset.<br>
+    You can now log in with your new password.
+</p>
+
+<!-- Button -->
+<div class="d-grid">
+    <a href="{% url 'admin_login' %}" class="btn btn-custom w-100">
+        Back to Login
+    </a>
+</div>
+
+<style>
+    /* Green circle background */
+    .success-icon {
+        width: 75px;
+        height: 75px;
+        background: #e6f9ee;   /* Light green background */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        color: #00b341;
+        font-size: 35px;
+        border: 2px solid #00b341;
+    }
+</style>
+
+{% endblock %}

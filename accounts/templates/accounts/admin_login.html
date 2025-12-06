@@ -1,0 +1,129 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+
+<h2 class="brand-title mb-1">Her Choice</h2>
+
+<p class="brand-subtitle mb-1">Admin Login</p>
+
+<p class="text-muted text-center mb-4" style="font-size:14px;">
+    Enter your credentials to access the admin panel
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <!-- Email Field -->
+    <div class="mb-3">
+        <label class="fw-semibold">Email address</label>
+        <input type="email" name="email" class="form-control custom-input"
+               placeholder="name@company.com" required>
+    </div>
+
+    <!-- Password Field -->
+    <div class="mb-1">
+        <label class="fw-semibold">Password</label>
+
+        <div class="input-group">
+            <input type="password" name="password" id="loginPassword"
+                   class="form-control custom-input"
+                   placeholder="••••••••" required>
+
+            <span class="input-group-text eye-btn" onclick="togglePassword('loginPassword', 'eyeIcon')">
+                {% comment %} <i class="fa fa-eye" id="eyeIcon"></i> {% endcomment %}
+                <i class="far fa-eye" id="eyeIcon"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Remember + Forgot Password -->
+    <div class="d-flex justify-content-between align-items-center mt-1 mb-3">
+        <div>
+            <input type="checkbox" id="remember">
+            <label for="remember" class="text-muted" style="font-size:14px;">Remember me</label>
+        </div>
+
+        <a href="{% url 'admin_forgot_password' %}" class="text-decoration-none"
+           style="color:#d6336c; font-size:14px;">
+            Forgot your password?
+        </a>
+    </div>
+
+    <!-- Login Button -->
+    <button type="submit" class="btn btn-custom w-100">
+        Sign In
+    </button>
+
+    {% if error %}
+        <p class="text-danger text-center mt-3">{{ error }}</p>
+    {% endif %}
+</form>
+
+<style>
+    .custom-input {
+        height: 48px;
+        font-size: 15px;
+        border-radius: 10px !important;
+    }
+
+    .eye-btn {
+        cursor: pointer;
+        background: white;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+    }
+
+    .btn-custom {
+        background: #d6336c;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+
+    .btn-custom:hover {
+        background: #b82859;
+    }
+</style>
+
+<script>
+function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
+
+{% endblock %}
+
+
+{% comment %} 
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash'); // Change icon to the crossed-out eye
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye'); // Change icon back to the standard eye
+        }
+    }
+</script>
+  {% endcomment %}

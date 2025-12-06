@@ -1,20 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-# AbstractBaseUser provides core user authentication fields (password, last_login, is_active)
-# BaseUserManager provides methods for creating users and superusers
-# PermissionsMixin provides group/permission fields and methods (is_superuser, get_all_permissions)
 
-# Create your models here.
+# ======== CUSTOM USER AND MANAGER ============== 
 
 class UserManager(BaseUserManager):
-    """
-    Custom user manager for the CustomUser model.
-    Handles the creation of standard users and superusers.
-    """
+    # Custom user manager for the CustomUser model.
+   
     def create_user(self, email, password=None, **extra_fields):
-        """
-        Creates and saves a regular user with the given email and password.
-        """
         if not email:
             raise ValueError("User must have an email")
 
@@ -25,23 +17,21 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        """
-        Creates and saves a superuser with the given email and password.
-        Sets necessary flags for administrative access.
-        """
-        extra_fields.setdefault("is_admin", True)
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True) ## Superusers should be active immediately
+        extra_fields.setdefault("is_active", True) 
+        extra_fields.setdefault("is_verified", True)
+
+        # Raise an error if flags are not True
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
 
         return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    """
-    Custom User Model extending Django's base user functionality.
-    Uses email as the unique identifier for authentication.
-    """
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -49,10 +39,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     profile_pic = models.URLField( max_length=200, blank=True,null=True)
 
     # Permission/Status Flags
-    is_admin = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)    
-    is_staff = models.BooleanField(default=False)  # Needed for Django admin
+    is_staff = models.BooleanField(default=False) 
+    is_admin = models.BooleanField(default=False)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -60,9 +51,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # Manager assignment and required settings
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     objects = UserManager()
 
     def __str__(self):
         return self.email
+    
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"

@@ -1,0 +1,91 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Verify OTP{% endblock %}
+
+{% block content %}
+
+<h3 class="fw-bold mb-2">Verify OTP</h3>
+
+<p class="text-muted mb-4">
+    We've sent a 6-digit code to <strong>{{ request.session.reset_email }}</strong>
+</p>
+
+<form method="POST" id="otpForm">
+    {% csrf_token %}
+
+    <label class="fw-medium">Enter Verification Code</label>
+
+    <!-- OTP Input Boxes -->
+    <div class="d-flex gap-2 my-3 justify-content-center">
+        <input type="text" maxlength="1" class="otp-input" />
+        <input type="text" maxlength="1" class="otp-input" />
+        <input type="text" maxlength="1" class="otp-input" />
+        <input type="text" maxlength="1" class="otp-input" />
+        <input type="text" maxlength="1" class="otp-input" />
+        <input type="text" maxlength="1" class="otp-input" />
+    </div>
+
+    <!-- Invisible field to send full OTP -->
+    <input type="hidden" name="otp" id="otpHidden">
+
+    <!-- Verify Button -->
+    <button type="submit" class="btn btn-custom w-100 mt-2">
+        Verify Code
+    </button>
+
+    {% if error %}
+        <p class="text-danger text-center mt-3">{{ error }}</p>
+    {% endif %}
+
+</form>
+
+<!-- Back Link -->
+<div class="text-center mt-3">
+    <a href="{% url 'admin_forgot_password' %}" class="text-muted">Back</a>
+</div>
+
+<style>
+    .otp-input {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .otp-input:focus {
+        border-color: #d6336c;
+        outline: none;
+        box-shadow: 0 0 4px rgba(214, 51, 108, 0.4);
+    }
+</style>
+
+<script>
+    // OTP Auto Move Logic
+    const inputs = document.querySelectorAll('.otp-input');
+    const hiddenField = document.getElementById('otpHidden');
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !input.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+
+    // Before submitting form → combine OTP digits into hidden field
+    document.getElementById("otpForm").addEventListener("submit", () => {
+        hiddenField.value = Array.from(inputs).map(i => i.value).join('');
+    });
+</script>
+
+{% endblock %}
+
+
