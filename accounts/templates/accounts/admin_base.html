@@ -68,6 +68,29 @@
             border-radius: 10px;
             font-size: 16px;
             font-weight: 500;
+        } 
+
+        .custom-input {
+            height: 48px;
+            font-size: 15px;
+            border-radius: 10px !important;
+        }
+
+        .eye-btn {
+            cursor: pointer;
+            background: white;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+
+        {% comment %} .btn-custom {
+            border: none;
+            padding: 12px;
+            margin-top: 15px;
+        } {% endcomment %}
+
+        .btn-custom:hover {
+            background: #b82859;
         }
     </style>
 </head>
@@ -80,6 +103,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_script %}{% endblock %}
 
 </body>
 </html>

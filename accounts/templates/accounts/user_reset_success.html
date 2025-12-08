@@ -1,4 +1,4 @@
-{% extends "accounts/admin_base.html" %}
+{% extends "accounts/user_base.html" %}
 {% block title %}Password Reset Successful{% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
 
 <!-- Button -->
 <div class="d-grid">
-    <a href="{% url 'admin_login' %}" class="btn btn-custom w-100">
+    <a href="{% url 'user_login' %}" class="btn btn-custom w-100">
         Back to Login
     </a>
 </div>
@@ -31,7 +31,8 @@
     .success-icon {
         width: 75px;
         height: 75px;
-        background: #e6f9ee;   /* Light green background */
+        background: #e6f9ee;
+        /* Light green background */
         border-radius: 50%;
         display: flex;
         justify-content: center;

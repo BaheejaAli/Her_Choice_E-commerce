@@ -31,7 +31,7 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 # Set the default sender address used throughout the project
-DEFAULT_FROM_EMAIL = 'Her Choice <no-reply@herchoice.com>'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
@@ -148,7 +148,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / 'static'
 ]
 
 # Default primary key field type

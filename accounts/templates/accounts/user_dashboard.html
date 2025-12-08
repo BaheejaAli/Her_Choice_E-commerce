@@ -1,0 +1,23 @@
+{% extends "accounts/user_base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h2>Welcome to Your Dashboard, {{ user.first_name }}!</h2>
+    <p>Your account is successfully verified and active.</p>
+
+    {% comment %} Example dashboard content {% endcomment %}
+    <div style="margin-top: 30px; border: 1px solid #ddd; padding: 20px; border-radius: 5px;">
+        <h3>Account Details</h3>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
+        <p><strong>Phone:</strong> {{ user.phone|default:"N/A" }}</p>
+    </div>
+    
+    <div style="text-align: right; margin-top: 20px;">
+        <a href="#" style="color: gray;">Edit Profile</a>
+    </div>
+    <a href="{% url "user_logout" %}" style="color: gray;">logout</a>
+</div>
+{% endblock %}

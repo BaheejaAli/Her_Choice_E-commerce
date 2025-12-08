@@ -4,6 +4,8 @@ from accounts.forms import AdminLoginForm, AdminForgotPasswordForm, AdminResetPa
 from accounts.models import CustomUser
 from django.contrib.auth.hashers import make_password
 from accounts.utils import send_otp_email
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 import random, time
 
 # Create your views here.
@@ -167,8 +169,10 @@ def admin_logout(request):
     return redirect("admin_login")
 
 # ================== Admin Dashboard ==================
+@login_required
+@never_cache
 def admin_dashboard(request):
     if not request.user.is_admin:
         return redirect("admin_login")
 
-    return render(request, "accounts/dashboard.html")
+    return render(request, "accounts/admin_dashboard.html")
