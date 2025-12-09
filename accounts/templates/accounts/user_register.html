@@ -1,19 +1,19 @@
-
 {% extends "accounts/user_base.html" %}
+{% load static %}
 {% block title %}Create Account{% endblock %}
 
 {% block content %}
 
-    <h2 class="brand-title">Her Choice</h2>
-    <p class="brand-subtitle mb-4">Create Your Account</p>
+<h2 class="brand-title">Her Choice</h2>
+<p class="brand-subtitle mb-4">Create Your Account</p>
 
-    {% if form.non_field_errors%}
-    <div class="alert alert-danger mb-3" role="alert">
-            {% for error in form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
-        </div>
-    {% endif %}
+{% if form.non_field_errors%}
+<div class="alert alert-danger mb-3" role="alert">
+    {% for error in form.non_field_errors %}
+    {{ error }}
+    {% endfor %}
+</div>
+{% endif %}
 
 <form method="POST">
     {% csrf_token %}
@@ -24,7 +24,7 @@
             <label class="fw-semibold">{{ form.first_name.label }}:</label>
             {{form.first_name}}
             {% for error in form.first_name.errors %}
-                <small class="text-danger d-block">{{ error }}</small>
+            <small class="text-danger d-block">{{ error }}</small>
             {% endfor %}
         </div>
 
@@ -32,7 +32,7 @@
             <label class="fw-semibold">{{form.last_name.label}}</label>
             {{form.last_name}}
             {% for error in form.last_name.errors %}
-                <small class="text-danger d-block">{{ error }}</small>
+            <small class="text-danger d-block">{{ error }}</small>
             {% endfor %}
         </div>
     </div>
@@ -42,7 +42,7 @@
         <label class="fw-semibold">{{form.email.label}}</label>
         {{form.email}}
         {% for error in form.email.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
+        <small class="text-danger d-block">{{ error }}</small>
         {% endfor %}
     </div>
 
@@ -51,14 +51,14 @@
         <label class="fw-semibold">{{form.password.label}}</label>
         <div class="input-group">
             {{form.password}}
-            <span class="input-group-text bg-white" style="cursor: pointer;" 
-                  onclick="togglePassword('id_password', 'eyeNew')">
-                <i class="far fa-eye" id="eyeNew"></i>            
+            <span class="input-group-text bg-white" style="cursor: pointer;"
+                onclick="togglePassword('id_password', 'eyeNew')">
+                <i class="far fa-eye" id="eyeNew"></i>
             </span>
         </div>
 
         {% for error in form.password.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
+        <small class="text-danger d-block">{{ error }}</small>
         {% endfor %}
         <small class="text-muted" style="font-size: 12px;">Password must be at least 8 characters</small>
     </div>
@@ -68,14 +68,14 @@
         <label class="fw-semibold">{{form.confirm_password.label}}</label>
         <div class="input-group">
             {{ form.confirm_password }}
-            
-            <span class="input-group-text bg-white" style="cursor: pointer;" 
-                  onclick="togglePassword('id_confirm_password', 'eyeConfirm')">
+
+            <span class="input-group-text bg-white" style="cursor: pointer;"
+                onclick="togglePassword('id_confirm_password', 'eyeConfirm')">
                 <i class="far fa-eye" id="eyeConfirm"></i>
             </span>
         </div>
         {% for error in form.confirm_password.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
+        <small class="text-danger d-block">{{ error }}</small>
         {% endfor %}
         <small class="text-muted" style="font-size: 12px;">Password must be at least 8 characters</small>
     </div>
@@ -100,24 +100,7 @@
 </form>
 
 {% block extra_script %}
-<script>
-    function togglePassword(inputId, iconId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash'); // Change icon to the crossed-out eye
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye'); // Change icon back to the standard eye
-        }
-    }
-</script>
+<script src="{% static 'js/accounts/user_register.js' %}"></script>
 {% endblock %}
 
-{% endblock %} 
-
-
+{% endblock %}

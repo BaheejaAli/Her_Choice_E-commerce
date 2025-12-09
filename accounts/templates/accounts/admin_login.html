@@ -1,5 +1,7 @@
-{% extends "accounts/admin_base.html" %} {% block title %}Admin Login{% endblock%}
- {% block content %}
+{% extends "accounts/admin_base.html" %}
+{% load static %}
+{% block title %}Admin Login{% endblock%}
+{% block content %}
 
 <h2 class="brand-title">Her Choice</h2>
 
@@ -27,11 +29,7 @@
 
     <div class="input-group">
       {{ form.password }}
-      <span
-        class="input-group-text bg-white"
-        style="cursor: pointer"
-        onclick="togglePassword('id_password', 'eyeNew')"
-      >
+      <span class="input-group-text bg-white" style="cursor: pointer" onclick="togglePassword('id_password', 'eyeNew')">
         <i class="far fa-eye" id="eyeNew"></i>
       </span>
     </div>
@@ -44,20 +42,12 @@
   <div class="d-flex justify-content-between align-items-center mt-1 mb-3">
     <div class="d-flex align-items-center">
       {{ form.remember }}
-      <label
-        for="{{ form.remember.id_for_label }}"
-        class="text-muted ms-2"
-        style="font-size: 14px"
-      >
+      <label for="{{ form.remember.id_for_label }}" class="text-muted ms-2" style="font-size: 14px">
         {{ form.remember.label }}
       </label>
     </div>
 
-    <a
-      href="{% url 'admin_forgot_password' %}"
-      class="text-decoration-none"
-      style="color: #d6336c; font-size: 14px"
-    >
+    <a href="{% url 'admin_forgot_password' %}" class="text-decoration-none" style="color: #d6336c; font-size: 14px">
       Forgot your password?
     </a>
   </div>
@@ -82,5 +72,4 @@
     }
   }
 </script>
-{% endblock %} 
-
+{% endblock %}

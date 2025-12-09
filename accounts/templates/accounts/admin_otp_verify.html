@@ -1,4 +1,5 @@
 {% extends "accounts/admin_base.html" %}
+{% load static %}
 {% block title %}Verify OTP{% endblock %}
 
 {% block content %}
@@ -33,7 +34,7 @@
     </button>
 
     {% if error %}
-        <p class="text-danger text-center mt-3">{{ error }}</p>
+    <p class="text-danger text-center mt-3">{{ error }}</p>
     {% endif %}
 
 </form>
@@ -43,49 +44,8 @@
     <a href="{% url 'admin_forgot_password' %}" class="text-muted">Back</a>
 </div>
 
-<style>
-    .otp-input {
-        width: 48px;
-        height: 48px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        text-align: center;
-        font-size: 20px;
-        font-weight: 600;
-    }
+<link rel="stylesheet" href="{% static 'css/accounts/admin_otp_verify.css' %}">
 
-    .otp-input:focus {
-        border-color: #d6336c;
-        outline: none;
-        box-shadow: 0 0 4px rgba(214, 51, 108, 0.4);
-    }
-</style>
-
-<script>
-    // OTP Auto Move Logic
-    const inputs = document.querySelectorAll('.otp-input');
-    const hiddenField = document.getElementById('otpHidden');
-
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            if (input.value.length === 1 && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-        });
-
-        input.addEventListener('keydown', (e) => {
-            if (e.key === "Backspace" && !input.value && index > 0) {
-                inputs[index - 1].focus();
-            }
-        });
-    });
-
-    // Before submitting form → combine OTP digits into hidden field
-    document.getElementById("otpForm").addEventListener("submit", () => {
-        hiddenField.value = Array.from(inputs).map(i => i.value).join('');
-    });
-</script>
+<script src="{% static 'js/accounts/admin_otp_verify.js' %}"></script>
 
 {% endblock %}
-
-

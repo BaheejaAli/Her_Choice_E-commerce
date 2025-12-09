@@ -1,19 +1,23 @@
 from django.shortcuts import render, redirect
-from accounts.forms import UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm
+from accounts.forms import (UserRegistrationForm, UserLoginForm, UserForgotPasswordForm, UserResetPasswordForm,)
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from accounts.models import CustomUser
-import random, time
+import random
 from datetime import timedelta
 from django.utils import timezone
 from accounts.utils import send_otp_email
+from django.views.decorators.cache import never_cache
+from accounts.decorators import logout_required
 
 # Define the OTP expiry duration (e.g., 5 minutes)
 OTP_EXPIRY_SECONDS = 300
 
 # ========== USER REGISTRATION ======================
+@never_cache
+@logout_required(redirect_to="home")
 def user_register(request):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
@@ -51,9 +55,11 @@ def user_register(request):
     return render(request, "accounts/user_register.html", {'form':form})
 
 # ========== USER LOGIN ======================
+@never_cache
+@logout_required(redirect_to="home")
 def user_login(request):
-    if request.user.is_authenticated:
-        return redirect('user_dashboard')
+    # if request.user.is_authenticated:
+    #     return redirect('user_dashboard')
     
     if request.method == "POST":
         form = UserLoginForm(request.POST)
@@ -67,7 +73,7 @@ def user_login(request):
                 if user.is_active:
                     login(request,user)
                     messages.success(request, f"Welcome back,{user.first_name}!")
-                    return redirect('user_dashboard')
+                    return redirect('home')
                 else:
                     messages.warning(request, 'Your account is not active. Please verify your email.')
                     return redirect('user_login')
@@ -81,12 +87,13 @@ def user_login(request):
     return render(request, 'accounts/user_login.html', {'form':form})
 
 # ================== USER OTP VERIFICATION (Used after registration or password reset initiation) ==============
+@never_cache
 def user_otp_verify(request):
     verification_email = request.session.get('verification_email')
     stored_otp = request.session.get('verification_otp')
     otp_expiry = request.session.get('otp_expiry')
 
-    if not verification_email or not stored_otp:
+    if not verification_email:
         messages.error(request, 'Verification session expired or invalid.')
         return redirect('user_register') 
     
@@ -130,6 +137,7 @@ def user_otp_verify(request):
     return render(request, 'accounts/user_otp_verify.html', context)
 
 # ================== USER RESEND OTP VERIFICATION  ==============
+@never_cache
 def user_resend_otp(request):
     verification_email = request.session.get('verification_email')
     reset_email = request.session.get('reset_email')
@@ -171,6 +179,8 @@ def user_resend_otp(request):
             return redirect('user_reset_password_verify')
 
 # ================== USER FORGOT PASSWORD ========================
+@never_cache
+@logout_required(redirect_to="home")
 def user_forgot_password(request):
     if request.method == 'POST':
         form = UserForgotPasswordForm(request.POST)
@@ -208,13 +218,13 @@ def user_forgot_password(request):
 
 
 # ======================= PASSWORD RESET VERIFICATION (Reuse logic from OTP verify, but lead to password reset form) =====================
-
+@never_cache
 def user_reset_password_verify(request):
     reset_email = request.session.get('reset_email')
     stored_otp = request.session.get('reset_otp')
     otp_expiry = request.session.get('otp_expiry')
 
-    if not reset_email or not stored_otp:
+    if not reset_email:
         messages.error(request, 'Password reset session invalid.')
         return redirect('user_forgot_password') 
 
@@ -250,10 +260,8 @@ def user_reset_password_verify(request):
     }
     return render(request, 'accounts/user_otp_verify.html', context) # Reusing the OTP template
 
-# =================================================================
-# 7. PASSWORD RESET FINAL STEP
-# =================================================================
-
+# ===================== PASSWORD RESET FINAL STEP ==================
+@never_cache
 def user_reset_password(request):
     reset_email = request.session.get('reset_email')
     otp_verified = request.session.get('otp_verified')
@@ -293,6 +301,7 @@ def user_reset_password(request):
 
 # ========== USER LOGOUT ======================
 @login_required
+@never_cache
 def user_logout(request):
     logout(request)
     messages.info(request, "You have been logged out successfully.")

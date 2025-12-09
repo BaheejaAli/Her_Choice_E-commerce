@@ -1,0 +1,15 @@
+/* Green circle background */
+.success-icon {
+    width: 75px;
+    height: 75px;
+    background: #e6f9ee;
+    /* Light green background */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    color: #00b341;
+    font-size: 35px;
+    border: 2px solid #00b341;
+}
