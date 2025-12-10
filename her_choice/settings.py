@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     # my Apps
     'accounts',
+    'frontend_pages',
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
@@ -149,9 +150,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 # STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+}
+
+/* HEADER */
+.header {
+    background: white;
+    border-bottom: 1px solid #eee;
+    padding: 15px 40px;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.icons a {
+    margin-left: 12px;
+    color: #333;
+}
+
+.logout-btn {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #333;
+}
+
+.logout-btn:hover {
+    color: #ff1680;
+}
+
+.user-name {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+/* FOOTER */
+.footer {
+    background: #eee;
+    padding: 20px;
+    text-align: center;
+}

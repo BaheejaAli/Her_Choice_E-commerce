@@ -1,0 +1,59 @@
+{% extends "frontend_pages/base.html" %}
+{% load static %}
+
+{% block title %}Home | Her Choice{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/frontend_pages/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>Welcome to Her Choice</h1>
+        <p>Discover stylish collections designed to empower every woman.</p>
+        <a href="#" class="btn-shop">Shop Now</a>
+    </div>
+</section>
+
+<!-- FEATURED COLLECTION -->
+<section class="featured-section">
+    <h2 class="section-title">Featured Collection</h2>
+
+    <div class="product-grid">
+
+        {% for product in featured_products %}
+        <div class="product-card">
+            <img src="{{ product.image.url }}" alt="">
+            <h3>{{ product.name }}</h3>
+            <p class="price">{{ product.price }} ₹</p>
+            <a href="#" class="btn-view">View Details</a>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<!-- SHOP BY CATEGORY -->
+<section class="category-section">
+    <h2 class="section-title">Shop by Category</h2>
+
+    <div class="category-grid">
+
+        {% for category in categories %}
+        <div class="category-box">
+            <img src="{{ category.image.url }}">
+            <span>{{ category.name }}</span>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'frontend_pages/js/home.js' %}"></script>
+{% endblock %}

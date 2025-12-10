@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Her Choice{% endblock %}</title>
+
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{% static 'css/frontend_pages/base.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo"><a href="/">Her Choice</a></div>
+
+            <ul class="menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+
+            <div class="icons">
+
+                {% if user.is_authenticated %}
+
+                    <!-- User Greeting -->
+                    <span class="user-name"> {{ user.username }}</span>
+
+                    <!-- Logout Form -->
+                    <form action="#" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">Logout</button>
+                    </form>
+
+                {% else %}
+
+                    <!-- Links for guests -->
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
+
+                {% endif %}
+
+                <a href="#"><i class="fa fa-heart"></i></a>
+                <a href="#"><i class="fa fa-shopping-cart"></i></a>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2025 Her Choice. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Base JS -->
+    <script src="{% static 'frontend_pages/js/base.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
