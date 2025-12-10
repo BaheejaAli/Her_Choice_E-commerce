@@ -1,0 +1,149 @@
+{% extends "frontend_pages/admin/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | Her Choice{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/frontend_pages/admin/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h4 class="welcome-text">Welcome Back, Admin!</h4>
+
+<!-- ================== CARDS ================== -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <h6>Total Sales</h6>
+            <h2>$890</h2>
+            <p class="success">+5% this week</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <h6>Total Orders</h6>
+            <h2>1,234</h2>
+            <p class="success">+1% this week</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <h6>Total Revenue</h6>
+            <h2>$54,321</h2>
+            <p class="danger">-3% this week</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <h6>Products in Stock</h6>
+            <h2>1,205</h2>
+            <p class="success">+2% this week</p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================== CHARTS ================== -->
+<div class="row mb-4">
+
+    <div class="col-md-8">
+        <div class="card chart-card">
+            <div class="d-flex justify-content-between">
+                <h6>Sales Overview</h6>
+                <span class="text-muted">Monthly</span>
+            </div>
+            <img src="{% static 'img/chart_placeholder.png' %}" class="img-fluid mt-3">
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card chart-card">
+            <h6>Payment Method Analysis</h6>
+            <img src="{% static 'img/donut_placeholder.png' %}" class="img-fluid mt-3">
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================== ALERTS ================== -->
+<div class="row mb-4">
+
+    <div class="col-md-6">
+        <div class="alert alert-warning custom-alert">
+            <strong>Low Stock Alerts</strong><br>
+            15 products are running low on stock.
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="alert alert-info custom-alert">
+            <strong>Today's Revenue</strong><br>
+            Revenue generated today: $3,456
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ================== RECENT ORDERS ================== -->
+<div class="card p-4 recent-orders">
+    <h5 class="mb-3">Recent Orders</h5>
+
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>#3210</td>
+                <td>Alice Johnson</td>
+                <td>2023-11-20</td>
+                <td>$125.99</td>
+                <td>Credit Card</td>
+                <td><span class="badge bg-success">Completed</span></td>
+                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
+            </tr>
+
+            <tr>
+                <td>#3109</td>
+                <td>Sarah Williams</td>
+                <td>2023-11-20</td>
+                <td>$89.75</td>
+                <td>PayPal</td>
+                <td><span class="badge bg-warning text-dark">Processing</span></td>
+                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
+            </tr>
+
+            <tr>
+                <td>#3208</td>
+                <td>Michael Brown</td>
+                <td>2023-11-19</td>
+                <td>$412.00</td>
+                <td>Credit Card</td>
+                <td><span class="badge bg-info">Shipped</span></td>
+                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

@@ -61,3 +61,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+    
+
+
+# from cloudinary.models import CloudinaryField
+# from django.db import models
+
+# class Profile(models.Model):
+#     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+#     profile_image = CloudinaryField('image', blank=True, null=True)
+

@@ -1,0 +1,63 @@
+/* WELCOME TEXT */
+.welcome-text {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* STATS CARDS */
+.stats-card {
+    padding: 18px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.stats-card h6 {
+    font-size: 14px;
+    color: #666;
+}
+
+.stats-card h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.success {
+    color: #28a745;
+}
+.danger {
+    color: #e74c3c;
+}
+
+/* CHARTS */
+.chart-card {
+    padding: 18px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ALERTS */
+.custom-alert {
+    border-radius: 12px;
+    padding: 18px;
+    font-size: 15px;
+}
+
+/* RECENT ORDERS */
+.recent-orders {
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.table thead {
+    background: #f1f3f5;
+}
+
+.table td {
+    padding: 14px;
+}

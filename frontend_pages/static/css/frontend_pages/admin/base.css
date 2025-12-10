@@ -1,0 +1,92 @@
+/* GENERAL */
+body {
+    background: #f6f7fb;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+/* DASHBOARD LAYOUT */
+.dashboard-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    border-right: 1px solid #eaeaea;
+    padding: 20px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff1680;
+    margin-bottom: 25px;
+} 
+
+.sidebar-menu li a {
+    text-decoration: none;
+    color: #333;
+}
+
+.sidebar-menu li a:hover {
+    text-decoration: none;
+    color: #007bff;
+} 
+
+.sidebar-menu li {
+    padding: 12px 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: #444;
+    font-size: 15px;
+}
+
+.sidebar-menu li i {
+    margin-right: 10px;
+}
+
+.sidebar-menu li:hover {
+    background: #ffe8f2;
+    color: #ff1680;
+}
+
+.sidebar-menu .active {
+    background: #ffe6f1;
+    color: #ff1680;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    padding: 25px;
+}
+
+/* TOP BAR */
+.top-bar {
+    background: #ffffff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.search-box input {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* PAGE CONTENT */
+.page-content {
+    margin-top: 20px;
+}
