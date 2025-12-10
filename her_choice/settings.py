@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     # my Apps
     'accounts',
+    'frontend_pages',
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
