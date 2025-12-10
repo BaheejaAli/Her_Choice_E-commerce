@@ -11,6 +11,7 @@ from django.utils import timezone
 from accounts.utils import send_otp_email
 from django.views.decorators.cache import never_cache
 from accounts.decorators import logout_required
+from allauth.socialaccount.providers.google.views import oauth2_callback
 
 # Define the OTP expiry duration (e.g., 5 minutes)
 OTP_EXPIRY_SECONDS = 300
@@ -308,6 +309,11 @@ def user_logout(request):
     return redirect('user_login')
 
 
+def google_callback_safe(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        return redirect("home")
+    
+    return oauth2_callback(request, *args, **kwargs)
 
 
 
