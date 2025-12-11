@@ -1,0 +1,130 @@
+{% extends "admin_base.html" %}
+
+{% load static %}
+
+{% block title %}User Management | Her Choice{% endblock %}
+
+{% block page_title %}User Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_panel/user_management.css' %}">
+{% endblock %}
+
+{% block content %}
+    
+    <div class="user-management-container">
+        <p class="text-muted mb-4">Manage your users and their account permissions here.</p>
+
+        <!-- ================== STATS CARDS ================== -->
+        <div class="row g-3 mb-4">
+            
+            <div class="col-md-4">
+                <div class="card stats-card">
+                    <h6>Total Users</h6>
+                    <h2>8</h2>
+                    <p class="success">+12% this month</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stats-card">
+                    <h6>Active Users</h6>
+                    <h2>4</h2>
+                    <p class="success">+5% this month</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card stats-card">
+                    <h6>Inactive Users</h6>
+                    <h2>3</h2>
+                    <p class="danger">-2% this month</p>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ================== SEARCH & FILTERS ================== -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <input type="text" class="form-control me-3" style="max-width: 400px;" placeholder="Search by name or email...">
+            
+            <div class="d-flex align-items-center">
+                <span class="me-2 text-muted">Filter:</span>
+                <select class="form-select me-3" style="width: 120px;">
+                    <option selected>All</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                    <option>Blocked</option>
+                </select>
+                <a href="#" class="btn btn-primary" style="background-color: #f16091; border-color: #f16091;">
+                    <i class="fa-solid fa-plus me-1"></i> Add User
+                </a>
+            </div>
+        </div>
+
+        <!-- ================== USER TABLE ================== -->
+        <div class="card p-4 user-table-card">
+            <h5 class="mb-3">All Users</h5>
+
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 30%;">User</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Total Orders</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40?img=1" alt="Olivia Martin" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h6 class="mb-0">Olivia Martin</h6>
+                                    <small class="text-muted">olivia.martin@email.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>(070) 555-0117</td>
+                        <td>54</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><a href="#" class="text-secondary"><i class="fa-solid fa-ellipsis"></i></a></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/40?img=2" alt="Emma Garcia" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h6 class="mb-0">Emma Garcia</h6>
+                                    <small class="text-muted">emma.garcia@email.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>(458) 555-0121</td>
+                        <td>21</td>
+                        <td><span class="badge bg-danger">Blocked</span></td>
+                        <td><a href="#" class="text-secondary"><i class="fa-solid fa-ellipsis"></i></a></td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            
+            <!-- ================== PAGINATION ================== -->
+            <nav class="d-flex justify-content-end">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+{% endblock content %}

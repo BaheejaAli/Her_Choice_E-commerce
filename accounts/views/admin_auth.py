@@ -11,7 +11,13 @@ import random, time
 # Create your views here.
 
 # ================== Admin Login (Authentication) ==================
+@never_cache
 def admin_login(request):
+    # CHECK IF USER IS ALREADY LOGGED IN AND IS AN ADMIN
+    if request.user.is_authenticated and hasattr(request.user, 'is_admin') and request.user.is_admin:
+        # If the user is already authenticated AND is an admin, redirect to dashboard
+        return redirect("admin_dashboard")
+    
     if request.method == "POST":
         form = AdminLoginForm(request.POST) # <--- Using the Form
         if form.is_valid():

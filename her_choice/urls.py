@@ -23,7 +23,14 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("accounts/google/login/callback/", google_callback_safe, name="google_callback"),
     path("accounts/", include("allauth.socialaccount.providers.google.urls")),
+
+    # Admin urls
+    path("admin-panel/", include("adminpanel.urls")),
+
+    # User urls
     path("", include("frontend_pages.urls")),
+
+
 
 
 ]
