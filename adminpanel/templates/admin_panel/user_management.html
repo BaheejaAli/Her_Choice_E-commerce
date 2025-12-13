@@ -1,9 +1,7 @@
 {% extends "admin_base.html" %}
-
 {% load static %}
 
 {% block title %}User Management | Her Choice{% endblock %}
-
 {% block page_title %}User Management{% endblock %}
 
 {% block extra_css %}
@@ -11,172 +9,125 @@
 {% endblock %}
 
 {% block content %}
-    
-    <div class="user-management-container">
-        {% comment %} Display Django messages (success/error/warning) {% endcomment %}
-       {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %} 
+<div class="user-management-container">
 
-        <p class="text-muted mb-4">Manage your users and their account permissions here.</p>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
-        <!-- ================== STATS CARDS ================== -->
-        <div class="row g-3 mb-4">
-            
-            <div class="col-md-4">
-                <div class="card stats-card">
-                    <h6>Total Users</h6>
-                    <h2>{{ total_users }}</h2>
-                </div>
-            </div>
+    <p class="text-muted">Manage your users and their account permissions here.</p>
 
-            <div class="col-md-4">
-                <div class="card stats-card">
-                    <h6>Active Users</h6>
-                    <h2>{{ active_users }}</h2>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card stats-card">
-                    <h6>Inactive Users</h6>
-                    <h2>{{inactive_users}}</h2>
-                </div>
-            </div>
-            
+    <!-- STATS -->
+    <div class="stats-row">
+        <div class="stats-card">
+            <h6>Total Users</h6>
+            <h2>{{ total_users }}</h2>
         </div>
+        <div class="stats-card">
+            <h6>Active Users</h6>
+            <h2>{{ active_users }}</h2>
+        </div>
+        <div class="stats-card">
+            <h6>Inactive Users</h6>
+            <h2>{{ inactive_users }}</h2>
+        </div>
+    </div>
 
-        <!-- ================== SEARCH & FILTERS ================== -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <form method="GET" action="{% url 'user_management' %}" 
-            class="d-flex align-items-center flex-grow-1 me-3" style="max-width: 400px;">
-                <div class="input-group">
-                    <input type="text" 
-                        name="q" 
-                        class="form-control search-input" 
-                        placeholder="Search by name or email..." 
-                        value="{{ search_query }}" 
-                        id="searchInput">
-            
-            <button class="btn btn-outline-secondary" type="submit" title="Search">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-            
+    <!-- SEARCH & FILTER -->
+    <form method="GET" class="search-filter-form" id="filterForm">
+        <div class="filter-left">
+            <input type="text" name="q" class="search-input"
+                   placeholder="Search by name or email..."
+                   value="{{ search_query }}">
+            <button type="submit"><i class="fa fa-search"></i> Search</button>
+
             {% if search_query or status_filter %}
-                <a href="{% url 'user_management' %}" class="btn btn-outline-danger" title="Clear Search">
-                    <i class="fa-solid fa-xmark"></i>
-                </a>
+                <a href="?" class="clear-btn">Clear</a>
             {% endif %}
         </div>
-   
-        <div class="d-flex align-items-center">
-            <span class="me-2 text-muted">Filter:</span>
-                    <select class="form-select me-3" style="width: 120px;" name= "status_filter">
-                        <option value="all"
-                            {% if status_filter == 'all' or not status_filter %}
-                                selected
-                            {% endif %}>
-                                All
-                        </option>
-                        <option value="active"
-                            {% if status_filter == 'active' %}
-                                selected
-                            {% endif %}>Active</option>
-                        <option value="inactive" 
-                        {% if status_filter == 'inactive' %}
-                                selected
-                            {% endif %}>Inactive</option>
-                    </select>
-                </div>
+
+        <div class="filter-right">
+            <select name="status_filter" id="statusFilter">
+                <option value="all">All</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
         </div>
     </form>
-            
-        
 
-        <!-- ================== USER TABLE ================== -->
-        <div class="card p-4 user-table-card">
-            <h5 class="mb-3">All Users</h5>
+    <!-- USER TABLE -->
+    <div class="user-table-wrapper">
+        <h5>All Users</h5>
 
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th scope="col">User ID</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Total Orders</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Last Login</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Orders</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-                <tbody>
-                    {% for user in page_obj %}
-                    <tr>
-                        <td>{{user.pk}}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img src="{% if user.profile_picture %}{{user.profile_picture.url}}
-                                {% else %}{% static "images/default_avatar.png" %}
-                                {% endif %}" alt="{{user.email}}" class="rounded-circle me-3 profile_thumb" style="width: 40px; height: 40px;">
-                                <h6 class="mb-0">{{user.get_full_name|default:"user.username"}}</h6>
-                            </div>
-                        </td>
-                        <td>{{user.email}}</td>
-                        <td>{{ user.phone|default:"N/A" }}</td>
-                        <td>{{ user.total_orders|default:"0" }}</td>
-                        <td>{% if user.is_active %}
-                            <span class="badge bg-success">Active</span>
+            <tbody>
+            {% for user in page_obj %}
+                <tr>
+                    <td>{{ user.pk }}</td>
+
+                    <td class="user-name">
+                        <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
+                             class="profile-thumb">
+                        {{ user.get_full_name|default:user.email }}
+                    </td>
+
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone|default:"N/A" }}</td>
+                    <td>{{ user.total_orders|default:"0" }}</td>
+
+                    <td>
+                        {% if user.is_active %}
+                            <span class="status active">Active</span>
                         {% else %}
-                            <span class="badge bg-danger">Inactive</span>
-                        </span>{% endif %}
-                        </td>
-                        <td>{{user.last_login}}</td>
-                        <td>
-                            <form method="POST" action="{% url 'toggle_user_status' user.id %}" id="toggle-form-{{ user.id }}">
-                                {% csrf_token %}
-                                
-                                {% if user.is_active %}
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-danger modal-trigger"
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#confirmationModal"
-                                    data-username="{{ user.get_full_name|default:user.email }}"
-                                    data-action="Block"
-                                    data-form-id="toggle-form-{{ user.id }}"
-                                    title="Block User">
-                                    <i class="fa-solid fa-ban me-1"></i> Block
-                                </button>
+                            <span class="status inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ user.last_login|date:"M d, Y H:i" }}</td>
+
+                    <td>
+                        <button
+                            type="button"
+                            class="btn btn-sm {% if user.is_active %}btn-danger{% else %}btn-success{% endif %}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#statusModal"
+                            data-user-id="{{ user.id }}"
+                            data-user-name="{{ user.get_full_name|default:user.email }}"
+                            data-action="{% if user.is_active %}Block{% else %}Unblock{% endif %}"
+                            data-url="{% url 'toggle_user_status' user.id %}"
+                            >
+                            
+                            {% if user.is_active %}
+                                <i class="fa-solid fa-ban"></i> Block
                             {% else %}
-                                <button 
-                                    type="button" 
-                                    class="btn btn-sm btn-success modal-trigger"
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#confirmationModal"
-                                    data-username="{{ user.get_full_name|default:user.email }}"
-                                    data-action="Unblock"
-                                    data-form-id="toggle-form-{{ user.id }}">
-                                    <i class="fa-solid fa-check me-1"></i> Unblock
-                                </button>
+                                <i class="fa-solid fa-check"></i> Unblock
                             {% endif %}
-                            </form>
-                        </td>
-                    </tr>{% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center text-muted">No users found{% if search_query %} matching "{{ search_query }}"{% endif %}.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-            <!-- ================== PAGINATION ================== -->
+                        </button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" class="empty">No users found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+         <!-- ================== PAGINATION ================== -->
             {% if page_obj.has_other_pages %}
                 <nav class="d-flex justify-content-end">
                     <ul class="pagination pagination-sm mb-0">
@@ -216,73 +167,59 @@
                     </ul>
                 </nav>
             {% endif %}
-        </div>
     </div>
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to <strong id="modalActionType"></strong> user <strong id="modalUsername"></strong>?
-                    <p class="text-muted mt-2 small">This action will change the user's active status.</p>
-                </div>
-                <div class="modal-footer">
+</div>
+
+<!-- STATUS MODAL -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p id="modalText"></p>
+            </div>
+
+            <div class="modal-footer">
+                <form method="POST" id="statusForm">
+                    {% csrf_token %}
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmSubmitBtn">Confirm</button>
-                </div>
+                    <button type="submit" id="modalConfirmBtn"></button>
+                </form>
             </div>
         </div>
     </div>
-{% endblock content %}
+</div>
+{% endblock %}
 {% block extra_js %}
 <script>
-    // 2. ADD: JAVASCRIPT/JQUERY LOGIC FOR MODAL SUBMISSION
-    // This assumes jQuery and Bootstrap JS are loaded in your admin_base.html
-    $(document).ready(function() {
-        var formToSubmitId = null; // Variable to store the ID of the form to be submitted
+document.getElementById('statusFilter').addEventListener('change', function () {
+    document.getElementById('filterForm').submit();
+});
 
-        // 1. Event listener that fires when the modal is about to be shown
-        $('#confirmationModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var username = button.data('username');
-            var actionType = button.data('action');
-            var formId = button.data('form-id');
+const statusModal = document.getElementById('statusModal');
 
-            // Update the modal's content dynamically
-            var modal = $(this);
-            modal.find('#modalActionType').text(actionType);
-            modal.find('#modalUsername').text(username);
-            
-            // Set the Confirm button's text and style
-            var confirmBtn = modal.find('#confirmSubmitBtn');
-            confirmBtn.text('Confirm ' + actionType);
-            
-            // Change the button color dynamically
-            confirmBtn.removeClass('btn-danger btn-success');
-            if (actionType === 'Block') {
-                confirmBtn.addClass('btn-danger');
-            } else {
-                confirmBtn.addClass('btn-success');
-            }
+statusModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
 
-            // Store the form ID for the submit handler
-            formToSubmitId = formId; 
-        });
+    const userName = button.getAttribute('data-user-name');
+    const action = button.getAttribute('data-action');
+    const actionUrl = button.getAttribute('data-url');
 
-        // 2. Event listener for the "Confirm" button inside the modal
-        $('#confirmSubmitBtn').on('click', function() {
-            if (formToSubmitId) {
-                // Submit the form using the stored ID
-                $('#' + formToSubmitId).submit();
-                
-                // Hide the modal (optional, as the page will reload anyway)
-                var modalInstance = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
-                modalInstance.hide();
-            }
-        });
-    });
+    document.getElementById('modalText').textContent =
+        `Are you sure you want to ${action} "${userName}"?`;
+
+    const form = document.getElementById('statusForm');
+    form.action = actionUrl;
+
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    confirmBtn.textContent = action;
+    confirmBtn.className = action === 'Block'
+        ? 'btn btn-danger'
+        : 'btn btn-success';
+});
 </script>
 {% endblock %}

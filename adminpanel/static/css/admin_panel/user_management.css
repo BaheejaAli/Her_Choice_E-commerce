@@ -1,119 +1,157 @@
-/* HER_CHOICE_PROJECT/static/css/admin/user_management.css */
-
-/* Define the primary accent color for reuse */
 :root {
-    --her-choice-pink: #f16091;
-    --her-choice-primary: #5a5c69;
-    --her-choice-light-bg: #f8f9fa; /* Light Background */
-    --her-choice-border: #e9ecef; /* Subtle Border Color */
+    --pink-main: #e91e63;
+    --pink-light: #f8bbd0;
+    --pink-soft: #fde4ec;
+    --pink-dark: #c2185b;
+    --text-dark: #333;
+    --text-muted: #777;
+    --bg-page: #fdf7f9;
+    --bg-card: #ffffff;
+    --border-light: #eee;
+    --radius: 12px;
+    --transition: 0.2s ease-in-out;
 }
 
-/* Base Container */
 .user-management-container {
-    padding-bottom: 30px;
+    padding: 24px;
 }
 
-/* ================================================= */
-/* STATS CARDS - Match Dashboard Style */
-/* ================================================= */
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    background: var(--pink-soft);
+    color: var(--pink-dark);
+    margin-bottom: 16px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
 .stats-card {
-    padding: 18px;
-    border-radius: 12px;
-    background: #ffffff;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-}
-.stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-
-.stats-card h6 {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 0;
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
 }
 
 .stats-card h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 10px 0 0 0;
-    color: var(--her-choice-primary);
+    color: var(--pink-main);
 }
 
-/* ================================================= */
-/* USER TABLE CARD & ELEMENTS */
-/* ================================================= */
-.user-table-card {
-    border-radius: 12px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+.search-filter-form {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
 }
 
-/* Table Styling */
-.table thead {
-    background: #f1f3f5;
+.filter-left {
+    flex: 1;
 }
 
-.table td, .table th {
-    padding: 14px;
-    /* Ensure no wrapping in table headers/cells for better alignment */
-    white-space: nowrap;
-}
-
-/* User Profile Picture */
-.profile_thumb {
-    object-fit: cover;
-    /* This class is used in the HTML for the img tag */
-}
-
-/* Ensure badges use the correct colors and padding */
-.badge.bg-danger {
-    background-color: #dc3545 !important; /* Important to override utility.css if present */
-}
-
-.badge.bg-success {
-    background-color: #28a745 !important; 
-}
-
-.badge {
-    padding: 0.5em 0.8em;
-    font-weight: 500;
-    min-width: 70px; /* Optional: Standardize badge width */
-    text-align: center;
-}
-
-/* Style the primary button (e.g., if you add an 'Add User' button) */
-.btn-primary {
-    background-color: var(--her-choice-pink) !important;
-    border-color: var(--her-choice-pink) !important;
-}
-
-/* Adjust the search bar focus color */
-.form-control:focus {
-    border-color: var(--her-choice-pink);
-    box-shadow: 0 0 0 0.25rem rgba(241, 96, 145, 0.25);
-}
-
-/* Apply pink accent to active pagination item */
-.pagination-sm .page-item.active .page-link {
-    background-color: var(--her-choice-pink);
-    border-color: var(--her-choice-pink);
-    color: #fff;
-}
-
-/* Optional: Style for the search input group elements for consistency */
 .search-input {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    margin-right: 20px;
 }
-.input-group .btn-outline-secondary,
-.input-group .btn-outline-danger {
-    border-radius: 0;
+
+.filter-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
-.input-group .btn-outline-danger {
-    border-top-right-radius: 6px !important;
-    border-bottom-right-radius: 6px !important;
-    margin-left: -1px; /* Remove double border */
+
+.search-filter-form select,
+.search-filter-form button {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    margin-right: 20px;
+}
+
+.search-filter-form button {
+    background: var(--pink-main);
+    color: white;
+    border: none;
+}
+
+.clear-btn {
+    color: var(--pink-main);
+    text-decoration: none;
+}
+
+.user-table-wrapper {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.user-name {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.profile-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.status.active {
+    background: #e8f7ee;
+    color: #2e7d32;
+}
+
+.status.inactive {
+    background: #fdeaea;
+    color: #c62828;
+}
+
+.btn-danger {
+    background: #ffebee;
+    color: #c62828;
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+}
+
+.btn-success {
+    background: #e8f7ee;
+    color: #2e7d32;
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 20px;
 }

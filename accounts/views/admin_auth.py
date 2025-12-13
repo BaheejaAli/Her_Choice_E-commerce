@@ -28,7 +28,7 @@ def admin_login(request):
 
             user = authenticate(request, email=email, password=password)
 
-            if user is not None and user.is_admin:
+            if user is not None and user.is_staff:
                 login(request, user)
 
                 if not remember_me:
