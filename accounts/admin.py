@@ -13,7 +13,6 @@ class CustomUserAdmin(UserAdmin):
         "last_name",
         "is_active",
         "is_staff",
-        "is_admin",
         "is_superuser",
     )
     list_filter = ("is_superuser", "is_staff", "is_active")
@@ -33,7 +32,6 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "is_active",
                     "is_staff",
-                    "is_admin",
                     "is_superuser",
                     "is_verified",
                     "groups",
@@ -68,7 +66,7 @@ add_fieldsets = (
     (
         "Permissions",
         {
-            "fields": ("is_staff", "is_admin", "is_superuser"),
+            "fields": ("is_staff", "is_superuser"),
         },
     ),
 )

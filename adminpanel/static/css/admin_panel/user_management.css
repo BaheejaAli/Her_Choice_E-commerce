@@ -4,15 +4,29 @@
 :root {
     --her-choice-pink: #f16091;
     --her-choice-primary: #5a5c69;
+    --her-choice-light-bg: #f8f9fa; /* Light Background */
+    --her-choice-border: #e9ecef; /* Subtle Border Color */
 }
 
+/* Base Container */
+.user-management-container {
+    padding-bottom: 30px;
+}
+
+/* ================================================= */
 /* STATS CARDS - Match Dashboard Style */
+/* ================================================= */
 .stats-card {
     padding: 18px;
     border-radius: 12px;
     background: #ffffff;
     border: none;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
 
 .stats-card h6 {
@@ -28,16 +42,9 @@
     color: var(--her-choice-primary);
 }
 
-/* Success and Danger Colors */
-.success {
-    color: #28a745;
-}
-
-.danger {
-    color: #e74c3c;
-}
-
-/* USER TABLE CARD - Match Dashboard Style */
+/* ================================================= */
+/* USER TABLE CARD & ELEMENTS */
+/* ================================================= */
 .user-table-card {
     border-radius: 12px;
     background: #ffffff;
@@ -49,41 +56,38 @@
     background: #f1f3f5;
 }
 
-.table td {
+.table td, .table th {
     padding: 14px;
+    /* Ensure no wrapping in table headers/cells for better alignment */
+    white-space: nowrap;
 }
 
-.table th {
-    padding: 14px;
+/* User Profile Picture */
+.profile_thumb {
+    object-fit: cover;
+    /* This class is used in the HTML for the img tag */
 }
 
-/* Ensure badges use the correct colors */
+/* Ensure badges use the correct colors and padding */
 .badge.bg-danger {
-    background-color: #dc3545;
+    background-color: #dc3545 !important; /* Important to override utility.css if present */
 }
 
 .badge.bg-success {
-    background-color: #28a745; 
-}
-
-.badge.bg-warning {
-    background-color: #ffc107;
+    background-color: #28a745 !important; 
 }
 
 .badge {
     padding: 0.5em 0.8em;
     font-weight: 500;
+    min-width: 70px; /* Optional: Standardize badge width */
+    text-align: center;
 }
 
-/* Style the Add User button to match the theme */
+/* Style the primary button (e.g., if you add an 'Add User' button) */
 .btn-primary {
     background-color: var(--her-choice-pink) !important;
     border-color: var(--her-choice-pink) !important;
-}
-
-/* Styling for user list in table */
-.user-management-container .rounded-circle {
-    object-fit: cover;
 }
 
 /* Adjust the search bar focus color */
@@ -97,4 +101,19 @@
     background-color: var(--her-choice-pink);
     border-color: var(--her-choice-pink);
     color: #fff;
+}
+
+/* Optional: Style for the search input group elements for consistency */
+.search-input {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.input-group .btn-outline-secondary,
+.input-group .btn-outline-danger {
+    border-radius: 0;
+}
+.input-group .btn-outline-danger {
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+    margin-left: -1px; /* Remove double border */
 }

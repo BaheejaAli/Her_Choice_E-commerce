@@ -43,10 +43,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False) 
-    is_admin = models.BooleanField(default=False)
 
     # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     # Manager assignment and required settings

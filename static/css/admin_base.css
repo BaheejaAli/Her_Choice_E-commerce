@@ -26,7 +26,7 @@ body {
     margin-bottom: 25px;
 } 
 
-.sidebar-menu li a {
+.sidebar-menu a li{
     text-decoration: none;
     color: #333;
 }
@@ -90,3 +90,4 @@ body {
 .page-content {
     margin-top: 20px;
 }
+
