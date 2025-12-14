@@ -26,7 +26,8 @@ urlpatterns = [
 
     # Admin urls
     path("admin-panel/", include("adminpanel.urls")),
-
+    path('admin-panel/brandsandcategories/', 
+         include(('brandsandcategories.urls', 'brandsandcategories'), namespace='brandsandcategories')),
 
 
     path("", include("frontend_pages.urls")),

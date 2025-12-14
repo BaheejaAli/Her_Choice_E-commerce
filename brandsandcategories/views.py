@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 class BrandListView(LoginRequiredMixin, ListView):
     # Displays a list of all existing Brand objects.
     model = Brand
-    template_name = 'brandsandcategories/admin_brandmanagement.html'
+    template_name = 'brandsandcategories/admin_brand.html'
     context_object_name = 'brands'
 
     paginate_by = 10
@@ -29,7 +29,7 @@ class BrandCreateView(LoginRequiredMixin, CreateView):
     # Handles the creation of a new brand, usually triggered by the "Add New Brand" modal form.
     model = Brand
     form_class = BrandForm # Use the dedicated form class
-    template_name = 'adminpanel/brands/admin_brandmanagement.html' # Often uses the list template for modal forms
+    template_name = 'adminpanel/brands/admin_brand.html' # Often uses the list template for modal forms
     success_url = reverse_lazy('brandsandcategories:brands_list') 
 
 # --- 3. Brand Update View ---
@@ -37,7 +37,7 @@ class BrandUpdateView(LoginRequiredMixin, UpdateView):
     # Handles displaying a pre-filled form and updating an existing brand.
     model = Brand
     form_class = BrandForm
-    template_name = 'adminpanel/brands/admin_brandmanagement.html' # Or a dedicated form template
+    template_name = 'adminpanel/brands/admin_brand.html' # Or a dedicated form template
     context_object_name = 'brand' 
     success_url = reverse_lazy('brandsandcategories:brands_list')
     # Note: This view uses 'pk' (primary key) from the URL to identify the brand to update.

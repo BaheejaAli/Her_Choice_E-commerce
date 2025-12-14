@@ -5,7 +5,7 @@
 {% block page_title %}Brand Management{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/brandsandcategories/admin_brandmanagement.css' %}">
+<link rel="stylesheet" href="{% static 'css/brandsandcategories/admin_brand.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -152,7 +152,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
           
-            <form method="POST" action="#" enctype="multipart/form-data" class="brand-form">
+            <form method="POST" action="{% url "brandsandcategories:brand_add" %}" enctype="multipart/form-data" class="brand-form">
                 {% csrf_token %}
                 <div class="modal-body brand-modal-body">
                     {# NOTE: The cleanest way is to use {{ form.as_p }} but manually placing fields is fine for custom layout #}
