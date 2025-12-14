@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "accounts",
     "frontend_pages",
     "adminpanel",
+    "brandsandcategories",
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"

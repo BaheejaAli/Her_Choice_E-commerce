@@ -1,93 +1,98 @@
 /* GENERAL */
 body {
-    background: #f6f7fb;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
+background: #f6f7fb;
+font-family: 'Poppins', sans-serif;
+margin: 0;
 }
-
 /* DASHBOARD LAYOUT */
 .dashboard-wrapper {
-    display: flex;
-    height: 100vh;
+display: flex;
+height: 100vh;
 }
-
-/* SIDEBAR */
+/* ------------------------------------------------ */
+/* SIDEBAR (Final, Max Specificity Styles) */
+/* ------------------------------------------------ */
 .sidebar {
-    width: 240px;
-    background: #ffffff;
-    border-right: 1px solid #eaeaea;
-    padding: 20px;
+width: 240px;
+background: #ffffff;
+border-right: 1px solid #eaeaea;
+padding: 20px;
 }
-
 .logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: #ff1680;
-    margin-bottom: 25px;
+font-size: 22px;
+font-weight: 700;
+color: #ff1680;
+margin-bottom: 25px;
 } 
-
-.sidebar-menu a li{
-    text-decoration: none;
-    color: #333;
+/* 1. ANCHOR TAG (A) BASE STYLES - REMOVE UNDERLINE */
+/* This rule is highly specific and should beat all others, including Bootstrap. */
+.sidebar-menu a,
+.sidebar-menu ul a {
+text-decoration: none !important; /* Forcefully removes the underline */
+display: block;                  /* Ensures the whole area is clickable */
 }
-
-.sidebar-menu li a:hover {
-    text-decoration: none;
-    color: #007bff;
-} 
-
+/* 2. LIST ITEM (LI) BASE STYLES */
 .sidebar-menu li {
-    padding: 12px 10px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    border-radius: 8px;
-    color: #444;
-    font-size: 15px;
+padding: 12px 10px;
+margin-bottom: 5px;
+cursor: pointer;
+border-radius: 8px;
+font-size: 15px;
+transition: all 0.2s ease-in-out; 
 }
-
+/* Ensure the text color within the LI is the default color when not active/hovered */
+.sidebar-menu a li {
+color: #444; 
+}
+.sidebar-menu a.active li {
+    background: #ffe6f1; /* Your desired background color */
+    color: #ff1680;      /* Your desired text color */
+    font-weight: 600;    /* Makes selected item stand out */
+}
+/* Icon spacing */
 .sidebar-menu li i {
-    margin-right: 10px;
+margin-right: 10px;
 }
-
-.sidebar-menu li:hover {
-    background: #ffe8f2;
-    color: #ff1680;
+/* 3. HOVER STATE */
+/* Targets the LI when its PARENT A is hovered */
+.sidebar-menu a:hover li {
+background: #ffe8f2;
+color: #ff1680; 
 }
-
-.sidebar-menu .active {
-    background: #ffe6f1;
-    color: #ff1680;
+/* 4. ACTIVE (SELECTED) STATE */
+/* VITAL: Targets the LI when its PARENT A has the 'active' class (set by Django) */
+.sidebar-menu a.active li {
+background: #ffe6f1; /* Changes the background color */
+color: #ff1680;      /* Changes the font color */
+font-weight: 600;    /* Makes selected item stand out */
+text-decoration: none !important; /* Ensures no underline when active */
 }
-
+/* ------------------------------------------------ */
 /* MAIN CONTENT */
+/* ------------------------------------------------ */
 .main-content {
-    flex: 1;
-    padding: 25px;
+flex: 1;
+padding: 25px;
 }
-
 /* TOP BAR */
 .top-bar {
-    background: #ffffff;
-    padding: 12px 18px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    display: flex;
+background: #ffffff;
+padding: 12px 18px;
+border-radius: 12px;
+margin-bottom: 20px;
+display: flex;
 }
-
 .search-box input {
-    padding: 7px 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+padding: 7px 14px;
+border-radius: 8px;
+border: 1px solid #ddd;
 }
-
 .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+width: 40px;
+height: 40px;
+border-radius: 50%;
 }
-
 /* PAGE CONTENT */
 .page-content {
-    margin-top: 20px;
+margin-top: 20px;
 }
-

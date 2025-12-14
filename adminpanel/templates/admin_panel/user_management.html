@@ -109,7 +109,7 @@
                             data-user-id="{{ user.id }}"
                             data-user-name="{{ user.get_full_name|default:user.email }}"
                             data-action="{% if user.is_active %}Block{% else %}Unblock{% endif %}"
-                            data-url="{% url 'toggle_user_status' user.id %}"
+                            data-url="{% url 'adminpanel:toggle_user_status' user.id %}"
                             >
                             
                             {% if user.is_active %}

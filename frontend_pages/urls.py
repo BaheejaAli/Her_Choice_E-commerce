@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
+app_name = 'frontend_pages'
 urlpatterns = [
     path("",views.home, name="home"),
-    path("dashboard", views.admin_dashboard, name="admin_dashboard"),
-    path("admin-logout/", views.admin_logout, name="admin_logout")
+    path("dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    
 ]

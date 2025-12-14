@@ -27,8 +27,10 @@ urlpatterns = [
     # Admin urls
     path("admin-panel/", include("adminpanel.urls")),
 
-    # User urls
+
+
     path("", include("frontend_pages.urls")),
+    
 
 
 

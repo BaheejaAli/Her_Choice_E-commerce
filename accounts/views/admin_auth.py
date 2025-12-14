@@ -14,9 +14,9 @@ import random, time
 @never_cache
 def admin_login(request):
     # CHECK IF USER IS ALREADY LOGGED IN AND IS AN ADMIN
-    if request.user.is_authenticated and hasattr(request.user, 'is_admin') and request.user.is_admin:
+    if request.user.is_authenticated and request.user.is_staff:
         # If the user is already authenticated AND is an admin, redirect to dashboard
-        return redirect("admin_dashboard")
+        return redirect("frontend_pages:admin_dashboard")
     
     if request.method == "POST":
         form = AdminLoginForm(request.POST) # <--- Using the Form
@@ -33,7 +33,7 @@ def admin_login(request):
 
                 if not remember_me:
                     request.session.set_expiry(0)
-                return redirect("admin_dashboard")
+                return redirect("frontend_pages:admin_dashboard")
             else:
                 return render(
                     request,
@@ -64,7 +64,7 @@ def admin_forgot_password(request):
 
             # Check if the user exists AND is an admin
             try:
-                user = CustomUser.objects.get(email=email, is_admin=True)
+                user = CustomUser.objects.get(email=email, is_staff=True)
             except CustomUser.DoesNotExist:
                 return render(
                     request,
@@ -178,7 +178,7 @@ def admin_logout(request):
 @login_required
 @never_cache
 def admin_dashboard(request):
-    if not request.user.is_admin:
+    if not (request.user.is_active and request.user.is_staff):
         return redirect("admin_login")
 
     return render(request, "accounts/admin_dashboard.html")

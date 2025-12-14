@@ -28,34 +28,64 @@
             <h3 class="logo">Her Choice</h3>
 
             <ul class="sidebar-menu list-unstyled">
-                <a href="{% url 'admin_dashboard' %}">
-                    <li class="active"><i class="fa-solid fa-house"></i> Dashboard</li>
+                
+                {# 1. DASHBOARD LINK #}
+                <a href="{% url 'frontend_pages:admin_dashboard' %}" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <li><i class="fa-solid fa-house"></i> Dashboard</li>
                 </a>
-                <a href="#">
+                
+                {# 2. BRANDS LINK (Placeholder for future URL) #}
+                <a href="/admin-panel/brandsandcategories/brands/" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'brands_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-shirt"></i> Brands</li>
                 </a>
-                <a href="#">
+                
+                {# 3. PRODUCTS LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'products_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-shirt"></i> Products</li>
                 </a>
-                <a href="#">
+                
+                {# 4. CATEGORIES LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'categories_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-list"></i> Categories</li>
                 </a>
-                <a href="#">
+                
+                {# 5. ORDERS LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-box"></i> Orders</li>
                 </a>
-                <a href="{% url "user_management" %}">
+                
+                {# 6. USERS LINK (This should now highlight correctly) #}
+                <a href="{% url "adminpanel:user_management" %}" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">
                     <li><i class="fa-solid fa-users"></i> Users</li>
                 </a>
-                <a href="#">
+                
+                {# 7. PAYMENTS LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'payments_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-credit-card"></i> Payments</li>
                 </a>
-                <a href="#">
+                
+                {# 8. PROMOTIONS LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'promotions_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-tags"></i> Promotions</li>
                 </a>
-                <a href="#">
+                
+                {# 9. REPORTS LINK (Placeholder for future URL) #}
+                <a href="#" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'reports_page' %}active{% endif %}">
                     <li><i class="fa-solid fa-chart-line"></i> Reports</li>
                 </a>
-                <a href="{% url "admin_logout" %}">
+                
+                {# 10. LOGOUT LINK #}
+                <a href="{% url "admin_logout" %}"  style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'admin_logout' %}active{% endif %}">
                     <li><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
                 </a>
             </ul>

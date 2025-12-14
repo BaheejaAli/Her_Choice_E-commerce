@@ -4,12 +4,30 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from django.urls import reverse
 
 # NEW IMPORTS FOR SEARCH AND PAGINATION
 from django.db.models import Q
 
 
 # Create your views here.
+
+# ============== ADMIN DASHBOARD ==================
+
+def admin_root_redirect(request):
+    # this redirect admin_panel to admin_dashboard
+    return redirect(reverse('frontend_pages:admin_dashboard'))
+
+
+
+
+
+
+
+
+
+
+# ========= USER MANAGEMENT ==================
 
 # Get the active User model
 User = get_user_model()
@@ -88,7 +106,7 @@ def toggle_user_status(request,user_id):
             messages.success(request, f"User {user_to_toggle.email} has been Unblocked.")
 
         user_to_toggle.save()
-    return redirect('user_management')
+    return redirect('adminpanel:user_management')
 
 
 
