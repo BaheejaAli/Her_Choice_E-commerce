@@ -1,5 +1,5 @@
 from django import forms
-from .models import Brand, Category
+from .models import Brand
 
 
 class BrandForm(forms.ModelForm):
@@ -28,9 +28,9 @@ class BrandForm(forms.ModelForm):
                 attrs={"class": "form-input-field"},
             ),
         }
-        # labels = {
-        #     'is_active': 'Status (Visibility)',
-        # }
+        labels = {
+            'is_active': 'Status (Visibility)',
+        }
 
 
 # class CategoryForm(forms.ModelForm):

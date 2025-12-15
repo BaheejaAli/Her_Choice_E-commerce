@@ -73,8 +73,15 @@ def user_login(request):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-                    messages.success(request, f"Welcome back,{user.first_name}!")
-                    return redirect('home')
+                    
+                    # Check if this is a newly verified user
+                    if request.session.get('newly_verified'):
+                        del request.session['newly_verified']
+                        messages.success(request, f"Welcome {user.first_name}! Your account has been successfully created and verified.")
+                    else:
+                        messages.success(request, f"Welcome back,{user.first_name}!")
+                    
+                    return redirect('frontend_pages:home')
                 else:
                     messages.warning(request, 'Your account is not active. Please verify your email.')
                     return redirect('user_login')
@@ -120,6 +127,9 @@ def user_otp_verify(request):
                 del request.session['verification_email']
                 del request.session['verification_otp']
                 del request.session['otp_expiry']
+
+                # Mark as newly verified for special welcome message
+                request.session['newly_verified'] = True
 
                 messages.success(request, 'Email successfully verified. Welcome!')
                 return redirect('user_login')

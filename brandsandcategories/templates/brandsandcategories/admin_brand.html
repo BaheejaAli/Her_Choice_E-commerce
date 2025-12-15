@@ -10,6 +10,18 @@
 
 {% block content %}
 <div class="brand-management-wrapper">
+    <!-- Django Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="page-header-section">
         <div class="header-content">
             <h4 class="page-main-title">Brand Management</h4>
@@ -25,13 +37,17 @@
         <div class="search-input-wrapper">
             <input type="text" id="brandSearchInput" class="search-input" placeholder="Search brands...">
         </div>
-        <div class="filter-dropdown-wrapper">
-            <button class="filter-dropdown-btn">
-                <i class="fas fa-filter"></i>
-                <span>Filter</span>
+       
+    <div class="filter-right">
+            <select name="status_filter" id="statusFilter">
+                <option value="all">All</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
                 <i class="fas fa-chevron-down"></i>
             </button>
-        </div>
+        
     </div>
 
     <div class="brand-table-wrapper">
@@ -57,11 +73,18 @@
                                 <i class="fas fa-building brand-icon-fallback"></i> 
                                 {% endif %}
                             </div>
+                  
                             <div class="brand-text-info">
                                 <h6 class="brand-name-text">{{ brand.name }}</h6>
                                 <p class="brand-description-text">{{ brand.description|truncatewords:10 }}</p>
                             </div>
+                      
                         </div>
+                    </td>
+                     <td class="products-cell">
+                 
+                        <span class="product-count-number">{{ brand.category_count|default:0 }}</span>
+                        <span class="product-count-label">items</span>
                     </td>
                     <td class="products-cell">
                         <span class="product-count-number">{{ brand.product_count|default:0 }}</span>
@@ -69,32 +92,29 @@
                     </td>
                     
                     <td class="status-cell">
-                        {% if brand.is_active %}
-                        <span class="status-badge status-active-badge">
-                            <span class="status-indicator-dot"></span>
-                            <span>Active</span>
-                        </span>
-                        {% else %}
-                        <span class="status-badge status-inactive-badge">
-                            <span class="status-indicator-dot"></span>
-                            <span>Inactive</span>
-                        </span>
-                        {% endif %}
+                        <form method="post" action="{% url 'brandsandcategories:toggle_brand_status' brand.id %}" class="status-toggle-form" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="is_active" value="{% if brand.is_active %}False{% else %}True{% endif %}">
+                            <button type="submit" class="status-toggle-btn {% if brand.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                {% if brand.is_active %}
+                                   Active
+                                {% else %}
+                                    Inactive
+                                {% endif %}
+                            </button>
+                        </form>
                     </td>
-                    
+
                     <td class="actions-cell">
                         <div class="action-buttons-group">
-                            <button class="action-btn edit-action-btn" 
-                                    data-bs-toggle="modal" 
+                            {% comment %} EDIT BUTTON {% endcomment %}
+                            <button class="action-btn edit-action-btn"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#editBrandModal"
                                     onclick="populateEditModal({{ brand.id }}, '{{ brand.name }}', '{{ brand.description|escapejs }}', '{% if brand.is_active %}Active{% else %}Inactive{% endif %}')"
                                     title="Edit Brand">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button class="action-btn delete-action-btn" 
-                                    onclick="deleteBrandConfirm({{ brand.id }})"
-                                    title="Delete Brand">
-                                <i class="fas fa-trash"></i>
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span class="btn-text">Edit</span>
                             </button>
                         </div>
                     </td>
@@ -144,6 +164,7 @@
     </div>
 </div>
 
+{% comment %} ==========ADD BRAND MODAL=========== {% endcomment %}
 <div class="modal fade" id="addBrandModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content brand-modal-content">
@@ -155,38 +176,40 @@
             <form method="POST" action="{% url "brandsandcategories:brand_add" %}" enctype="multipart/form-data" class="brand-form">
                 {% csrf_token %}
                 <div class="modal-body brand-modal-body">
-                    {# NOTE: The cleanest way is to use {{ form.as_p }} but manually placing fields is fine for custom layout #}
+                    {# {{ form.as_p }} but manually placing fields is fine for custom layout #}
                     
                     <div class="form-group-item">
                         <label class="form-input-label">Brand Name *</label>
-                        <input type="text" name="name" class="form-input-field" required placeholder="e.g., Nike">
+                        {{form.name}}
+                        {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+                        {% comment %} <input type="text" name="name" class="form-input-field" required placeholder="e.g., Nike"> {% endcomment %}
                     </div>
                     
                     <div class="form-group-item">
                         <label class="form-input-label">Description *</label>
-                        <textarea name="description" class="form-input-field" rows="3" required placeholder="Brief description of the brand"></textarea>
+                        {{ form.description }}
+                        {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                        {% comment %} <textarea name="description" class="form-input-field" rows="3" required placeholder="Brief description of the brand"></textarea> {% endcomment %}
                     </div>
                     
-                    {# REMOVED: Category form field - it is not on the Brand model #}
+                    <div class="form-group-item">
+                        <label class="form-input-label">Category *</label>
+                        <input type="text" name="name" class="form-input-field" required placeholder="e.g., Nike">
+                    </div>
                     
                     <div class="form-group-item">
                         <label class="form-input-label">Brand Logo</label>
-                        <input type="file" name="logo" class="form-input-field" accept="image/*">
+                        {{ form.logo }}
                         <small class="form-help-text">Upload brand logo (JPG, PNG, SVG, WEBP)</small>
-                    </div>
-                    
-                    {# REMOVED: Icon and Color fields - they are not on the Brand model #}
-                    {# <div class="form-row-two-cols"> ... </div> #}
+                        {% if form.logo.errors %}<div class="text-danger small">{{ form.logo.errors }}</div>{% endif %}
+                                   </div>
                     
                     <div class="form-group-item">
                         <label class="form-input-label">Status</label>
-                        {# This must match the model's is_active boolean field (True/False) #}
-                        <select name="is_active" class="form-input-field"> 
-                            <option value="True" selected>Active</option>
-                            <option value="False">Inactive</option>
-                        </select>
+                        {{ form.is_active }}
+                        {% if form.is_active.errors %}<div class="text-danger small">{{ form.is_active.errors }}</div>{% endif %}
                     </div>
-                </div>
+                </div> 
                 <div class="modal-footer brand-modal-footer">
                     <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn-modal-submit">Add Brand</button>
@@ -196,6 +219,7 @@
     </div>
 </div>
 
+{% comment %} ================= EDIT BTAND MODAL =================={% endcomment %}
 <div class="modal fade" id="editBrandModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content brand-modal-content">
@@ -203,8 +227,7 @@
                 <h5 class="modal-title">Edit Brand</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            {# ACTION URL: Change to your actual edit view URL #}
-            <form method="POST" action="#" enctype="multipart/form-data" class="brand-form" id="editBrandForm">
+            <form method="POST" action="brandsandcategories:edit_brand" enctype="multipart/form-data" class="brand-form" id="editBrandForm">
                 {% csrf_token %}
                 <input type="hidden" name="brand_id" id="editBrandId">
                 <div class="modal-body brand-modal-body">
@@ -218,8 +241,14 @@
                         <label class="form-input-label">Description *</label>
                         <textarea name="description" id="editBrandDescription" class="form-input-field" rows="3" required></textarea>
                     </div>
-                    
-                    {# REMOVED: Category form field #}
+                   <div class="form-group-item">
+                        <label class="form-input-label">Category *</label>
+                        <input type="text" name="name" id="editBrandName" class="form-input-field" required>
+                    </div>
+                    <div class="form-group-item">
+                        <label class="form-input-label">Products *</label>
+                        <input type="text" name="name" id="editBrandName" class="form-input-field" required>
+                    </div>
                     
                     <div class="form-group-item">
                         <label class="form-input-label">Brand Logo</label>
@@ -227,11 +256,8 @@
                         <small class="form-help-text">Leave empty to keep current logo</small>
                     </div>
                     
-                    {# REMOVED: Icon and Color fields #}
-                    
                     <div class="form-group-item">
                         <label class="form-input-label">Status</label>
-                        {# This must match the model's is_active boolean field (True/False) #}
                         <select name="is_active" id="editBrandStatus" class="form-input-field">
                             <option value="True">Active</option>
                             <option value="False">Inactive</option>
@@ -251,24 +277,12 @@
 
 {% block extra_js %}
 <script>
-/**
- * Populates the 'Edit Brand' modal with current brand data.
- * @param {number} id - The Brand's primary key ID.
- * @param {string} name - The Brand's name.
- * @param {string} description - The Brand's description.
- * @param {string} is_active - The Brand's status as a string ('True' or 'False').
- */
+{% comment %} Populates the 'Edit Brand' modal with current brand data. {% endcomment %}
 function populateEditModal(id, name, description, is_active) {
-    // 1. Set the hidden ID field for form submission
     document.getElementById('editBrandId').value = id;
-    
-    // 2. Set the Name and Description fields
     document.getElementById('editBrandName').value = name;
     document.getElementById('editBrandDescription').value = description;
-    
-    // 3. Set the Status select dropdown
     const statusSelect = document.getElementById('editBrandStatus');
-    // The value passed from Django ('True' or 'False') matches the <option> value
     statusSelect.value = is_active;
 }
 

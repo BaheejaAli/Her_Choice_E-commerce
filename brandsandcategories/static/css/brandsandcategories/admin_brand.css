@@ -194,7 +194,7 @@ textarea:focus {
 
 .brand-management-wrapper {
     padding: 2rem !important;
-    max-width: 1200px !important;
+    width: 100% !important;
     margin: 0 auto !important;
     background-color: #ffffff !important;
     min-height: calc(100vh - 200px) !important;
@@ -331,6 +331,7 @@ textarea:focus {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
     overflow: hidden !important;
     border: 1px solid #f3f4f6 !important;
+    padding: 20px !important;
 }
 
 .brand-data-table {
@@ -407,53 +408,86 @@ textarea:focus {
     margin: 0 !important;
 }
 
-/* Status badges */
-.status-badge {
+/* Status toggle button */
+.status-toggle-btn {
     display: inline-flex !important;
     align-items: center !important;
-    padding: 0.25rem 0.75rem !important;
-    border-radius: 9999px !important;
-    font-size: 0.75rem !important;
+    padding: 8px 14px !important;
+    border-radius: 12px !important;
+    font-size: 0.875rem !important;
     font-weight: 600 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-}
-
-.status-active {
-    background-color: #10b981 !important;
-    color: #ffffff !important;
-}
-
-.status-inactive {
-    background-color: #6b7280 !important;
-    color: #ffffff !important;
-}
-
-/* Action buttons */
-.action-btn {
-    background: none !important;
+    letter-spacing: 0.5px !important;
     border: none !important;
-    padding: 0.5rem !important;
-    border-radius: 0.25rem !important;
     cursor: pointer !important;
-    transition: background-color 0.2s !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+}
+
+.status-toggle-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.status-toggle-btn.status-active {
+    background: #e8f7ee !important;
+    color: #2e7d32 !important;
+    border-color: #2e7d32 !important;
+}
+
+.status-toggle-btn.status-active:hover {
+    background: #d4edda !important;
+    border-color: #28a745 !important;
+}
+
+.status-toggle-btn.status-inactive {
+    background: #fdeaea !important;
+    color: #c62828 !important;
+    border-color: #c62828 !important;
+}
+
+.status-toggle-btn.status-inactive:hover {
+    background: #f8d7da !important;
+    border-color: #dc3545 !important;
+}
+/* Enhanced Action buttons */
+.action-btn {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    border: none !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
     margin: 0 0.25rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .action-btn:hover {
-    background-color: #f3f4f6 !important;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-.action-btn.edit {
-    color: #3b82f6 !important;
+.action-btn.edit-action-btn {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    border-color: #3b82f6 !important;
+    color: #1e40af !important;
 }
 
-.action-btn.delete {
-    color: #ef4444 !important;
+.action-btn.edit-action-btn:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+    color: #1d4ed8 !important;
 }
 
-.action-btn.toggle {
-    color: #f59e0b !important;
+.btn-text {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
 }
 
 /* Empty state */

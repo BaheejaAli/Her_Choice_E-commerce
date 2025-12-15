@@ -24,15 +24,12 @@ class Brand(models.Model):
 
     is_active = models.BooleanField(
         default=True,
-        help_text="Status: True for Active (visible), False for Inactive/Soft Delete",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Brand"
-        verbose_name_plural = "Brands"
 
     def __str__(self):
         return self.name
@@ -40,28 +37,24 @@ class Brand(models.Model):
 
 # ================== CATEGORY MODEL ==================
 class Category(models.Model):
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Category name (e.g., Casual, Formal, Ethnic, Dresses)",
-    )
-
-    image = models.ImageField(
-        upload_to="categories/images/",
+    name = models.CharField(max_length=100, unique=True, help_text="Category Name")
+    description = models.TextField(
+        max_length=250,
+        help_text="Brief description of the category",
         blank=True,
         null=True,
-        help_text="Image representing the category on the admin dashboard",
     )
-
+    image = models.ImageField(upload_to="categories/images/", blank=True, null=True)
     is_active = models.BooleanField(
         default=True,
-        help_text="Status: True for Active (visible), False for Inactive/Soft Delete"
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
-        verbose_name_plural = 'Categories'
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.name
+
+

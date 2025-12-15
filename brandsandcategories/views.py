@@ -1,15 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, get_object_or_404
 from .models import Brand
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView,CreateView,UpdateView ,DeleteView
+from django.contrib.auth.decorators import login_required
 from .forms import BrandForm
 from django.urls import reverse_lazy
+from django.db.models import Count
+from django.views.decorators.http import require_POST
+from django.contrib import messages
 
 # Create your views here.
 # =========== Brand List View (Read) ===========
 
 class BrandListView(LoginRequiredMixin, ListView):
-    # Displays a list of all existing Brand objects.
     model = Brand
     template_name = 'brandsandcategories/admin_brand.html'
     context_object_name = 'brands'
@@ -20,35 +23,54 @@ class BrandListView(LoginRequiredMixin, ListView):
     # Inject the creation form into the context for the modal
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Assuming BrandForm exists and is imported
         context['form'] = BrandForm() 
         return context
+    
+    # def get_queryset(self):
+    #     return Brand.objects.annotate(
+    #         category_count=Count('categories', distinct=True),
+    #         product_count=Count('products', distinct=True)
+    #     )
 
-# --- 2. Brand Create View ---
+# ============== Brand Create View ===================
 class BrandCreateView(LoginRequiredMixin, CreateView):
-    # Handles the creation of a new brand, usually triggered by the "Add New Brand" modal form.
     model = Brand
-    form_class = BrandForm # Use the dedicated form class
-    template_name = 'adminpanel/brands/admin_brand.html' # Often uses the list template for modal forms
+    form_class = BrandForm 
+    template_name = 'adminpanel/brands/admin_brand.html' 
     success_url = reverse_lazy('brandsandcategories:brands_list') 
 
-# --- 3. Brand Update View ---
+# ================== Brand Update View =================
 class BrandUpdateView(LoginRequiredMixin, UpdateView):
-    # Handles displaying a pre-filled form and updating an existing brand.
     model = Brand
     form_class = BrandForm
-    template_name = 'adminpanel/brands/admin_brand.html' # Or a dedicated form template
+    template_name = 'adminpanel/brands/admin_brand.html' 
     context_object_name = 'brand' 
     success_url = reverse_lazy('brandsandcategories:brands_list')
-    # Note: This view uses 'pk' (primary key) from the URL to identify the brand to update.
 
-# --- 4. Brand Delete View ---
+# =============== Brand Delete View ===================
 class BrandDeleteView(LoginRequiredMixin, DeleteView):
-    # Handles the confirmation and deletion of a brand.
     model = Brand
-    # Use a minimal template for confirmation, or skip template rendering entirely for AJAX
-    template_name = 'adminpanel/brands/brand_confirm_delete.html' 
+    template_name = 'adminpanel/brands/admin_brand.html' 
     context_object_name = 'brand'
     success_url = reverse_lazy('brandsandcategories:brands_list')
-    # Note: This view also uses 'pk' from the URL.
+
+# =============== Toggle Brand Status ===================
+
+@require_POST
+@login_required 
+def toggle_brand_status(request, pk):
+    """
+    View to securely toggle the active status of a brand by flipping its current state.
+    This eliminates redundant status checking from the HTML template.
+    """
+    try:
+        brand = get_object_or_404(Brand, pk=pk)
+        brand.is_active = not brand.is_active
+        brand.save()
+        status_action = "activated (Restored)" if brand.is_active else "deactivated (Soft Deleted)"
+        messages.success(request, f'Brand "{brand.name}" status successfully {status_action}.')
+        
+    except Exception as e:
+        messages.error(request, f'An error occurred: Could not update status. {str(e)}')
+    return redirect('brandsandcategories:brands_list')
 
