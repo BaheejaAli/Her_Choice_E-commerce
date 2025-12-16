@@ -7,33 +7,26 @@ from accounts.utils import send_otp_email
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 import random, time
+from django.contrib import messages
 
 # Create your views here.
 
 # ================== Admin Login (Authentication) ==================
 @never_cache
 def admin_login(request):
-    # CHECK IF USER IS ALREADY LOGGED IN AND IS AN ADMIN
     if request.user.is_authenticated and request.user.is_staff:
-        # If the user is already authenticated AND is an admin, redirect to dashboard
-        return redirect("frontend_pages:admin_dashboard")
+        return redirect("admin_dashboard")
     
     if request.method == "POST":
-        form = AdminLoginForm(request.POST) # <--- Using the Form
+        form = AdminLoginForm(request.POST) 
         if form.is_valid():
-            # Get clean data from the form
             email = form.cleaned_data.get("email")
             password = form.cleaned_data.get("password")
-            remember_me = form.cleaned_data.get("remember")
-
             user = authenticate(request, email=email, password=password)
 
             if user is not None and user.is_staff:
                 login(request, user)
-
-                if not remember_me:
-                    request.session.set_expiry(0)
-                return redirect("frontend_pages:admin_dashboard")
+                return redirect("admin_dashboard")
             else:
                 return render(
                     request,
@@ -41,7 +34,6 @@ def admin_login(request):
                     {"form": form, "error": "Invalid admin credentials"},
                 )
         else:
-            # If form is invalid (e.g., bad email format)
             return render(
                 request,
                 "accounts/admin_login.html",
@@ -182,3 +174,4 @@ def admin_dashboard(request):
         return redirect("admin_login")
 
     return render(request, "accounts/admin_dashboard.html")
+

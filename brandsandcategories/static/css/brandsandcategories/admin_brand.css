@@ -1,617 +1,211 @@
-/* ====================================================================
-   1. GLOBAL VARIABLES & CSS RESET
-   ==================================================================== */
-:root {
-    /* Colors */
-    --color-primary: #ec4899; /* Pink-500 */
-    --color-primary-dark: #db2777; /* Pink-600 */
-    --color-secondary: #007bff; /* Blue */
-    --color-success: #10b981; /* Emerald-500 */
-    --color-warning: #f59e0b; /* Amber-500 */
-    --color-danger: #ef4444; /* Red-500 */
-    --color-info: #3b82f6; /* Blue-500 */
-    
-    /* Neutral/Gray Scale */
-    --color-gray-900: #1f2937;
-    --color-gray-700: #374151;
-    --color-gray-500: #6b7280;
-    --color-gray-300: #d1d5db;
-    --color-gray-100: #f3f4f6;
-    --color-white: #ffffff;
 
-    /* Typography */
-    --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-size-base: 1rem; /* 16px */
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    
-    /* Border Radius */
-    --border-radius-sm: 0.25rem;
-    --border-radius-md: 0.5rem;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-}
 
-/* * Modern CSS Reset 
- * Source: Andy Bell's CSS Reset (simplified)
- */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-body, h1, h2, h3, h4, p, figure, blockquote, dl, dd {
-    margin: 0;
-}
-
-ul[role='list'], ol[role='list'] {
-    list-style: none;
-    padding: 0;
-}
-
-html:focus-within {
-    scroll-behavior: smooth;
-}
-
-body {
-    min-height: 100vh;
-    text-rendering: optimizeSpeed;
-    line-height: 1.5;
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-base);
-    color: var(--color-gray-700);
-    background-color: var(--color-gray-100);
-}
-
-a:not([class]) {
-    text-decoration-skip-ink: auto;
-}
-
-img, picture {
-    max-width: 100%;
-    display: block;
-}
-
-input, button, textarea, select {
-    font: inherit;
-}
-
-/* ====================================================================
-   2. TYPOGRAPHY
-   ==================================================================== */
-h1, h2, h3, h4, h5, h6 {
-    line-height: 1.2;
-    font-weight: 700;
-    color: var(--color-gray-900);
-}
-
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1rem; }
-
-a {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-a:hover {
-    color: var(--color-primary-dark);
-    text-decoration: underline;
-}
-
-/* ====================================================================
-   3. BASE BUTTON STYLES
-   ==================================================================== */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-}
-
-.btn-primary:hover {
-    background-color: var(--color-primary-dark);
-}
-
-/* Example: Secondary/Cancel Button */
-.btn-secondary {
-    background-color: var(--color-gray-100);
-    color: var(--color-gray-700);
-    border-color: var(--color-gray-300);
-}
-
-.btn-secondary:hover {
-    background-color: var(--color-gray-300);
-}
-
-/* ====================================================================
-   4. BASE FORM STYLES
-   ==================================================================== */
-.form-input-field,
-.form-input-color,
-.form-input-file,
-select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--border-radius-md);
-    background-color: var(--color-white);
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input-field:focus,
-select:focus,
-textarea:focus {
-    border-color: var(--color-primary);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2); /* Soft focus ring */
-}
-
-.form-input-label {
-    display: block;
-    font-size: 0.875rem; /* Small text */
-    font-weight: 600;
-    color: var(--color-gray-700);
-    margin-bottom: var(--spacing-xs);
-}
-
-.form-help-text {
-    display: block;
-    margin-top: var(--spacing-xs);
-    font-size: 0.75rem;
-    color: var(--color-gray-500);
-}
-
-/* Utility for wrapping a group of form elements */
-.form-group-item {
-    margin-bottom: var(--spacing-lg);
-}
-
-/* ====================================================================
-   6. BRAND MANAGEMENT PAGE SPECIFIC STYLES
-   ==================================================================== */
-
+/* ===== Page Wrapper ===== */
 .brand-management-wrapper {
-    padding: 2rem !important;
-    width: 100% !important;
-    margin: 0 auto !important;
-    background-color: #ffffff !important;
-    min-height: calc(100vh - 200px) !important;
+    background: #f8fafc;
+    padding: 20px;
 }
 
+/* ===== Messages ===== */
+.messages-container {
+    margin-bottom: 16px;
+}
+
+.alert {
+    background: #e7f8ef;
+    color: #16a34a;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #16a34a;
+}
+
+/* ===== Header Section ===== */
 .page-header-section {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 2rem !important;
-    padding-bottom: 1.5rem !important;
-    border-bottom: 1px solid #e5e7eb !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
-.header-content h4.page-main-title {
-    font-size: 1.875rem !important;
-    font-weight: 700 !important;
-    color: #111827 !important;
-    margin-bottom: 0.5rem !important;
+.page-main-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
 }
 
 .page-subtitle {
-    color: #6b7280 !important;
-    font-size: 0.875rem !important;
-    margin: 0 !important;
+    font-size: 13px;
+    color: #6b7280;
 }
 
+/* ===== Add Button ===== */
 .btn-add-new-brand {
-    background-color: #ec4899 !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 0.75rem 1.5rem !important;
-    border-radius: 0.5rem !important;
-    font-weight: 600 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: background-color 0.2s !important;
-    cursor: pointer !important;
+    background: #ff1680;   /* same pink as user mgmt */
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
 }
 
 .btn-add-new-brand:hover {
-    background-color: #db2777 !important;
+    opacity: 0.9;
 }
 
-.btn-modal-submit {
-    background-color: #ec4899 !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 0.75rem 1.5rem !important;
-    border-radius: 0.5rem !important;
-    font-weight: 600 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: background-color 0.2s !important;
-    cursor: pointer !important;
-    margin-left: 0.5rem !important;
-}
-
-.btn-modal-submit:hover {
-    background-color: #db2777 !important;
-}
-
-.btn-modal-cancel {
-    background-color: #6b7280 !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 0.75rem 1.5rem !important;
-    border-radius: 0.5rem !important;
-    font-weight: 600 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: background-color 0.2s !important;
-    cursor: pointer !important;
-    margin-left: 0.5rem !important;
-}
-
-.btn-modal-cancel:hover {
-    background-color: #4b5563 !important;
-}
-
+/* ===== Search & Filter Section ===== */
 .search-filter-section {
-    display: flex !important;
-    gap: 1rem !important;
-    margin-bottom: 2rem !important;
-    align-items: center !important;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
+/* Search box */
 .search-input-wrapper {
-    flex: 1 !important;
-    max-width: 400px !important;
+    flex: 1;
+    max-width: 320px;
 }
 
 .search-input {
-    width: 100% !important;
-    padding: 0.75rem 1rem !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 0.5rem !important;
-    font-size: 1rem !important;
-    transition: border-color 0.2s !important;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
 }
 
 .search-input:focus {
-    border-color: #ec4899 !important;
-    outline: none !important;
-    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2) !important;
+    outline: none;
+    border-color: #ec145a;
 }
 
-.filter-dropdown-wrapper {
-    position: relative !important;
+/* Filter */
+.filter-right select {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    cursor: pointer;
 }
 
-.filter-dropdown-btn {
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 0.5rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    cursor: pointer !important;
-    transition: border-color 0.2s !important;
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .page-header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .search-filter-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .search-input-wrapper {
+        max-width: 100%;
+    }
 }
 
-.filter-dropdown-btn:hover {
-    border-color: #9ca3af !important;
+/* Card wrapper */
+.table-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
 }
 
-.brand-table-wrapper {
-    background-color: #ffffff !important;
-    border-radius: 0.5rem !important;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
-    overflow: hidden !important;
-    border: 1px solid #f3f4f6 !important;
-    padding: 20px !important;
+/* Table */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
 }
 
-.brand-data-table {
-    width: 100% !important;
-    border-collapse: collapse !important;
+/* Header */
+.admin-table thead th {
+    text-align: left;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.brand-data-table thead {
-    background-color: #f9fafb !important;
+/* Rows */
+.admin-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.brand-data-table th {
-    padding: 1rem !important;
-    text-align: left !important;
-    font-weight: 600 !important;
-    color: #374151 !important;
-    border-bottom: 1px solid #e5e7eb !important;
-    font-size: 0.875rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+.admin-table tbody td {
+    padding: 14px 12px;
+    vertical-align: middle;
 }
 
-.brand-data-table td {
-    padding: 1rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    vertical-align: middle !important;
+/* Sub text (description) */
+.sub-text {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
 }
 
-.brand-data-table tbody tr:hover {
-    background-color: #f9fafb !important;
+/* Status badges */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
-.col-brand-details {
-    min-width: 250px !important;
+.status-badge.active {
+    background: #e7f8ef;
+    color: #16a34a;
 }
 
-.col-category {
-    min-width: 150px !important;
+.status-badge.inactive {
+    background: #fdecec;
+    color: #dc2626;
 }
 
-.col-products {
-    min-width: 100px !important;
-    text-align: center !important;
-}
-
-.col-status {
-    min-width: 100px !important;
-    text-align: center !important;
-}
-
-.col-actions {
-    min-width: 150px !important;
-    text-align: center !important;
-}
-
-/* Brand logo and name styling */
-.brand-logo {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 0.25rem !important;
-    object-fit: cover !important;
-    border: 1px solid #e5e7eb !important;
-}
-
-.brand-name {
-    font-weight: 600 !important;
-    color: #111827 !important;
-    margin-bottom: 0.25rem !important;
-}
-
-.brand-description {
-    font-size: 0.875rem !important;
-    color: #6b7280 !important;
-    margin: 0 !important;
-}
-
-/* Status toggle button */
-.status-toggle-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    padding: 8px 14px !important;
-    border-radius: 12px !important;
-    font-size: 0.875rem !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    text-decoration: none !important;
-}
-
-.status-toggle-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-.status-toggle-btn.status-active {
-    background: #e8f7ee !important;
-    color: #2e7d32 !important;
-    border-color: #2e7d32 !important;
-}
-
-.status-toggle-btn.status-active:hover {
-    background: #d4edda !important;
-    border-color: #28a745 !important;
-}
-
-.status-toggle-btn.status-inactive {
-    background: #fdeaea !important;
-    color: #c62828 !important;
-    border-color: #c62828 !important;
-}
-
-.status-toggle-btn.status-inactive:hover {
-    background: #f8d7da !important;
-    border-color: #dc3545 !important;
-}
-/* Enhanced Action buttons */
+/* Action buttons */
 .action-btn {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-    border: none !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    margin: 0 0.25rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    font-size: 0.875rem !important;
-    font-weight: 600 !important;
-    color: #475569 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn.edit {
+    color: #3b82f6;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-.action-btn.edit-action-btn {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
-    border-color: #3b82f6 !important;
-    color: #1e40af !important;
-}
-
-.action-btn.edit-action-btn:hover {
-    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
-    color: #1d4ed8 !important;
-}
-
-.btn-text {
-    font-size: 0.875rem !important;
-    font-weight: 600 !important;
+    opacity: 0.85;
 }
 
 /* Empty state */
-.empty-state-cell {
-    padding: 4rem 2rem !important;
-    text-align: center !important;
-    border: none !important;
-}
-
-.empty-state-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 1.5rem !important;
-}
-
-.empty-state-icon {
-    font-size: 4rem !important;
-    color: #d1d5db !important;
-    margin-bottom: 0.5rem !important;
-}
-
-.empty-state-text {
-    font-size: 1.125rem !important;
-    color: #6b7280 !important;
-    margin: 0 !important;
-    font-weight: 500 !important;
-}
-
-.btn-create-first {
-    background-color: #ec4899 !important;
-    color: #ffffff !important;
-    border: none !important;
-    padding: 0.75rem 1.5rem !important;
-    border-radius: 0.5rem !important;
-    font-weight: 600 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: background-color 0.2s !important;
-    cursor: pointer !important;
-    font-size: 1rem !important;
-    text-decoration: none !important;
-}
-
-.btn-create-first:hover {
-    background-color: #db2777 !important;
-    color: #ffffff !important;
-    text-decoration: none !important;
-}
-
-/* Modal styles (basic) */
-.modal-content {
-    border-radius: 0.5rem !important;
-    border: none !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-}
-
-.modal-header {
-    border-bottom: 1px solid #e5e7eb !important;
-    padding: 1.5rem !important;
-}
-
-.modal-title {
-    font-weight: 600 !important;
-    color: #111827 !important;
-}
-
-.modal-body {
-    padding: 1.5rem !important;
-}
-
-.modal-footer {
-    border-top: 1px solid #e5e7eb !important;
-    padding: 1.5rem !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .brand-management-wrapper {
-        padding: 1rem !important;
-    }
-    
-    .page-header-section {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 1rem !important;
-    }
-    
-    .search-filter-section {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-    
-    .brand-data-table {
-        font-size: 0.875rem !important;
-    }
-    
-    .brand-data-table th,
-    .brand-data-table td {
-        padding: 0.75rem 0.5rem !important;
-    }
-}
-
-/* ====================================================================
-   5. UTILITY CLASSES (Admin Layout & General Use)
-   ==================================================================== */
-
-/* Flex Utilities */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.justify-between { justify-content: space-between; }
-.items-center { align-items: center; }
-.gap-md { gap: var(--spacing-md); }
-
-/* Spacing Utilities */
-.mt-lg { margin-top: var(--spacing-lg); }
-.py-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
-
-/* Card/Panel Styles (for content sections) */
-.card {
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: var(--spacing-lg);
-    border: 1px solid var(--color-gray-100);
+.empty-text {
+    text-align: center;
+    color: #9ca3af;
+    padding: 20px;
 }

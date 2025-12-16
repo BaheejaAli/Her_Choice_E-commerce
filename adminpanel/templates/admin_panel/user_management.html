@@ -50,7 +50,7 @@
 
         <div class="filter-right">
             <select name="status_filter" id="statusFilter">
-                <option value="all">All</option>
+                <option value="">All</option>
                 <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
                 <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
             </select>
@@ -109,7 +109,7 @@
                             data-user-id="{{ user.id }}"
                             data-user-name="{{ user.get_full_name|default:user.email }}"
                             data-action="{% if user.is_active %}Block{% else %}Unblock{% endif %}"
-                            data-url="{% url 'adminpanel:toggle_user_status' user.id %}"
+                            data-url="{% url 'toggle_user_status' user.id %}"
                             >
                             
                             {% if user.is_active %}
@@ -117,56 +117,24 @@
                             {% else %}
                                 <i class="fa-solid fa-check"></i> Unblock
                             {% endif %}
-                        </button>
-                    </td>
+                        </button> 
+                    </td> 
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="8" class="empty">No users found</td>
+                    <td colspan="8" class="empty">
+                        <div class="empty-state">
+                            <i class="fa-regular fa-user"></i>
+                            <p>No users found</p>
+                        </div>
+                    </td>
                 </tr>
+
             {% endfor %}
             </tbody>
         </table>
-         <!-- ================== PAGINATION ================== -->
-            {% if page_obj.has_other_pages %}
-                <nav class="d-flex justify-content-end">
-                    <ul class="pagination pagination-sm mb-0">
-                        {% comment %} Previous Page Button {% endcomment %}
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" 
-                                href="?page={{page_obj.previous_page_number}}
-                                &q={{search_query}}" arial-label="Previous">&laquo;
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <span class="page-link">&laquo;</span>
-                            </li>
-                        {% endif %}
-
-                        {% comment %} Page Numbers {% endcomment %}
-                        {% for i in page_obj.paginator.page_range %}
-                            {% if page_obj.number == i %}
-                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ i }}&q={{ search_query }}">{{ i }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% comment %} Next Page Button {% endcomment %}
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}" aria-label="Next">&raquo;</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
+        <!-- PAGINATION -->
+        {% include "admin_panel/pagination.html" %}
     </div>
 </div>
 

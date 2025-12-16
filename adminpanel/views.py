@@ -3,8 +3,9 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from django.urls import reverse
+from adminpanel.utils import get_pagination
+
 
 # NEW IMPORTS FOR SEARCH AND PAGINATION
 from django.db.models import Q
@@ -13,18 +14,9 @@ from django.db.models import Q
 # Create your views here.
 
 # ============== ADMIN DASHBOARD ==================
-
-def admin_root_redirect(request):
-    # this redirect admin_panel to admin_dashboard
-    return redirect(reverse('frontend_pages:admin_dashboard'))
-
-
-
-
-
-
-
-
+@never_cache
+def admin_dashboard(request):
+    return render(request, "admin_panel/dashboard.html")
 
 
 # ========= USER MANAGEMENT ==================
@@ -33,19 +25,21 @@ def admin_root_redirect(request):
 User = get_user_model()
 
 # check if a user is an admin/staff
-def is_admin(user):
-    return user.is_active and (user.is_staff or user.is_superuser)
+# def is_admin(user):
+#     return user.is_active and (user.is_staff or user.is_superuser)
 
 @never_cache
 @login_required
-@user_passes_test(is_admin)
+# @user_passes_test(is_admin)
 def user_management(request):
-    # --- Search Logic ---
-    search_query = request.GET.get('q')
-    user_list = User.objects.all().order_by('-date_joined')         # Sorting by latest joined (descending)
+    
+    search_query = request.GET.get('q', '').strip()
+    
+    #query to exclude staffs and superusers
+    users = User.objects.filter(is_superuser=False, is_staff=False).order_by('-date_joined')   
 
-    if search_query:                                                # Filter users based on your CustomUser model fields
-        user_list = user_list.filter(
+    if search_query:                                                
+        users = users.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query) |
             Q(email__icontains=search_query) |
@@ -53,40 +47,28 @@ def user_management(request):
         ).distinct()
     
     # --- FILTER LOGIC ---
-    status_filter = request.GET.get('status_filter', 'all')
-
-    print(f"DEBUG: Status filter received: '{status_filter}'")
+    status_filter = request.GET.get('status_filter', '').strip()
 
     if status_filter == 'active':
-        user_list = user_list.filter(is_active = True)
+        users = users.filter(is_active = True)
     elif status_filter == 'inactive':
-        user_list = user_list.filter(is_active = False)
+        users = users.filter(is_active = False)
 
-    # Pagination
-    PAGINATE_BY = 10 
-    paginator = Paginator(user_list, PAGINATE_BY)   # The Paginator SLICES 'user_list'
-    page_number = request.GET.get('page', 1)    # 'page_obj' contains ONLY the 10 users for the current page
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+    page_obj = get_pagination(request, users, per_page=5)
 
     context = {
         'page_obj': page_obj,
         'total_users': User.objects.count(),
-        'active_users': User.objects.filter(is_active=True).count(),
+        'active_users': User.objects.filter(is_active=True).count(), 
         'inactive_users': User.objects.filter(is_active=False).count(),
-        'search_query': search_query or '',
+        'search_query': search_query,
         'status_filter': status_filter,
     }
     return render(request, "admin_panel/user_management.html",context)
 
 # active/inactive user in user management
 @login_required
-@user_passes_test(is_admin)
+# @user_passes_test(is_admin)
 def toggle_user_status(request,user_id):
     # Ensure the action is triggered by POST for security
     if request.method == 'POST':
@@ -106,7 +88,7 @@ def toggle_user_status(request,user_id):
             messages.success(request, f"User {user_to_toggle.email} has been Unblocked.")
 
         user_to_toggle.save()
-    return redirect('adminpanel:user_management')
+    return redirect('user_management')
 
 
 

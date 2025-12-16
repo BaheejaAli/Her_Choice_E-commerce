@@ -8,26 +8,15 @@ from django.views.decorators.cache import never_cache
 def home(request):
     return render(request, "frontend_pages/user/homepage.html")
 
-# ----------------- Custom Test Function -----------------
-def is_admin(user):
-    """
-    Checks if the user is active AND has staff status.
-    This ensures they are logged in and authorized for the admin site.
-    """
-    return user.is_active and user.is_staff
+# # ----------------- Custom Test Function -----------------
+# def is_admin(user):
+#     """
+#     Checks if the user is active AND has staff status.
+#     This ensures they are logged in and authorized for the admin site.
+#     """
+#     return user.is_active and user.is_staff
 
 # ----------------- Protected View -----------------
 # because is_admin implicitly checks if the user object exists (i.e., is authenticated)
 
-@never_cache
-@user_passes_test(is_admin,login_url='admin_login')
-def admin_dashboard(request):
-    """
-    Only users for whom is_admin(user) returns True can access this view.
-    """
-    return render(request, "frontend_pages/admin/dashboard.html")
 
-def admin_logout(request):
-    logout(request)
-    messages.info(request, "You have been logged out successfully.")
-    return redirect('admin_login')
