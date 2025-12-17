@@ -1,20 +1,19 @@
-{% extends "admin_base.html" %} {% load static %} {% block title %}Brand
-Management | Her Choice{% endblock %} {% block page_title %}Brand Management{%endblock %} {% block extra_css %}
-<link
-  rel="stylesheet"
-  href="{% static 'css/brandsandcategories/admin_brand.css' %}?v=2.0"
-/>
-{% endblock %} {% block content %}
+{% extends "admin_base.html" %}
+{% load static %} 
+{% block title %}Brand Management | Her Choice{% endblock %} 
+{% block page_title %}Brand Management{%endblock %} 
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_panel/brand_management.css' %}"/>
+{% endblock %} 
+{% block content %}
 {% csrf_token %}
 <div class="brand-management-wrapper">
-    
   <!-- Success Message Example -->
-  <div class="messages-container">
+  {% comment %} <div class="messages-container">
     <div class="alert alert-success">
       Brand added successfully!
       <button class="btn-close" onclick="this.parentElement.remove()">×</button>
     </div>
-  </div>
+  </div> {% endcomment %}
 
   <div class="page-header-section">
     <div class="header-content">
@@ -43,7 +42,7 @@ Management | Her Choice{% endblock %} {% block page_title %}Brand Management{%en
         id="statusFilter"
         onchange="filterByStatus()"
       >
-        <option value="all">All</option>
+        <option value="">All</option>
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
@@ -65,7 +64,6 @@ Management | Her Choice{% endblock %} {% block page_title %}Brand Management{%en
         {% for brand in brands %}
         <tr>
           <td>{{ brand.id }}</td>
-
           <td>
             <h6>{{ brand.name }}</h6>
             <div class="sub-text">{{ brand.description }}</div>
@@ -101,8 +99,11 @@ Management | Her Choice{% endblock %} {% block page_title %}Brand Management{%en
           <td colspan="6" class="empty-text">No brands found</td>
         </tr>
         {% endfor %}
+        
       </tbody>
+      
     </table>
+    {% include "admin_panel/pagination.html" %}
   </div>
 </div>
 {% endblock content %}

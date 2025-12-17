@@ -1,11 +1,30 @@
-<div class="pagination-wrapper">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/admin_panel/pagination.css' %}">
+
+{% if is_paginated %}
+<div class="pagination-container">
+
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">Prev</a>
+        <a class="pg-btn nav" href="?page={{ page_obj.previous_page_number }}">‹</a>
+    {% else %}
+        <span class="pg-btn nav disabled">‹</span>
     {% endif %}
 
-    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% for page in page_range %}
+        {% if page == page_obj.number %}
+            <span class="pg-btn active">{{ page }}</span>
+        {% elif page == '…' %}
+            <span class="pg-btn dots">…</span>
+        {% else %}
+            <a class="pg-btn" href="?page={{ page }}">{{ page }}</a>
+        {% endif %}
+    {% endfor %}
 
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="pg-btn nav" href="?page={{ page_obj.next_page_number }}">›</a>
+    {% else %}
+        <span class="pg-btn nav disabled">›</span>
     {% endif %}
+
 </div>
+{% endif %}

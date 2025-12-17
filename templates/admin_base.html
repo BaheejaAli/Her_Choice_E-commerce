@@ -42,12 +42,11 @@
                    class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">
                     <li><i class="fa-solid fa-users"></i> Users</li>
                 </a> 
-                
-                {# 2. BRANDS LINK (Placeholder for future URL) #}
-                {% comment %} <a href="/admin-panel/brandsandcategories/brands/" style="text-decoration: none"
+
+                <a href="{% url "brand_list" %}" style="text-decoration: none"
                    class="{% if request.resolver_match.url_name == 'brands_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-shirt"></i> Brands</li>
-                </a> {% endcomment %}
+                </a> 
                 
                 {# 3. PRODUCTS LINK (Placeholder for future URL) #}
                 <a href="#" style="text-decoration: none"

@@ -5,6 +5,7 @@ from django.core.validators import FileExtensionValidator
 
 
 # ================== BRAND MODEL ==================
+
 class Brand(models.Model):
     name = models.CharField(
         max_length=100, unique=True, help_text="Brand name (must be unique)"

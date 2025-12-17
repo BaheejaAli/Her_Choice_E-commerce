@@ -13,7 +13,10 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert {{ message.tags }}">{{ message }}</div>
+            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
@@ -49,7 +52,7 @@
         </div>
 
         <div class="filter-right">
-            <select name="status_filter" id="statusFilter">
+            <select name="status" id="statusFilter">
                 <option value="">All</option>
                 <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
                 <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
@@ -76,7 +79,7 @@
             </thead>
 
             <tbody>
-            {% for user in page_obj %}
+            {% for user in users %}
                 <tr>
                     <td>{{ user.pk }}</td>
 
