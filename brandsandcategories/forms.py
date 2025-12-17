@@ -1,10 +1,6 @@
 from django import forms
 from .models import Brand,Category
 
-from django import forms
-from .models import Brand
-
-
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
@@ -76,13 +72,17 @@ class CategoryForm(forms.ModelForm):
             ),
         }
         labels = {
-            'is_active': 'Status (Visibility)',
+            'is_active': 'Status',
+        }
+        help_texts = {
+            "name": "Category name must be unique.",
+            "image": "Upload JPG, PNG, or WEBP image.",
         }
 
     def clean_name(self):
-        name = self.cleaned_data.get("name")
+        name = self.cleaned_data.get("name","").strip()
         if not name:
-            raise forms.ValidationError("Please enter the Name!")
+            raise forms.ValidationError("Category name is required.")
         query = Category.objects.filter(name__iexact=name)
 
         # If editing an existing category, don't count itself as a duplicate
@@ -95,18 +95,14 @@ class CategoryForm(forms.ModelForm):
         return name
 
     def clean_description(self):
-        description = self.cleaned_data.get("description")
-        if not description:
-            raise forms.ValidationError('Please enter a description!')
-
-        if len(description) > 200:
-            raise forms.ValidationError('Description must be shorter than 200 characters.')
+        description = self.cleaned_data.get("description","").strip()
+        if len(description) > 250:
+            raise forms.ValidationError('Description must be shorter than 250 characters.')
         
         return description
 
     def clean_image(self):
         image = self.cleaned_data.get("image")
-        if image:
-            if image.size > 2 * 1024 * 1024:
-                raise forms.ValidationError("Image file too large ( > 2MB )")
+        if image and image.size > 2 * 1024 * 1024:
+            raise forms.ValidationError("Image file too large. Max size is 2MB.")
         return image

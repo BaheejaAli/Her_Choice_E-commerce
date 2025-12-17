@@ -1,12 +1,15 @@
-/* Wrapper (reuse brand page background) */
-.brand-management-wrapper {
+/* ================== PAGE WRAPPER ================== */
+.category-management-wrapper {
     background: #f8fafc;
     padding: 20px;
+    display: flex;
+    justify-content: center;   
+    align-items: flex-start;   
 }
 
-/* Breadcrumb links */
+/* ================== BREADCRUMB ================== */
 .breadcrumb-link {
-    color: #ec145a;
+    color: #3b82f6;
     text-decoration: none;
     font-weight: 500;
 }
@@ -15,43 +18,61 @@
     text-decoration: underline;
 }
 
-/* Form card */
+/* ================== MESSAGES ================== */
+.messages-container {
+    margin-bottom: 16px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background: #e7f8ef;
+    color: #16a34a;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fdecec;
+    color: #dc2626;
+}
+
+/* ================== FORM CARD ================== */
 .form-card {
     width: 100%;
-    max-width: 900px; 
-    margin: 24px auto;
+    max-width: 760px; 
     background: #ffffff;
     border-radius: 14px;
-    padding: 28px;
+    padding: 32px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
-
-
-/* Title */
+/* ================== FORM TITLE ================== */
 .form-title {
     font-size: 20px;
     font-weight: 600;
+    margin-bottom: 20px;
     color: #111827;
-    margin-bottom: 24px;
-    text-align: center;
 }
 
-/* Form group */
+/* ================== FORM GROUP ================== */
 .form-group {
     margin-bottom: 18px;
 }
 
-/* Labels */
 .form-group label {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    color: #374151;
     margin-bottom: 6px;
+    color: #374151;
 }
 
-/* Inputs */
+/* ================== INPUTS ================== */
+.form-input-field,
 .form-group input[type="text"],
 .form-group input[type="file"],
 .form-group textarea,
@@ -61,25 +82,20 @@
     border-radius: 10px;
     border: 1px solid #e5e7eb;
     font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Focus */
+.form-group textarea {
+    resize: vertical;
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #ec145a;
-    box-shadow: 0 0 0 2px rgba(236, 20, 90, 0.12);
+    border-color: #ff1680;
 }
 
-/* Textarea */
-.form-group textarea {
-    resize: vertical;
-    min-height: 110px;
-}
-
-/* Error */
+/* ================== FORM ERRORS ================== */
 .form-error {
     display: block;
     margin-top: 4px;
@@ -87,21 +103,19 @@
     color: #dc2626;
 }
 
-/* Actions */
+/* ================== ACTION BUTTONS ================== */
 .form-actions {
-    margin-top: 24px;
     display: flex;
     gap: 12px;
-    justify-content: flex-end;
+    margin-top: 24px;
 }
 
-/* Buttons */
 .btn-primary {
     background: #ff1680;
     color: #ffffff;
-    border: none;
-    border-radius: 10px;
     padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
     font-size: 14px;
     cursor: pointer;
 }
@@ -113,25 +127,31 @@
 .btn-secondary {
     background: #f3f4f6;
     color: #374151;
-    border-radius: 10px;
     padding: 10px 18px;
+    border-radius: 10px;
     font-size: 14px;
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
 }
 
 .btn-secondary:hover {
     background: #e5e7eb;
 }
 
-/* Responsive */
+/* ================== RESPONSIVE ================== */
 @media (max-width: 640px) {
     .form-card {
-        margin: 16px;
-        padding: 20px;
+        padding: 18px;
     }
 
     .form-actions {
         flex-direction: column;
-        align-items: stretch;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
     }
 }

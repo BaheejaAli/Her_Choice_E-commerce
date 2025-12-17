@@ -45,17 +45,25 @@ class Category(models.Model):
         blank=True,
         null=True,
     )
-    image = models.ImageField(upload_to="categories/images/", blank=True, null=True)
+    image = models.ImageField(upload_to="categories/images/", blank=True, null=True,
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],)
+    # Soft delete / status toggle
     is_active = models.BooleanField(
-        default=True,
+        default=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name_plural = "Categories"
+        indexes = [
+            models.Index(fields=["is_active"]),
+    ]
+
 
     def __str__(self):
         return self.name
+    
 
 

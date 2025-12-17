@@ -29,9 +29,7 @@
   <!-- HEADER -->
   <div class="page-header-section">
     <div class="header-content">
-      <h4 class="page-main-title">Brand Management</h4>
-      <p class="page-subtitle">Manage your product brands and partnerships</p>
-    </div>
+   </div>
     <a href="{% url 'brand_add' %}" class="btn-add-new-brand">
   <i class="fas fa-plus"></i>
   <span>Add New Brand</span>
@@ -40,24 +38,38 @@
   </div>
 
   <!-- SEARCH & FILTER (BACKEND DRIVEN) -->
-  <form method="get" class="search-filter-section">
-    <div class="search-input-wrapper">
-      <input
-        type="text"
-        name="q"
-        class="search-input"
-        placeholder="Search brands..."
-        value="{{ search_query }}"
-      />
-    </div>
-    <div class="filter-right">
-      <select name="status" onchange="this.form.submit()">
-        <option value="">All</option>
-        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
-        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
-      </select>
-    </div>
-  </form>
+  <form method="get" class="search-filter-form" id="filterForm">
+  <div class="filter-left">
+    <input
+      type="text"
+      name="q"
+      class="search-input"
+      placeholder="Search brands..."
+      value="{{ search_query }}"
+    />
+
+    <button type="submit">
+      <i class="fa fa-search"></i> Search
+    </button>
+
+    {% if search_query or current_status_filter %}
+      <a href="?" class="clear-btn">Clear</a>
+    {% endif %}
+  </div>
+
+  <div class="filter-right">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>
+        Active
+      </option>
+      <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>
+        Inactive
+      </option>
+    </select>
+  </div>
+</form>
+
  
   <!-- TABLE -->
   <div class="table-card">
@@ -81,7 +93,9 @@
             <div class="sub-text">{{ brand.description }}</div>
           </td>
 
-          <td>{{ brand.product_count }}</td>
+          <td>{{ brand.product_count }}
+            <p>Items</p>
+          </td>
 
           <td>
             <!-- STATUS BUTTON -->

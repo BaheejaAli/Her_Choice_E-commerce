@@ -1,10 +1,32 @@
-/* ===== Page Wrapper ===== */
-.brand-management-wrapper {
+/* ================== PAGE WRAPPER ================== */
+.category-management-wrapper {
     background: #f8fafc;
     padding: 20px;
 }
 
-/* ===== Header Section ===== */
+/* ================== MESSAGES ================== */
+.messages-container {
+    margin-bottom: 16px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background: #e7f8ef;
+    color: #16a34a;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fdecec;
+    color: #dc2626;
+}
+
+/* ================== HEADER ================== */
 .page-header-section {
     display: flex;
     justify-content: space-between;
@@ -16,7 +38,6 @@
     font-size: 20px;
     font-weight: 600;
     color: #111827;
-    margin-bottom: 4px;
 }
 
 .page-subtitle {
@@ -24,32 +45,29 @@
     color: #6b7280;
 }
 
-/* ===== Add Button ===== */
-.btn-add-new-brand {
+/* ================== ADD BUTTON ================== */
+.btn-add-new-category {
     background: #ff1680;
     color: #ffffff;
-    border: none;
     border-radius: 10px;
     padding: 10px 16px;
     font-size: 14px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
     text-decoration: none;
 }
 
-.btn-add-new-brand:hover {
+.btn-add-new-category:hover {
     opacity: 0.9;
 }
-/* ===== Search & Filter ===== */
+
+/* ================== SEARCH & FILTER (USER MGMT STYLE) ================== */
 .search-filter-form {
     display: flex;
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 24px;
-    background: transparent;
-    padding: 0;
 }
 
 .filter-left {
@@ -73,6 +91,7 @@
     border-color: #ff1680;
 }
 
+/* Search button */
 .search-filter-form button {
     background: #ff1680;
     color: #ffffff;
@@ -90,6 +109,7 @@
     opacity: 0.9;
 }
 
+/* Clear button */
 .clear-btn {
     color: #ff1680;
     font-size: 14px;
@@ -100,6 +120,7 @@
     text-decoration: underline;
 }
 
+/* Status filter */
 .filter-right select {
     padding: 10px 14px;
     border-radius: 12px;
@@ -108,21 +129,19 @@
     cursor: pointer;
 }
 
-/* ===== Table Card ===== */
+/* ================== TABLE CARD ================== */
 .table-card {
     background: #ffffff;
     border-radius: 12px;
     padding: 16px;
 }
 
-/* ===== Table ===== */
 .admin-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
 
-/* Header */
 .admin-table thead th {
     text-align: left;
     font-weight: 600;
@@ -131,53 +150,40 @@
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Rows */
-.admin-table tbody tr {
-    border-bottom: 1px solid #f1f5f9;
-}
-
 .admin-table tbody td {
     padding: 14px 12px;
     vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-/* Sub text (description) */
+/* ================== TEXT ================== */
 .sub-text {
     font-size: 12px;
     color: #9ca3af;
     margin-top: 4px;
 }
-a {
-    text-decoration: none;
-}
 
-/* ===== Status Button ===== */
+/* ================== STATUS BUTTON ================== */
 .status-btn {
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 12px;
-    font-weight: 500;
     border: none;
     cursor: pointer;
 }
 
-/* Active */
 .btn-success {
     background: #e7f8ef;
     color: #16a34a;
 }
 
-/* Inactive */
 .btn-secondary {
     background: #fdecec;
     color: #dc2626;
 }
 
-/* ===== Action Buttons ===== */
+/* ================== ACTION BUTTON ================== */
 .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
     font-size: 13px;
     display: inline-flex;
     align-items: center;
@@ -193,14 +199,14 @@ a {
     opacity: 0.85;
 }
 
-/* ===== Empty State ===== */
+/* ================== EMPTY STATE ================== */
 .empty-text {
     text-align: center;
     color: #9ca3af;
     padding: 20px;
 }
 
-/* ===== Responsive ===== */
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
     .page-header-section {
         flex-direction: column;
@@ -208,13 +214,13 @@ a {
         gap: 12px;
     }
 
-    .search-filter-section {
+    .search-filter-form {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
     }
 
-    .search-input-wrapper {
+    .search-input {
         max-width: 100%;
     }
 }

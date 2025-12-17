@@ -47,6 +47,11 @@
                    class="{% if request.resolver_match.url_name == 'brands_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-shirt"></i> Brands</li>
                 </a> 
+
+                <a href="{% url "category_list" %}" style="text-decoration: none"
+                   class="{% if request.resolver_match.url_name == 'categories_list' %}active{% endif %}">
+                    <li><i class="fa-solid fa-list"></i> Categories</li>
+                </a>
                 
                 {# 3. PRODUCTS LINK (Placeholder for future URL) #}
                 <a href="#" style="text-decoration: none"
@@ -55,10 +60,7 @@
                 </a>
                 
                 {# 4. CATEGORIES LINK (Placeholder for future URL) #}
-                <a href="#" style="text-decoration: none"
-                   class="{% if request.resolver_match.url_name == 'categories_list' %}active{% endif %}">
-                    <li><i class="fa-solid fa-list"></i> Categories</li>
-                </a>
+                
                 
                 {# 5. ORDERS LINK (Placeholder for future URL) #}
                 <a href="#" style="text-decoration: none"

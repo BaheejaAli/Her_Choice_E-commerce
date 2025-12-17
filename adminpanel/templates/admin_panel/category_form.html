@@ -2,31 +2,41 @@
 {% load static %}
 
 {% block title %}
-Brand Management | Her Choice
+Category Management | Her Choice
 {% endblock %}
 
 {% block page_title %}
 Dashboard /
-<a href="{% url 'brand_list' %}" class="breadcrumb-link">Brand Management</a> /
-{% if object %}Edit Brand{% else %}Add Brand{% endif %}
+<a href="{% url 'category_list' %}" class="breadcrumb-link">Category Management</a> /
+{% if object %}Edit Category{% else %}Add Category{% endif %}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/brand_form.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_panel/category_form.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="brand-management-wrapper">
+<div class="category-management-wrapper">
+
+  {% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <div class="form-card">
     <h3 class="form-title">
-      {% if object %}Edit Brand{% else %}Add Brand{% endif %}
+      {% if object %}Edit Category{% else %}Add Category{% endif %}
     </h3>
 
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
 
-      <!-- Brand Name -->
+      <!-- Category Name -->
       <div class="form-group">
         {{ form.name.label_tag }}
         {{ form.name }}
@@ -44,11 +54,11 @@ Dashboard /
         {% endfor %}
       </div>
 
-      <!-- Logo -->
+      <!-- Image -->
       <div class="form-group">
-        {{ form.logo.label_tag }}
-        {{ form.logo }}
-        {% for error in form.logo.errors %}
+        {{ form.image.label_tag }}
+        {{ form.image }}
+        {% for error in form.image.errors %}
           <small class="form-error">{{ error }}</small>
         {% endfor %}
       </div>
@@ -62,10 +72,10 @@ Dashboard /
       <!-- Actions -->
       <div class="form-actions">
         <button type="submit" class="btn-primary">
-          {% if object %}Update Brand{% else %}Create Brand{% endif %}
+          {% if object %}Update Category{% else %}Create Category{% endif %}
         </button>
 
-        <a href="{% url 'brand_list' %}" class="btn-secondary">
+        <a href="{% url 'category_list' %}" class="btn-secondary">
           Cancel
         </a>
       </div>
