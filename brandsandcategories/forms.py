@@ -38,6 +38,9 @@ class BrandForm(forms.ModelForm):
         name = self.cleaned_data.get("name", "").strip()
         qs = Brand.objects.filter(name__iexact=name)
 
+        if not name:
+            raise forms.ValidationError("Brand name is required.")
+
         # Exclude self when updating
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)

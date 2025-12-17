@@ -1,59 +1,71 @@
 {% extends "admin_base.html" %}
 {% load static %} 
+
 {% block title %}Brand Management | Her Choice{% endblock %} 
 {% block page_title %}Brand Management{%endblock %} 
+
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_panel/brand_management.css' %}"/>
 {% endblock %} 
-{% block content %}
-{% csrf_token %}
-<div class="brand-management-wrapper">
-  <!-- Success Message Example -->
-  {% comment %} <div class="messages-container">
-    <div class="alert alert-success">
-      Brand added successfully!
-      <button class="btn-close" onclick="this.parentElement.remove()">×</button>
-    </div>
-  </div> {% endcomment %}
 
+{% block content %}
+<div class="brand-management-wrapper">
+
+  {% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+  <!-- CSRF TOKEN FOR AJAX -->
+  <form id="csrf-form">
+    {% csrf_token %}
+  </form>
+
+  <!-- HEADER -->
   <div class="page-header-section">
     <div class="header-content">
       <h4 class="page-main-title">Brand Management</h4>
       <p class="page-subtitle">Manage your product brands and partnerships</p>
     </div>
-    <button class="btn-add-new-brand" onclick="openModal('addBrandModal')">
-      <i class="fas fa-plus"></i>
-      <span>Add New Brand</span>
-    </button>
+    <a href="{% url 'brand_add' %}" class="btn-add-new-brand">
+  <i class="fas fa-plus"></i>
+  <span>Add New Brand</span>
+</a>
+
   </div>
 
-  <div class="search-filter-section">
+  <!-- SEARCH & FILTER (BACKEND DRIVEN) -->
+  <form method="get" class="search-filter-section">
     <div class="search-input-wrapper">
       <input
         type="text"
-        id="brandSearchInput"
+        name="q"
         class="search-input"
         placeholder="Search brands..."
-        onkeyup="searchBrands()"
+        value="{{ search_query }}"
       />
     </div>
     <div class="filter-right">
-      <select
-        name="status_filter"
-        id="statusFilter"
-        onchange="filterByStatus()"
-      >
+      <select name="status" onchange="this.form.submit()">
         <option value="">All</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
+        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
       </select>
     </div>
-  </div>
+  </form>
+ 
+  <!-- TABLE -->
   <div class="table-card">
     <table class="admin-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Brand Details</th>
+          <th>Brand</th>
           <th>Products</th>
           <th>Status</th>
           <th>Action</th>
@@ -69,182 +81,69 @@
             <div class="sub-text">{{ brand.description }}</div>
           </td>
 
-          <td>{{ brand.products.count }}</td>
+          <td>{{ brand.product_count }}</td>
 
           <td>
+            <!-- STATUS BUTTON -->
             <button
               type="button"
-              id="status-btn-{{ brand.id }}"
-              onclick="toggleBrandStatus({{ brand.id }})"
-              class="btn {% if brand.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-            >
+              class="btn status-btn {% if brand.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+              data-url="{% url 'toggle_brand_status' brand.id %}"
+              onclick="toggleBrandStatus(this)">
               {{ brand.is_active|yesno:"Active,Inactive" }}
             </button>
-            {% comment %} {% if brand.is_active %}
-            <span class="status-badge active">Active</span>
-            {% else %}
-            <span class="status-badge inactive">Inactive</span>
-            {% endif %} {% endcomment %}
           </td>
 
           <td>
-            <button class="action-btn edit">
-              <i class="fa-solid fa-pen-to-square"></i>
-              Edit
-            </button>
+            <!-- EDIT BUTTON -->
+            <a href="{% url 'brand_edit' brand.id %}" class="action-btn edit">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </a>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" class="empty-text">No brands found</td>
+          <td colspan="5" class="empty-text">No brands found</td>
         </tr>
-        {% endfor %}
-        
-      </tbody>
-      
+        {% endfor %}        
+      </tbody>     
     </table>
+
+    <!-- PAGINATION -->
     {% include "admin_panel/pagination.html" %}
   </div>
 </div>
 {% endblock content %}
- {% block extra_js %}
+
+{% block extra_js %}
 <script>
-    function toggleBrandStatus(brandId) {
-    const btn = document.getElementById(`status-btn-${brandId}`);
-    const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+  {% comment %} STATUS TOGGLE {% endcomment %}
+    function toggleBrandStatus(btn) {
+  const url = btn.dataset.url;
+  const csrftoken =
+    document.querySelector('#csrf-form input[name=csrfmiddlewaretoken]').value;
 
-    if (!csrfElement) {
-        console.error("CSRF token not found. Add {% csrf_token %} to your template.");
-        return;
+  btn.disabled = true;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken
     }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      btn.textContent = data.is_active ? 'Active' : 'Inactive';
 
-    const csrftoken = csrfElement.value;
-    btn.disabled = true; // Prevent double clicks
-
-    // THE FULL CORRECTED URL PATH
-    const url = `/admin-panel/brandsandcategories/brands/toggle-status/${brandId}/`;
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrftoken,
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            if (data.is_active) {
-                btn.textContent = 'Active';
-                btn.className = 'btn btn-success';
-            } else {
-                btn.textContent = 'Inactive';
-                btn.className = 'btn btn-secondary';
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert("Update failed. Check the console for 404 errors.");
-    })
-    .finally(() => {
-        btn.disabled = false;
-    });
+      btn.classList.toggle('btn-success', data.is_active);
+      btn.classList.toggle('btn-secondary', !data.is_active);
+    }
+  })
+  .catch(() => alert('Something went wrong'))
+  .finally(() => {
+    btn.disabled = false;
+  });
 }
-  </script>
+</script>
 {% endblock %}
-          // --- 1. MODAL MANAGEMENT FUNCTIONS ---
-          {% comment %} function openModal(id) {
-              document.getElementById(id).classList.add('show');
-              document.body.classList.add('modal-open'); // Prevent background scrolling
-          }
-
-          function closeModal(id) {
-              document.getElementById(id).classList.remove('show');
-              document.body.classList.remove('modal-open');
-              document.getElementById(id).querySelector('form').reset(); // Clear form on close
-          } {% endcomment %}
-
-          // Close modal when clicking outside
-          {% comment %} window.onclick = function(event) {
-              if (event.target.classList.contains('modal')) {
-                  closeModal(event.target.id);
-              }
-          } {% endcomment %}
-
-          // --- 2. DISPLAY MESSAGE HELPER ---
-          {% comment %} function displayMessage(message, type) {
-              const container = document.querySelector('.messages-container');
-              const alertDiv = document.createElement('div');
-              alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
-              alertDiv.innerHTML = `${message} <button class="btn-close" onclick="this.parentElement.remove()">×</button>`;
-              container.appendChild(alertDiv);
-
-              // Auto-hide after 5 seconds
-              setTimeout(() => {
-                  if (alertDiv.parentElement) alertDiv.remove();
-              }, 5000);
-          } {% endcomment %}
-
-          // --- 3. EDIT MODAL POPULATION ---
-          {% comment %} function openEditModal(id, name, description, status) {
-              document.getElementById('editBrandId').value = id;
-              document.getElementById('editBrandName').value = name;
-              document.getElementById('editBrandDescription').value = description;
-
-              // Set the Status dropdown value
-              document.getElementById('editBrandStatus').value = status;
-
-              // Set the dynamic form action URL for the AJAX submission
-              document.getElementById('editBrandForm').action = `/brands/update/${id}/`; // Update URL!
-
-              openModal('editBrandModal');
-          }{% endcomment %}
-
-
-          // --- 5. SEARCH AND FILTER FUNCTIONS ---
-
-          {% comment %} function searchBrands() {
-              const input = document.getElementById('brandSearchInput').value.toLowerCase(); {% endcomment %}
-              // Call filterByStatus to combine search and filter logic
-              {% comment %} filterByStatus(input);
-          }
-
-          function filterByStatus(searchTerm = null) {
-              const searchInput = searchTerm !== null ? searchTerm : document.getElementById('brandSearchInput').value.toLowerCase();
-              const filterValue = document.getElementById('statusFilter').value;
-              const rows = document.querySelectorAll('#brandTableBody .brand-row');
-
-              rows.forEach(row => {
-                  const brandName = row.querySelector('.brand-name-text').textContent.toLowerCase();
-                  const brandStatus = row.dataset.status.toLowerCase();
-
-                  const matchesSearch = brandName.includes(searchInput);
-                  const matchesFilter = (filterValue === 'all' || brandStatus === filterValue);
-
-                  // Show row if it matches both search text and status filter
-                  row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
-              });
-          }
-           {% endcomment %}
-          // --- 6. FORM HANDLER STUBS (Need backend implementation) ---
-
-          {% comment %} function handleAddBrand(event) {
-              event.preventDefault();  {% endcomment %}
-              // In a real app, you would perform a POST request (AJAX/Fetch) here
-              {% comment %} displayMessage('Brand creation successful (AJAX stub)!', 'success'); {% endcomment %}
-              // If success, you would append the new row to the table or reload data
-              {% comment %} closeModal('addBrandModal');
-          } {% endcomment %}
-
-          {% comment %} function handleEditBrand(event) {
-              event.preventDefault();  {% endcomment %}
-              // In a real app, you would perform a POST request (AJAX/Fetch) here
-              {% comment %} displayMessage('Brand updated successfully (AJAX stub)!', 'success'); {% endcomment %}
-              // If success, you would update the corresponding row in the table
-              {% comment %} closeModal('editBrandModal');
-          } {% endcomment %}
-

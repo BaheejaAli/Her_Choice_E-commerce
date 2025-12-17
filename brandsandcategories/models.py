@@ -8,7 +8,7 @@ from django.core.validators import FileExtensionValidator
 
 class Brand(models.Model):
     name = models.CharField(
-        max_length=100, unique=True, help_text="Brand name (must be unique)"
+        max_length=100, unique=True, blank=False, help_text="Brand name (must be unique)"
     )
 
     logo = models.ImageField(

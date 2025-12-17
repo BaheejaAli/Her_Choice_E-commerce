@@ -1,0 +1,87 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block title %}
+Brand Management | Her Choice
+{% endblock %}
+
+{% block page_title %}
+Dashboard /
+<a href="{% url 'brand_list' %}" class="breadcrumb-link">Brand Management</a> /
+{% if object %}Edit Brand{% else %}Add Brand{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_panel/brand_form.css' %}">
+{% endblock %}
+{% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+{% block content %}
+<div class="brand-management-wrapper">
+
+  <div class="form-card">
+    <h3 class="form-title">
+      {% if object %}Edit Brand{% else %}Add Brand{% endif %}
+    </h3>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Brand Name -->
+      <div class="form-group">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {% for error in form.name.errors %}
+          <small class="form-error">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        {{ form.description.label_tag }}
+        {{ form.description }}
+        {% for error in form.description.errors %}
+          <small class="form-error">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <!-- Logo -->
+      <div class="form-group">
+        {{ form.logo.label_tag }}
+        {{ form.logo }}
+        {% for error in form.logo.errors %}
+          <small class="form-error">{{ error }}</small>
+        {% endfor %}
+      </div>
+
+      <!-- Status -->
+      <div class="form-group">
+        {{ form.is_active.label_tag }}
+        {{ form.is_active }}
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          {% if object %}Update Brand{% else %}Create Brand{% endif %}
+        </button>
+
+        <a href="{% url 'brand_list' %}" class="btn-secondary">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+{% endblock %}
