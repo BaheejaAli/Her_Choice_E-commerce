@@ -1,19 +1,21 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from django.views.decorators.cache import never_cache 
+from django.views.decorators.cache import never_cache  
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import redirect, get_object_or_404
-from brandsandcategories.models import Brand, Category
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView,CreateView,UpdateView 
-from brandsandcategories.forms import BrandForm, CategoryForm
+from django.views.generic import ListView, CreateView, UpdateView    
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.db.models import Count, Q
-from accounts.models import CustomUser
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.utils.decorators import method_decorator
+from accounts.models import CustomUser
+from brandsandcategories.models import Brand, Category 
+from brandsandcategories.forms import BrandForm, CategoryForm
+from products.models import Product
+from products.forms import ProductForm, ProductImageFormSet
+
 
 # ######### ADMIN CHECK #############
 def is_admin(user):
@@ -328,14 +330,155 @@ def toggle_category_status(request, category_id):
     })
 
 
+# ========================
+# PRODUCT MANAGEMENT
+# ========================
 
+# =========== Product List View (Read) ===========
+@method_decorator([user_passes_test(is_admin),never_cache],name="dispatch")
+class ProductListView(LoginRequiredMixin,ListView):
+    model = Product
+    template_name = "admin_panel/product_management.html"
+    context_object_name = "products"
+    paginate_by = 10
+     
+    def get_queryset(self):
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("category", "brand")
+            .annotate(image_count=Count("images", distinct=True))
+            .order_by("-updated_at")
+        )
 
+        search_query = self.request.GET.get("q", "").strip()
+        status_filter = self.request.GET.get("status", "")
 
+        # Status filter
+        if status_filter == "active":
+            queryset = queryset.filter(is_active=True)
+        elif status_filter == "inactive":
+            queryset = queryset.filter(is_active=False)
 
+        # Search filter
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(category__name__icontains=search_query) |
+                Q(brand__name__icontains=search_query)
+            )
 
+        return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
+        # Pagination UI support
+        paginator = context.get("paginator")
+        page_obj = context.get("page_obj")
 
+        if paginator and page_obj:
+            context["page_range"] = paginator.get_elided_page_range(
+                number=page_obj.number,
+                on_each_side=1,
+                on_ends=1,
+            )
 
+        # Preserve filters
+        context["current_status_filter"] = self.request.GET.get("status", "all")
+        context["search_query"] = self.request.GET.get("q", "")
 
+        return context
 
+# ============== Product Create View =================== 
+@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'admin_panel/product_form.html'
+    success_url = reverse_lazy('product_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['image_formset'] = ProductImageFormSet(self.request.POST, self.request.FILES)
+        else:
+            context['image_formset'] = ProductImageFormSet()
+        return context
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        image_formset = context['image_formset']
+        
+        if image_formset.is_valid():
+            with transaction.atomic():
+                self.object = form.save()  # Save Product first
+                image_formset.instance = self.object
+                image_formset.save()       # Save the 3+ images
+            messages.success(self.request, "Product and 3 images uploaded successfully.")
+            return super().form_valid(form)
+        else:
+            # If image_formset is invalid, re-render the form with errors
+            return self.render_to_response(self.get_context_data(form=form))
+
+# =============== Product Update View ===================   
+@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')  
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Handles the logic for updating existing product details
+    and managing the associated image formset.
+    """
+    model = Product
+    form_class = ProductForm
+    template_name = 'admin_panel/product_form.html'
+    success_url = reverse_lazy('product_list')
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('category', 'brand').prefetch_related('images')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['image_formset'] = ProductImageFormSet(
+                self.request.POST, 
+                self.request.FILES, 
+                instance=self.object
+            )
+        else:
+            context['image_formset'] = ProductImageFormSet(instance=self.object)
+        return context
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        image_formset = context['image_formset']
+        
+        if image_formset.is_valid():
+            with transaction.atomic():
+                self.object = form.save()
+                image_formset.instance = self.object
+                image_formset.save()
+            messages.success(self.request, "Product updated successfully.")
+            return super().form_valid(form)
+        else:
+            print("Formset Errors:", image_formset.errors)
+        return self.form_invalid(form)
+    
+
+# =============== Toggle Product Status ===================
+@require_POST
+@login_required
+@user_passes_test(is_admin, login_url='admin_login')
+def toggle_product_status(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.is_active = not product.is_active
+    product.save(update_fields=['is_active'])
+
+    return JsonResponse({
+        'success': True,
+        'is_active': product.is_active,
+        'message': (
+            f'Product "{product.name}" activated.'
+            if product.is_active
+            else f'Product "{product.name}" deactivated.'
+        )
+    })

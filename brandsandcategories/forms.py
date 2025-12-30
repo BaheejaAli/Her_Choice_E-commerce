@@ -1,20 +1,25 @@
 from django import forms
-from .models import Brand,Category
+from .models import Brand, Category
+
 
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
         fields = ["name", "logo", "description", "is_active"]
         widgets = {
-            "name": forms.TextInput(attrs={
-                "placeholder": "Brand name (e.g., Her Choice)",
-                "class": "form-input-field",
-            }),
-            "description": forms.Textarea(attrs={
-                "rows": 4,
-                "placeholder": "Brief description of the brand",
-                "class": "form-input-field",
-            }),
+            "name": forms.TextInput(
+                attrs={
+                    "placeholder": "Brand name (e.g., Her Choice)",
+                    "class": "form-input-field",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "placeholder": "Brief description of the brand",
+                    "class": "form-input-field",
+                }
+            ),
             "is_active": forms.Select(
                 choices=[(True, "Active"), (False, "Inactive")],
                 attrs={"class": "form-input-field"},
@@ -42,11 +47,10 @@ class BrandForm(forms.ModelForm):
             qs = qs.exclude(pk=self.instance.pk)
 
         if qs.exists():
-            raise forms.ValidationError(
-                "A brand with this name already exists."
-            )
+            raise forms.ValidationError("A brand with this name already exists.")
 
         return name
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -67,12 +71,12 @@ class CategoryForm(forms.ModelForm):
                 }
             ),
             "is_active": forms.Select(
-                choices=[(True, 'Active'), (False, 'Inactive')],
-                attrs={'class': 'form-input-field'}
+                choices=[(True, "Active"), (False, "Inactive")],
+                attrs={"class": "form-input-field"},
             ),
         }
         labels = {
-            'is_active': 'Status',
+            "is_active": "Status",
         }
         help_texts = {
             "name": "Category name must be unique.",
@@ -80,7 +84,7 @@ class CategoryForm(forms.ModelForm):
         }
 
     def clean_name(self):
-        name = self.cleaned_data.get("name","").strip()
+        name = self.cleaned_data.get("name", "").strip()
         if not name:
             raise forms.ValidationError("Category name is required.")
         query = Category.objects.filter(name__iexact=name)
@@ -88,17 +92,21 @@ class CategoryForm(forms.ModelForm):
         # If editing an existing category, don't count itself as a duplicate
         if self.instance and self.instance.pk:
             query = query.exclude(pk=self.instance.pk)
-            
+
         if query.exists():
-            raise forms.ValidationError(f"A category with the name '{name}' already exists.")
-        
+            raise forms.ValidationError(
+                f"A category with the name '{name}' already exists."
+            )
+
         return name
 
     def clean_description(self):
-        description = self.cleaned_data.get("description","").strip()
+        description = self.cleaned_data.get("description", "").strip()
         if len(description) > 250:
-            raise forms.ValidationError('Description must be shorter than 250 characters.')
-        
+            raise forms.ValidationError(
+                "Description must be shorter than 250 characters."
+            )
+
         return description
 
     def clean_image(self):

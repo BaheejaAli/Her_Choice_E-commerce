@@ -1,14 +1,14 @@
 from django.db import models
 from brandsandcategories.models import Brand,Category
+from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
 # ================== PRODUCT MODEL ==================
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True)
-    image = models.ImageField(upload_to="products/images", blank=True, null=True)
-    alt_text = models.CharField(max_length=250, blank=True, null=True)
+    slug = models.SlugField(max_length=120, unique=True,blank=True)
     description = models.TextField(
         max_length=250,
         help_text="Brief description of the category",
@@ -21,6 +21,8 @@ class Product(models.Model):
     )
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name= "products")
+    
+    # Status flags
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     is_selective = models.BooleanField(default=False)
@@ -28,7 +30,7 @@ class Product(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     class Meta:
         ordering = ["-created_at"]
         indexes = [
@@ -39,6 +41,43 @@ class Product(models.Model):
             models.Index(fields=["slug"])
             ]
 
-
     def __str__(self):
         return self.name
+    
+    # Auto slug generation
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            count = 1
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    # Price validation
+    def clean(self):
+        if self.base_price <= 0:
+            raise ValidationError("Base price must be greater than zero")
+    
+        if self.offer_price and self.offer_price >= self.base_price:
+            raise ValidationError("Offer price must be less than base price")
+
+
+# ================== PRODUCT IMAGE MODEL ==================
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+    image = models.ImageField(upload_to="products/images/")
+    alt_text = models.CharField(max_length=250, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.name} Image"
+
+

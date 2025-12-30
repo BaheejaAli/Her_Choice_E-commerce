@@ -1,0 +1,180 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %}
+Product Management | Her Choice
+{% endblock %}
+
+
+{% block page_title %}
+Dashboard /
+<a href="{% url 'product_list' %}" class="breadcrumb-link">Product Management</a> /
+{% if object %}Edit Product{% else %}Add Product{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="product-form-wrapper">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="custom-alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" novalidate class="elegant-form">
+      {% csrf_token %}
+
+      <div class="form-main-card">
+        <div class="form-section">
+          <h5 class="section-title">General Information</h5>
+          <div class="input-grid">
+            <div class="input-field-group narrow-full-width">
+              <label>Product Name</label>
+              {{ form.name }} {% if form.name.errors %}
+                <span class="error-text">{{ form.name.errors.0 }}</span>
+              {% endif %}
+            </div>
+
+            <div class="input-field-group">
+              <label>Category</label>
+              {{ form.category }}
+            </div>
+
+            <div class="input-field-group">
+              <label>Brand</label>
+              {{ form.brand }}
+            </div>
+
+            <div class="input-field-group narrow-full-width">
+              <label>Description</label>
+              {{ form.description }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section mt-4">
+          <h5 class="section-title">Pricing & Visibility</h5>
+          <div class="input-grid">
+            <div class="input-field-group">
+              <label>Regular Price (₹)</label>
+              {{ form.base_price }}
+            </div>
+            <div class="input-field-group">
+              <label>Offer Price (₹)</label>
+              {{ form.offer_price }}
+            </div>
+            <div class="input-field-group">
+              <label>Visibility Status</label>
+              {{ form.is_active }}
+            </div>
+
+            <div class="checkbox-group-wrapper">
+              <label class="d-block mb-2">Promotional Flags</label>
+              <div class="checkbox-flex">
+                <label class="custom-checkbox">{{ form.is_featured }} Featured</label>
+                <label class="custom-checkbox">{{ form.is_selective }} Selective</label>
+                <label class="custom-checkbox">{{ form.is_most_demanded }} Popular</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} <div class="form-section mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="section-title m-0">Product Gallery</h5>
+            <span class="badge-requirement">Minimum 3 high-quality images required</span>
+          </div>
+
+          {{ image_formset.management_form }}
+          <div class="image-upload-grid">
+            {% for image_form in image_formset %}
+              <div class="image-upload-card">
+                {% for hidden in image_form.hidden_fields %}
+                  {{ hidden }}
+                {% endfor %}
+                <div class="upload-icon">
+                  {% if image_form.instance.image %}
+                    <img src="{{ image_form.instance.image.url }}" class="preview-thumb" />
+                  {% else %}
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                  {% endif %}
+                </div>
+                <div class="upload-controls">
+                  {{ image_form.image }}
+                  <div class="alt-text-input">{{ image_form.alt_text }}</div>
+                </div>
+                {% if image_formset.can_delete and image_form.instance.pk %}
+                  <div class="delete-overlay">
+                    {{ image_form.DELETE }}
+                    <span class="text-danger"><i class="fa-solid fa-trash"></i>Remove</span>
+                  </div>
+                {% endif %} {% if image_form.errors %}
+                  {% for error in image_form.image.errors %}
+                    <span class="error-text">{{ error }}</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div> {% endcomment %}
+        <div class="form-section mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="section-title m-0">Product Gallery</h5>
+        <span class="badge-requirement">Minimum 3 high-quality images required</span>
+    </div>
+
+    {{ image_formset.management_form }}
+    <div class="image-upload-grid">
+        {% for image_form in image_formset %}
+            <div class="image-upload-card">
+                {% for hidden in image_form.hidden_fields %}{{ hidden }}{% endfor %}
+                
+                <div class="upload-icon">
+                    {% if image_form.instance.image %}
+                        <img src="{{ image_form.instance.image.url }}" class="preview-thumb" />
+                    {% else %}
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    {% endif %}
+                </div>
+
+                <div class="upload-controls-stack">
+                    {% if image_form.instance.image %}
+                        <div class="current-file-link">
+                            {{ image_form.image }} </div>
+                    {% else %}
+                        <div class="new-file-input">
+                            {{ image_form.image }}
+                        </div>
+                    {% endif %}
+
+                    <div class="alt-text-group">
+                        <label>Alt Text (SEO)</label>
+                        {{ image_form.alt_text }}
+                    </div>
+                </div>
+
+                {% if image_formset.can_delete and image_form.instance.pk %}
+                    <div class="delete-checkbox-zone">
+                        <label class="custom-delete">
+                            {{ image_form.DELETE }} 
+                            <span class="delete-text"><i class="fa-solid fa-trash"></i> Remove</span>
+                        </label>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn-cancel">Reset</button>
+          <button type="submit" class="btn-save">Confirm & Publish Product</button>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

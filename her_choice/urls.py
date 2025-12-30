@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from accounts.views.user_auth import google_callback_safe
 from django.urls import path,include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,14 +28,11 @@ urlpatterns = [
 
     # Admin urls
     path("admin-panel/", include("adminpanel.urls")),
-    # path('admin-panel/brandsandcategories/', 
-    #      include(('brandsandcategories.urls', 'brandsandcategories'), namespace='brandsandcategories')),
-
-
     path("", include("frontend_pages.urls")),
-    
-
-
-
-
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+

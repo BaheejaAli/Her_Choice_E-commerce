@@ -1,0 +1,190 @@
+/* Container & Layout */
+.product-form-wrapper {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.form-main-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 900px;
+    margin: 0 auto;
+    
+}
+
+/* Section Styling */
+.section-title {
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ff007f; /* Matching your theme pink */
+    padding-left: 15px;
+}
+
+/* Grid & Inputs */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.full-width { grid-column: span 2; }
+
+.narrow-full-width {
+    grid-column: span 2;
+    max-width: 600px;
+}
+
+.input-field-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #636e72;
+    font-size: 0.9rem;
+}
+
+.input-field-group input, 
+.input-field-group select, 
+.input-field-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dfe6e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.input-field-group input:focus {
+    border-color: #ff007f;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 0, 127, 0.1);
+}
+
+/* Image Upload Cards (The Gallery) */
+.image-upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.image-upload-card {
+    border: 2px dashed #dfe6e9;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    transition: 0.3s;
+}
+
+.image-upload-card:hover { border-color: #ff007f; background: #fff5f9; }
+
+.preview-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Buttons (Matching your Pink/White style) */
+.btn-save {
+    background: #ff007f;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #f1f2f6;
+    color: #2d3436;
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+
+
+/* Fix the Grid to be more accommodating */
+.image-upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.image-upload-card {
+    border: 2px dashed #dfe6e9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #fff;
+    display: flex;
+    flex-direction: column; /* Forces everything to stack downside */
+    gap: 12px;
+    transition: 0.3s;
+    overflow: hidden; /* Safety net */
+}
+
+/* Fix the long 'Currently:' link text */
+.current-file-link {
+    font-size: 0.75rem;
+    color: #636e72;
+    text-align: left;
+    word-break: break-all; /* Forces long links to wrap downside instead of sideways */
+    line-height: 1.4;
+}
+
+.current-file-link a {
+    color: #ff007f;
+    text-decoration: none;
+    display: block; /* Moves the link below the 'Currently' text */
+    margin-bottom: 5px;
+}
+
+/* Stack the file input and alt text */
+.upload-controls-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.alt-text-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.alt-text-group input {
+    width: 100% !important;
+    padding: 8px !important;
+    border-radius: 6px !important;
+}
+
+/* Delete Zone Styling */
+.delete-checkbox-zone {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.custom-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #ff7675;
+    font-size: 0.85rem;
+}
+
+.custom-delete input[type="checkbox"] {
+    accent-color: #ff7675;
+    width: 16px;
+    height: 16px;
+}

@@ -4,6 +4,7 @@ from accounts.views import admin_auth
 from .views import (
     BrandListView, BrandCreateView, BrandUpdateView,
     CategoryListView, CategoryCreateView, CategoryUpdateView,
+    ProductListView, ProductCreateView, ProductUpdateView
 )
 
 urlpatterns = [
@@ -23,5 +24,10 @@ urlpatterns = [
     path("categories/add/", CategoryCreateView.as_view(), name="category_add"),
     path("categories/<int:pk>/edit/", CategoryUpdateView.as_view(), name="category_edit"),
     path("categories/toggle-status/<int:category_id>/", views.toggle_category_status, name="toggle_category_status"),
+
+    path("products/", ProductListView.as_view(), name="product_list"),
+    path("products/add/",ProductCreateView.as_view(), name="product_add"),
+    path("products/<int:pk>/edit/",ProductUpdateView.as_view(), name="product_edit"),
+    path("products/toggle-status/<int:product_id>/", views.toggle_product_status, name="toggle_product_status"),
 
 ]

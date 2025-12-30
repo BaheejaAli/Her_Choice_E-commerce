@@ -53,16 +53,11 @@
                     <li><i class="fa-solid fa-list"></i> Categories</li>
                 </a>
                 
-                {# 3. PRODUCTS LINK (Placeholder for future URL) #}
-                <a href="#" style="text-decoration: none"
+                <a href="{% url "product_list" %}" style="text-decoration: none"
                    class="{% if request.resolver_match.url_name == 'products_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-shirt"></i> Products</li>
                 </a>
                 
-                {# 4. CATEGORIES LINK (Placeholder for future URL) #}
-                
-                
-                {# 5. ORDERS LINK (Placeholder for future URL) #}
                 <a href="#" style="text-decoration: none"
                    class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-box"></i> Orders</li>

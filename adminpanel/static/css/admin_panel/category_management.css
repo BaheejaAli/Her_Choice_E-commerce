@@ -144,17 +144,32 @@
 
 .admin-table thead th {
     text-align: left;
-    font-weight: 600;
-    color: #6b7280;
+    font-weight: 700;
+    font-size: 18px;
+    color: #000000;
     padding: 12px;
     border-bottom: 1px solid #e5e7eb;
 }
+
+/* Column widths for better proportions */
+.admin-table thead th:nth-child(1) { width: 8%; }  /* ID */
+.admin-table thead th:nth-child(2) { width: 35%; } /* Category - reduced from default */
+.admin-table thead th:nth-child(3) { width: 15%; text-align: center; } /* Products */
+.admin-table thead th:nth-child(4) { width: 15%; text-align: center; } /* Status */
+.admin-table thead th:nth-child(5) { width: 27%; text-align: center; } /* Action */
 
 .admin-table tbody td {
     padding: 14px 12px;
     vertical-align: middle;
     border-bottom: 1px solid #f1f5f9;
 }
+
+/* Apply same widths to table cells */
+.admin-table tbody td:nth-child(1) { width: 8%; }
+.admin-table tbody td:nth-child(2) { width: 35%; }
+.admin-table tbody td:nth-child(3) { width: 15%; text-align: center; }
+.admin-table tbody td:nth-child(4) { width: 15%; text-align: center; }
+.admin-table tbody td:nth-child(5) { width: 27%; text-align: center; }
 
 /* ================== TEXT ================== */
 .sub-text {
@@ -165,9 +180,9 @@
 
 /* ================== STATUS BUTTON ================== */
 .status-btn {
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 14px;
     border: none;
     cursor: pointer;
 }
@@ -184,15 +199,15 @@
 
 /* ================== ACTION BUTTON ================== */
 .action-btn {
-    font-size: 13px;
+    font-size: 18px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
     text-decoration: none;
 }
 
 .action-btn.edit {
-    color: #3b82f6;
+    color: #1e40af;
 }
 
 .action-btn:hover {

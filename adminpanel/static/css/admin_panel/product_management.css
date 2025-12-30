@@ -1,0 +1,246 @@
+/* ================== PAGE WRAPPER ================== */
+.product-management-wrapper {
+  background: #f5f7fb;
+  padding: 24px;
+  min-height: 100vh;
+}
+
+/* ================== HEADER ================== */
+.page-header-section {
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header-section h1,
+.page-header-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ================== ADD BUTTON ================== */
+.btn-add-new-product {
+  background: #ff0f7b;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add-new-product:hover {
+  background: #e80d6f;
+}
+
+/* ================== SEARCH & FILTER ================== */
+.search-filter-form {
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input {
+  width: 500px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.search-filter-form button {
+  background: #ff0f7b;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.clear-btn {
+  font-size: 13px;
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.filter-right select {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+/* ================== TABLE CARD ================== */
+.table-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+/* ================== TABLE ================== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-table thead th {
+  text-align: left;
+  padding: 14px 12px;
+  font-weight: 700;
+  font-size: 18px;
+  color: #000000;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Column widths for better proportions */
+.admin-table thead th:nth-child(1) { width: 5%; }  /* # */
+.admin-table thead th:nth-child(2) { width: 25%; } /* Product - reduced for professional look */
+.admin-table thead th:nth-child(3) { width: 12%; text-align: center; } /* Brand */
+.admin-table thead th:nth-child(4) { width: 12%; text-align: center; } /* Category */
+.admin-table thead th:nth-child(5) { width: 10%; text-align: center; } /* Images */
+.admin-table thead th:nth-child(6) { width: 10%; text-align: center; } /* Price */
+.admin-table thead th:nth-child(7) { width: 10%; text-align: center; } /* Status */
+.admin-table thead th:nth-child(8) { width: 16%; text-align: center; } /* Action */
+
+.admin-table tbody td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+/* Apply same widths to table cells */
+.admin-table tbody td:nth-child(1) { width: 5%; text-align: center; }
+.admin-table tbody td:nth-child(2) { width: 25%; }
+.admin-table tbody td:nth-child(3) { width: 12%; text-align: center; }
+.admin-table tbody td:nth-child(4) { width: 12%; text-align: center; }
+.admin-table tbody td:nth-child(5) { width: 10%; text-align: center; }
+.admin-table tbody td:nth-child(6) { width: 10%; text-align: center; }
+.admin-table tbody td:nth-child(7) { width: 10%; text-align: center; }
+.admin-table tbody td:nth-child(8) { width: 16%; text-align: center; }
+
+.admin-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* ================== PRODUCT DETAILS ================== */
+.admin-table h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ================== IMAGE ================== */
+.admin-table img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ================== PRICE ================== */
+del {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ================== STATUS PILL ================== */
+.status-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+}
+
+.btn-success {
+  background: #e7f8ef;
+  color: #16a34a;
+}
+
+.btn-secondary {
+  background: #fdecec;
+  color: #dc2626;
+}
+
+/* ================== ACTION BUTTON ================== */
+.action-btn {
+  font-size: 18px;
+  color: #1e40af;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-btn:hover {
+  text-decoration: underline;
+}
+
+/* ================== EMPTY STATE ================== */
+.empty-text {
+  text-align: center;
+  padding: 30px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ================== PAGINATION ================== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination a,
+.pagination span {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.pagination .active {
+  background: #ff0f7b;
+  color: #ffffff;
+  border-color: #ff0f7b;
+}
