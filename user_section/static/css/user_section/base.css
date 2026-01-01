@@ -27,6 +27,101 @@ body {
     color: #ff1680;
 }
 
+/* Search */
+/* 1. Search Container within Navbar */
+.nav-search {
+    flex: 1; 
+    max-width: 550px; /* Balanced width */
+    margin: 0 30px;
+    position: relative;
+}
+
+.nav-search-form {
+    width: 100%;
+}
+
+/* 2. The Search Box (Consolidated) */
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa; 
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* Slightly rounded for a modern look */
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Highlight search box when typing */
+.search-box:focus-within {
+    background-color: #ffffff;
+    border-color: #ff1680; 
+    box-shadow: 0 4px 12px rgba(255, 22, 128, 0.15);
+}
+
+/* 3. Input Field */
+.search-box input {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+}
+
+/* 4. Action Buttons (Search & Back) */
+.btn-search {
+    background: #ff1680; /* Brand Pink */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.btn-search:hover {
+    background: #e61473;
+}
+
+.btn-clear {
+    background: #f0f0f0;
+    color: #555;
+    padding: 0 15px;
+    height: 40px; /* Match height of input */
+    text-decoration: none;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-left: 1px solid #ddd;
+    transition: all 0.3s;
+}
+
+.btn-clear:hover {
+    background: #e8e8e8;
+    color: #000;
+}
+
+/* 5. Mobile Responsiveness */
+@media (max-width: 992px) {
+    .nav-search {
+        max-width: 300px;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-search {
+        order: 3; /* Push below logo/menu in mobile toggle if needed */
+        margin: 10px auto;
+        max-width: 95%;
+    }
+}
+
 /* Menu */
 .menu {
     list-style: none;
@@ -65,22 +160,19 @@ body {
 }
 
 /* Auth Buttons */
-.btn-login,
-.btn-register {
-    font-size: 14px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-}
-
 .btn-login {
-    color: #333;
-}
-
-.btn-register {
+    font-size: 14px;
+    padding: 10px 25px;
+    border-radius: 6px;
+    text-decoration: none;
     background: #ff1680;
     color: white;
     font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.btn-login:hover {
+    background: #d10068;
 }
 
 .user-name {
@@ -101,19 +193,7 @@ body {
 }
 
 /* ========= FOOTER ========= */
-/* .footer {
-    background: #eee;
-    padding: 40px 0;
-    margin-top: 80px;
-}
 
-.footer-container {
-    width: 90%;
-    margin: auto;
-    text-align: center;
-    color: #555;
-    font-size: 15px;
-} */
 /* FOOTER MAIN SECTION */
 .footer {
     background: #f3f3f5;

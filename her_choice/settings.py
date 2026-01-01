@@ -72,10 +72,10 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     # my Apps
     "accounts",
-    "frontend_pages",
     "adminpanel",
     "brandsandcategories",
     "products",
+    "user_section",
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"

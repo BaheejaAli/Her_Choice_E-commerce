@@ -1,0 +1,95 @@
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero-section {
+    height: 350px;
+    background: url('/static/user_section/img/banner.jpg') center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 40px;
+}
+
+.btn-shop {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 25px;
+    background: #ff1680;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.btn-shop:hover {
+    background: #d10068;
+}
+
+/* ==========================================================================
+   FEATURED PRODUCTS (GRID & CARDS)
+   ========================================================================== */
+.section-title {
+    text-align: center;
+    margin: 30px 0;
+    font-weight: 700;
+    color: #2d3436;
+}/* ==========================================================================
+   CATEGORY GRID
+   ========================================================================== */
+.category-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 20px;
+    gap: 20px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.category-grid::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+
+.category-box {
+    flex: 0 0 420px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-box img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    transition: transform 0.3s ease;
+}
+
+.category-box:hover img {
+    transform: scale(1.05);
+}
+
+.category-box span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(255, 22, 128, 0.9), rgba(255, 22, 128, 0.7));
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 15px;
+    text-align: center;
+    border-radius: 0 0 12px 12px;
+}

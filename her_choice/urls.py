@@ -28,7 +28,7 @@ urlpatterns = [
 
     # Admin urls
     path("admin-panel/", include("adminpanel.urls")),
-    path("", include("frontend_pages.urls")),
+    path("", include("user_section.urls")),
 ]
 
 if settings.DEBUG:

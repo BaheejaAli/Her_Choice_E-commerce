@@ -81,7 +81,7 @@ def user_login(request):
                     else:
                         messages.success(request, f"Welcome back,{user.first_name}!")
                     
-                    return redirect('frontend_pages:home')
+                    return redirect('user_homepage')
                 else:
                     messages.warning(request, 'Your account is not active. Please verify your email.')
                     return redirect('user_login')

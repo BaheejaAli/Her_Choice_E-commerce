@@ -385,7 +385,7 @@ class ProductListView(LoginRequiredMixin,ListView):
             )
 
         # Preserve filters
-        context["current_status_filter"] = self.request.GET.get("status", "all")
+        context["current_status_filter"] = self.request.GET.get("status", "")
         context["search_query"] = self.request.GET.get("q", "")
 
         return context

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from PIL import Image
 
 # Create your models here.
 
@@ -64,6 +65,20 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            img = Image.open(self.image.path)
+            target_size = (400, 400)
+
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            img.thumbnail(target_size)
+
+            img.save(self.image.path, quality=85, optimize=True)
     
 
 

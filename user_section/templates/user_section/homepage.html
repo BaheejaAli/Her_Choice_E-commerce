@@ -1,0 +1,133 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block title %}
+  Home | Her Choice
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=2.0" />
+  <link rel="stylesheet" href="{% static 'css/user_section/product_card.css' %}?v=1.2" />
+{% endblock %}
+
+{% block content %}
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Welcome to Her Choice</h1>
+      <p>Discover stylish collections designed to empower every woman.</p>
+      <a href="#" class="btn-shop">Shop Now</a>
+    </div>
+  </section>
+
+  {% comment %} <section class="search-container">
+    <form action="." method="GET" class="search-form">
+      <div class="search-box">
+        <input type="text" name="search" placeholder="Search for products, brands, or categories..." value="{{ search_query|default:'' }}" />
+        <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+        {% if search_query %}
+          <a href="." class="btn-clear">Back</a>
+        {% endif %}
+      </div>
+    </form>
+  </section> {% endcomment %}
+
+  {% comment %} {% if search_query %}
+    {% endcomment %}
+    {% comment %} <section class="featured-section">
+      <h2 class="section-title">Search Results for "{{ search_query }}"</h2>
+
+      <div class="product-grid">
+        {% for product in search_results %}
+          <div class="product-card">
+            <div class="product-img-container">
+              {% if product.images.all %}
+                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" />
+              {% else %}
+                <img src="{% static 'images/default.jpg' %}" alt="Default Image" />
+              {% endif %}
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="price">
+              {% if product.offer_price %}
+                <span class="offer-price">₹ {{ product.offer_price }}</span>
+                <del class="old-price">₹ {{ product.base_price }}</del>
+              {% else %}
+                <span class="regular-price">₹ {{ product.base_price }}</span>
+              {% endif %}
+            </p>
+            <div class="button-group">
+              <button class="btn-add"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+              <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
+            </div>
+          </div>
+        {% empty %}
+          <div style="grid-column: span 12; text-align: center; padding: 40px;">
+            <p>No products found matching "{{ search_query }}".</p>
+            <a href="." class="btn-shop" style="display:inline-block; margin-top:10px;">View All Collections</a>
+          </div>
+        {% endfor %}
+      </div>
+    </section> {% endcomment %}
+    {% comment %}
+  {% else %}
+    {% endcomment %}
+
+    <!-- NEW ARRIVALS -->
+    {% if new_arrivals %}
+      <section class="featured-section">
+        <h2 class="section-title">New Arrivals</h2>
+        <div class="product-grid">
+          {% for product in new_arrivals %}
+            {% include 'user_section/includes/product_card.html' %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Featured Collection -->
+    {% if featured_products %}
+      <section class="featured-section">
+        <h2 class="section-title">Featured Collection</h2>
+        <div class="product-grid">
+          {% for product in featured_products %}
+            {% include 'user_section/includes/product_card.html' %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% comment %}----------- TRENDING PRODUCTS -------------{% endcomment %}
+    {% if trending_products %}
+      <section class="featured-section">
+        <h2 class="section-title">Trending Products</h2>
+        <div class="product-grid">
+          {% for product in trending_products %}
+            {% include 'user_section/includes/product_card.html' %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% comment %}----------- Category -------------{% endcomment %}
+    {% if categories %}
+      <section class="category-section">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="category-grid">
+          {% for category in categories %}
+            <div class="category-box">
+              {% if category.image %}
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" />
+                <span>{{ category.name }}</span>
+              {% else %}
+                <div class="category-placeholder">
+                  <span class="placeholder-title">{{ category.name }}</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+    {% comment %}
+  {% endif %} {% endcomment %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/product_card.css' %}" />
+{% endblock %}
+
+<div class="product-card">
+  <div class="product-img-container">
+    {% comment %} <a href="{% url 'product_detail' product.slug %}"> {% endcomment %}
+    
+      {% if product.images.all %}
+        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image" />
+      {% else %}
+        <img src="{% static 'images/default_product.jpg' %}" alt="No image available" class="product-image" />
+      {% endif %}
+    </a>
+  </div>
+
+  <div class="product-info">
+    
+    {% comment %} <h3 class="product-name"><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a> {% endcomment %}</h3>
+<p>{{ product.name }}</p>
+    <div class="price">
+      {% if product.offer_price %}
+        <span class="offer-price">₹ {{ product.offer_price }}</span>
+        <del class="old-price">₹ {{ product.base_price }}</del>
+      {% else %}
+        <span class="regular-price">₹ {{ product.base_price }}</span>
+      {% endif %}
+    </div>
+
+    <div class="button-group">
+      {% if product.is_active %}
+        <button class="btn-add"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+        <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
+      {% else %}
+        <span class="out-of-stock">Unavailable</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+                
