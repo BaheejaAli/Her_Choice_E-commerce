@@ -38,7 +38,10 @@ body {
 
 .nav-search-form {
     width: 100%;
+    gap: 8px;
 }
+
+
 
 /* 2. The Search Box (Consolidated) */
 .search-box {
@@ -62,7 +65,7 @@ body {
 /* 3. Input Field */
 .search-box input {
     flex: 1;
-    padding: 10px 15px;
+    padding: 9px 15px;
     border: none;
     background: transparent;
     outline: none;
@@ -87,23 +90,34 @@ body {
     background: #e61473;
 }
 
-.btn-clear {
-    background: #f0f0f0;
-    color: #555;
-    padding: 0 15px;
-    height: 40px; /* Match height of input */
+.btn-clear-search {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    
+    padding: 8px 15px;
+    background-color: #f5f5f6; /* Light gray background */
+    color: #535766;
+    border: 1px solid #d4d5d9;
+    border-radius: 4px;
+    
     text-decoration: none;
     font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border-left: 1px solid #ddd;
-    transition: all 0.3s;
+    font-weight: 600;
+    white-space: nowrap; /* Keeps text on one line */
+    transition: all 0.2s ease;
 }
 
-.btn-clear:hover {
-    background: #e8e8e8;
-    color: #000;
+.btn-clear-search i {
+    font-size: 11px; /* Make the 'X' icon slightly smaller than text */
+}
+
+/* Hover State */
+.btn-clear-search:hover {
+    background-color: #ff3f6c; /* Brand Pink */
+    color: #ffffff;
+    border-color: #ff3f6c;
 }
 
 /* 5. Mobile Responsiveness */

@@ -15,21 +15,9 @@
     <div class="hero-content">
       <h1>Welcome to Her Choice</h1>
       <p>Discover stylish collections designed to empower every woman.</p>
-      <a href="#" class="btn-shop">Shop Now</a>
+      <a href="{% url "product_listing" %}" class="btn-shop">Shop Now</a>
     </div>
   </section>
-
-  {% comment %} <section class="search-container">
-    <form action="." method="GET" class="search-form">
-      <div class="search-box">
-        <input type="text" name="search" placeholder="Search for products, brands, or categories..." value="{{ search_query|default:'' }}" />
-        <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
-        {% if search_query %}
-          <a href="." class="btn-clear">Back</a>
-        {% endif %}
-      </div>
-    </form>
-  </section> {% endcomment %}
 
   {% comment %} {% if search_query %}
     {% endcomment %}
@@ -39,26 +27,7 @@
       <div class="product-grid">
         {% for product in search_results %}
           <div class="product-card">
-            <div class="product-img-container">
-              {% if product.images.all %}
-                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" />
-              {% else %}
-                <img src="{% static 'images/default.jpg' %}" alt="Default Image" />
-              {% endif %}
-            </div>
-            <h3>{{ product.name }}</h3>
-            <p class="price">
-              {% if product.offer_price %}
-                <span class="offer-price">₹ {{ product.offer_price }}</span>
-                <del class="old-price">₹ {{ product.base_price }}</del>
-              {% else %}
-                <span class="regular-price">₹ {{ product.base_price }}</span>
-              {% endif %}
-            </p>
-            <div class="button-group">
-              <button class="btn-add"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-              <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
-            </div>
+  
           </div>
         {% empty %}
           <div style="grid-column: span 12; text-align: center; padding: 40px;">
@@ -78,7 +47,7 @@
         <h2 class="section-title">New Arrivals</h2>
         <div class="product-grid">
           {% for product in new_arrivals %}
-            {% include 'user_section/includes/product_card.html' %}
+            {% include 'products/includes/product_card.html' %}
           {% endfor %}
         </div>
       </section>
@@ -90,7 +59,7 @@
         <h2 class="section-title">Featured Collection</h2>
         <div class="product-grid">
           {% for product in featured_products %}
-            {% include 'user_section/includes/product_card.html' %}
+            {% include 'products/includes/product_card.html' %}
           {% endfor %}
         </div>
       </section>
@@ -102,7 +71,7 @@
         <h2 class="section-title">Trending Products</h2>
         <div class="product-grid">
           {% for product in trending_products %}
-            {% include 'user_section/includes/product_card.html' %}
+            {% include 'products/includes/product_card.html' %}
           {% endfor %}
         </div>
       </section>
