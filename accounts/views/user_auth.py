@@ -146,46 +146,48 @@ def user_otp_verify(request):
     return render(request, 'accounts/user_otp_verify.html', context)
 
 # ================== USER RESEND OTP VERIFICATION  ==============
+
 @never_cache
 def user_resend_otp(request):
     verification_email = request.session.get('verification_email')
     reset_email = request.session.get('reset_email')
+    otp_expiry = request.session.get('otp_expiry')
 
+    if otp_expiry:
+        current_time = timezone.now().timestamp()
+        if current_time < float(otp_expiry):
+            messages.warning(request, "Please wait until timer expires.")
+
+            if verification_email:
+                return redirect('user_otp_verify')
+            return redirect('user_reset_password_verify')
+        
     if verification_email:
         target_email = verification_email
         session_otp_key = 'verification_otp'
         subject_prefix = "Registration Verification"
-        redirect_on_fail = 'user_register'
     elif reset_email:
         target_email = reset_email
         session_otp_key = 'reset_otp'
         subject_prefix = "Password Reset"
-        redirect_on_fail = 'user_forgot_password'   
     else:
-        # If neither session key is found, the user should restart
-        messages.error(request, 'Session expired. Please restart the registration or password reset process.')
+        messages.error(request, 'Session expired. Please restart.')
         return redirect('user_register')
     
-    # Generate a new OTP and update session/expiry
     new_otp = random.randint(100000, 999999)
     request.session[session_otp_key] = str(new_otp)
     request.session['otp_expiry'] = (timezone.now() + timedelta(seconds=OTP_EXPIRY_SECONDS)).timestamp()
 
-    # Send the email
     email_sent = send_otp_email(target_email, new_otp, subject_prefix=subject_prefix)
 
     if email_sent:
         messages.success(request, 'A new verification code has been successfully sent!')
-        if verification_email:
-            return redirect('user_otp_verify')
-        else: # Must be reset flow
-            return redirect('user_reset_password_verify')
     else:
-        messages.error(request, 'Failed to send new code. Please try again.')
-        if verification_email:
-            return redirect('user_otp_verify')
-        else:
-            return redirect('user_reset_password_verify')
+        messages.error(request, 'Failed to send new code.')
+
+    if verification_email:
+        return redirect('user_otp_verify')
+    return redirect('user_reset_password_verify')
 
 # ================== USER FORGOT PASSWORD ========================
 @never_cache
