@@ -46,7 +46,7 @@ class Category(models.Model):
         blank=True,
         null=True,
     )
-    image = models.ImageField(upload_to="categories/images/", blank=True, null=True,
+    image = models.ImageField(upload_to="categories/images/",
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],)
     # Soft delete / status toggle
     is_active = models.BooleanField(

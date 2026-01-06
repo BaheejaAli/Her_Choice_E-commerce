@@ -111,6 +111,13 @@ class CategoryForm(forms.ModelForm):
 
     def clean_image(self):
         image = self.cleaned_data.get("image")
-        if image and image.size > 2 * 1024 * 1024:
-            raise forms.ValidationError("Image file too large. Max size is 2MB.")
+        if not image:
+            raise forms.ValidationError("Category image is required.")
+        if image and not isinstance(image, str):
+            if image and image.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Image file too large. Max size is 2MB.")
         return image
+    
+
+
+   

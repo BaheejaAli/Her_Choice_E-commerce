@@ -1,87 +1,154 @@
-{% extends "admin_base.html" %}
+{% extends 'admin_base.html' %}
 {% load static %}
 
 {% block title %}
-Category Management | Her Choice
+  Category Management | Her Choice
 {% endblock %}
 
 {% block page_title %}
-Dashboard /
-<a href="{% url 'category_list' %}" class="breadcrumb-link">Category Management</a> /
-{% if object %}Edit Category{% else %}Add Category{% endif %}
+  Dashboard /
+  <a href="{% url 'category_list' %}" class="breadcrumb-link">Category Management</a> /{% if object %}
+    Edit Category
+  {% else %}
+    Add Category
+  {% endif %}
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/category_form.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin_panel/category_form.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
 {% endblock %}
 
 {% block content %}
-<div class="category-management-wrapper">
-
-  {% if messages %}
-  <div class="messages-container">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
+  <div class="category-management-wrapper">
+    {% comment %} {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
       </div>
-    {% endfor %}
+    {% endif %} {% endcomment %}
+
+    <div class="form-card">
+      <h3 class="form-title">
+        {% if object %}
+          Edit Category
+        {% else %}
+          Add Category
+        {% endif %}
+      </h3>
+
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        {% if messages %}
+        <div class="messages-container">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+        <!-- Category Name -->
+        <div class="form-group">
+          {{ form.name.label_tag }}
+          {{ form.name }}
+          {% for error in form.name.errors %}
+            <small class="form-error">{{ error }}</small>
+          {% endfor %}
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          {{ form.description.label_tag }}
+          {{ form.description }}
+          {% for error in form.description.errors %}
+            <small class="form-error">{{ error }}</small>
+          {% endfor %}
+        </div>
+
+        <!-- Image -->
+        <div class="form-group">
+          {{ form.image.label_tag }}
+          {{ form.image }}
+          {% for error in form.image.errors %}
+            <small class="form-error">{{ error }}</small>
+          {% endfor %}
+          <div id="cropper-wrapper" style="display:none; margin-top: 15px; border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">
+            <div style="max-height: 400px; overflow: hidden;">
+              <img id="image-preview" style="max-width: 100%;" />
+            </div>
+            <button type="button" id="crop-confirm-btn" class="btn-primary" style="margin-top: 10px; background-color: #28a745;">Confirm Crop</button>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">{{ form.is_active.label_tag }}
+          {{ form.is_active }}</div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">
+            {% if object %}
+              Update Category
+            {% else %}
+              Create Category
+            {% endif %}
+          </button>
+
+          <a href="{% url 'category_list' %}" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
   </div>
-  {% endif %}
-
-  <div class="form-card">
-    <h3 class="form-title">
-      {% if object %}Edit Category{% else %}Add Category{% endif %}
-    </h3>
-
-    <form method="post" enctype="multipart/form-data" novalidate>
-      {% csrf_token %}
-
-      <!-- Category Name -->
-      <div class="form-group">
-        {{ form.name.label_tag }}
-        {{ form.name }}
-        {% for error in form.name.errors %}
-          <small class="form-error">{{ error }}</small>
-        {% endfor %}
-      </div>
-
-      <!-- Description -->
-      <div class="form-group">
-        {{ form.description.label_tag }}
-        {{ form.description }}
-        {% for error in form.description.errors %}
-          <small class="form-error">{{ error }}</small>
-        {% endfor %}
-      </div>
-
-      <!-- Image -->
-      <div class="form-group">
-        {{ form.image.label_tag }}
-        {{ form.image }}
-        {% for error in form.image.errors %}
-          <small class="form-error">{{ error }}</small>
-        {% endfor %}
-      </div>
-
-      <!-- Status -->
-      <div class="form-group">
-        {{ form.is_active.label_tag }}
-        {{ form.is_active }}
-      </div>
-
-      <!-- Actions -->
-      <div class="form-actions">
-        <button type="submit" class="btn-primary">
-          {% if object %}Update Category{% else %}Create Category{% endif %}
-        </button>
-
-        <a href="{% url 'category_list' %}" class="btn-secondary">
-          Cancel
-        </a>
-      </div>
-
-    </form>
-  </div>
-
-</div>
 {% endblock %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+  const imageInput = document.querySelector('input[type="file"]')
+  const previewImg = document.getElementById('image-preview')
+  const cropperWrapper = document.getElementById('cropper-wrapper')
+  const confirmBtn = document.getElementById('crop-confirm-btn')
+  let cropper
+  
+  // 1. Show Cropper when file is selected
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        previewImg.src = event.target.result
+        cropperWrapper.style.display = 'block'
+  
+        if (cropper) cropper.destroy()
+        cropper = new Cropper(previewImg, {
+          aspectRatio: 1 / 1, // Change to 16/9 if needed
+          viewMode: 1
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  })
+  
+  // 2. Replace the file input with cropped data
+  confirmBtn.addEventListener('click', () => {
+    const canvas = cropper.getCroppedCanvas({
+      width: 600,
+      height: 600
+    })
+  
+    canvas.toBlob((blob) => {
+      const fileName = imageInput.files[0].name
+      const croppedFile = new File([blob], fileName, { type: 'image/jpeg' })
+  
+      // Use DataTransfer to put the new file into the input
+      const dataTransfer = new DataTransfer()
+      dataTransfer.items.add(croppedFile)
+      imageInput.files = dataTransfer.files
+  
+      // Visual feedback: Hide cropper and change button color
+      cropperWrapper.style.display = 'none'
+      alert('Image cropped successfully! You can now update/create the category.')
+    }, 'image/jpeg')
+  })
+</script>
