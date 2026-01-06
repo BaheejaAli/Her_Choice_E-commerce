@@ -14,11 +14,11 @@ from accounts.decorators import logout_required
 from allauth.socialaccount.providers.google.views import oauth2_callback
 
 # Define the OTP expiry duration (e.g., 5 minutes)
-OTP_EXPIRY_SECONDS = 300
+OTP_EXPIRY_SECONDS = 100
 
 # ========== USER REGISTRATION ======================
 @never_cache
-@logout_required(redirect_to="home")
+@logout_required(redirect_to="user_homepage")
 def user_register(request):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
@@ -57,10 +57,8 @@ def user_register(request):
 
 # ========== USER LOGIN ======================
 @never_cache
-@logout_required(redirect_to="home")
+@logout_required(redirect_to="user_homepage")
 def user_login(request):
-    # if request.user.is_authenticated:
-    #     return redirect('user_dashboard')
     
     if request.method == "POST":
         form = UserLoginForm(request.POST)
@@ -191,7 +189,7 @@ def user_resend_otp(request):
 
 # ================== USER FORGOT PASSWORD ========================
 @never_cache
-@logout_required(redirect_to="home")
+@logout_required(redirect_to="user_homepage")
 def user_forgot_password(request):
     if request.method == 'POST':
         form = UserForgotPasswordForm(request.POST)
@@ -315,13 +313,13 @@ def user_reset_password(request):
 @never_cache
 def user_logout(request):
     logout(request)
-    messages.info(request, "You have been logged out successfully.")
+    # messages.info(request, "You have been logged out successfully.")
     return redirect('user_login')
 
 
 def google_callback_safe(request, *args, **kwargs):
     if request.user.is_authenticated:
-        return redirect("home")
+        return redirect("user_homepage")
     
     return oauth2_callback(request, *args, **kwargs)
 

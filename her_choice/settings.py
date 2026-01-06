@@ -200,16 +200,16 @@ SOCIALACCOUNT_PROVIDERS = {
             "email",
             "https://www.googleapis.com/auth/user.phonenumbers.read",
         ],
-        "AUTH_PARAMS": {"access_type": "online"},
+        "AUTH_PARAMS": {"access_type": "online","prompt": "select_account",},
         "OAUTH_PKCE_ENABLED": True,
     }
 }
 
 LOGIN_URL = "accounts/login"
 LOGOUT_URL = "accounts/logout"
-LOGOUT_REDIRECT_URL = "home"
-LOGIN_REDIRECT_URL = "home"
-ACCOUNT_LOGOUT_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "user_homepage"
+LOGIN_REDIRECT_URL = "user_homepage"
+ACCOUNT_LOGOUT_REDIRECT_URL = "user_homepage"
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

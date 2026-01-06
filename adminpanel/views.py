@@ -25,6 +25,8 @@ def is_admin(user):
 # ADMIN DASHBOARD 
 # =========================
 @never_cache
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin,login_url='admin_login')
 def admin_dashboard(request):
     return render(request, "admin_panel/dashboard.html")
 
@@ -340,7 +342,7 @@ class ProductListView(LoginRequiredMixin,ListView):
     model = Product
     template_name = "admin_panel/product_management.html"
     context_object_name = "products"
-    paginate_by = 10
+    paginate_by = 5
      
     def get_queryset(self):
         queryset = (
@@ -413,7 +415,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         if image_formset.is_valid():
             with transaction.atomic():
                 self.object = form.save()  # Save Product first
-                image_formset.instance = self.object
+                image_formset.instance = self.object    #Link Parent to Children
                 image_formset.save()       # Save the 3+ images
             messages.success(self.request, "Product and 3 images uploaded successfully.")
             return super().form_valid(form)
@@ -482,3 +484,5 @@ def toggle_product_status(request, product_id):
             else f'Product "{product.name}" deactivated.'
         )
     })
+
+

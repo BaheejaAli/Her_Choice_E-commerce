@@ -13,6 +13,7 @@ class ProductForm(forms.ModelForm):
             "offer_price",
             "category",
             "brand",
+            "stock",
             "is_active",
             "is_featured",
             "is_selective",
@@ -48,6 +49,7 @@ class ProductForm(forms.ModelForm):
             ),
             "category": forms.Select(attrs={"class": "form-input-field"}),
             "brand": forms.Select(attrs={"class": "form-input-field"}),
+            "stock": forms.NumberInput(attrs={"class": "form-control", "min": '0'}),
             "is_active": forms.Select(
                 choices=[(True, "Active"), (False, "Inactive")],
                 attrs={"class": "form-input-field"},

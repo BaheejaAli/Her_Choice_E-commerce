@@ -1,0 +1,184 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/products/product_detail.css' %}?v=1.1" />
+{% endblock %}
+
+{% block content %}
+<div class="product-detail-wrapper">
+    <nav class="breadcrumb-nav">
+        <a href="{% url 'user_homepage' %}">Home</a> <i class="fas fa-chevron-right"></i>
+        <a href="{% url 'product_listing' %}">Shop</a> <i class="fas fa-chevron-right"></i>
+        <span class="current">{{ product.category.name }}</span> <i class="fas fa-chevron-right"></i>
+        <span class="current">{{ product.name }}</span>
+    </nav>
+
+    <div class="product-main-row">
+        <div class="product-image-section">
+            <div class="main-img-container" id="zoom-container">
+                {% with first_image=product.images.all|first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" id="product-img" alt="{{ product.name }}" />
+                    {% else %}
+                        <img src="{% static 'images/placeholder.png' %}" id="product-img" alt="No image" />
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="thumbnail-grid">
+                {% for image in product.images.all %}
+                <div class="thumb-wrapper {% if forloop.first %}active{% endif %}" onclick="changeImage(this, '{{ image.image.url }}')">
+                    <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail" />
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="product-info-section">
+            <div class="product-header">
+                <p class="brand-name">Brand: {{ product.brand.name}}</p>
+                <h1 class="product-title">{{ product.name }}</h1>
+            </div>
+
+            <div class="rating-container">
+                <span class="rating-value">4.2 <i class="fas fa-star"></i></span>
+                <span class="rating-separator">|</span>
+                <span class="review-count">124 Reviews</span>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="price-container">
+                <span class="current-price">₹{{ product.offer_price|default:product.base_price }}</span>
+                {% if product.offer_price and product.discount_percentage > 0 %}
+                    <span class="mrp">MRP ₹{{ product.base_price }}</span>
+                    <span class="discount-percent">({{ product.discount_percentage }}% OFF)</span>
+                {% endif %}
+            </div>
+            <p class="tax-info">Inclusive of all taxes</p>
+
+            <div class="stock-status">
+                {% if product.stock <= 0 %}
+                    <span class="out-of-stock-msg">SOLD OUT</span>
+                    <p class="error-text">This product is currently unavailable.</p>
+                {% elif product.stock < 10 %}
+                    <span class="low-stock-msg">Only {{ product.stock }} left!</span>
+                {% else %}
+                    <span class="in-stock-msg">In Stock</span>
+                {% endif %}
+            </div>
+
+            <div class="action-btns">
+                {% if product.stock > 0 %}
+                    <button class="btn-add-cart" onclick="addToBag({{ product.id }})">
+                        <i class="fas fa-shopping-bag"></i> ADD TO BAG
+                    </button>
+                    <button class="btn-wishlist">
+                        <i class="far fa-heart"></i> WISHLIST
+                    </button>
+                {% else %}
+                    <button class="btn-disabled" disabled>OUT OF STOCK</button>
+                    <button class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
+                {% endif %}
+            </div>
+
+            <hr class="divider">
+
+            
+            <div class="product-details-container">
+                <div class="product-description">
+                    <h4>PRODUCT DETAILS</h4>
+                    <p>{{ product.description}}</p>  
+                </div>
+
+                <div class="section mt-4">
+                    <h4 class="section-title">Specifications</h4>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Category: </span>
+                            <span class="spec-value">{{ product.category.name }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Brand: </span>
+                            <span class="spec-value">{{ product.brand.name }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Stock Status: </span>
+                            <span class="spec-value">
+                                {% if product.stock > 0 %} In Stock ({{ product.stock }} units) {% else %} Out of Stock {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if related_products %}
+<section class="related-products-section">
+    <h3 class="related-title">Featured items you may like</h3>
+    
+    <div class="related-grid">
+        {% for rel in related_products %}
+        <a href="{% url 'product_detail' rel.slug %}" class="related-card">
+            <div class="related-img-wrapper">
+                {% if rel.images.all %}
+                    <img src="{{ rel.images.all.0.image.url }}" alt="{{ rel.name }}">
+                {% else %}
+                    <img src="{% static 'images/placeholder.png' %}" alt="No image available">
+                {% endif %}
+            </div>
+            
+            <div class="related-info">
+                <p class="rel-name">{{ rel.name }}</p>
+                <div class="rel-pricing">
+                    <span class="rel-offer">₹{{ rel.offer_price|default:rel.base_price }}</span>
+                    
+                    {% if rel.offer_price and rel.offer_price < rel.base_price %}
+                        <span class="rel-mrp">₹{{ rel.base_price }}</span>
+                        <span class="rel-discount">({{ rel.discount_percentage }}% OFF)</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a> 
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function changeImage(element, imageUrl) {
+        const mainImg = document.getElementById('product-img');
+        document.querySelectorAll('.thumb-wrapper').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        element.classList.add('active');
+        mainImg.src = imageUrl;
+    }
+
+    // Zoom Logic 
+    const zoomContainer = document.getElementById('zoom-container');
+    const productImg = document.getElementById('product-img');
+
+    if (zoomContainer && productImg) {
+        zoomContainer.addEventListener('mousemove', function(e) {
+            const rect = zoomContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            productImg.style.transformOrigin = `${x}px ${y}px`;
+            productImg.style.transform = "scale(2)";
+        });
+
+        zoomContainer.addEventListener('mouseleave', function() {
+            productImg.style.transform = "scale(1)";
+        });
+    }
+</script>
+{% endblock %}
+

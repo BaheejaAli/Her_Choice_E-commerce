@@ -107,7 +107,18 @@
     margin-right: 10px;
 }
 
-
+.badge-requirement {
+    color: #d63031; /* Professional Red */
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #fff5f5; /* Light red background to make it pop */
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid #fab1a0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
 
 /* Fix the Grid to be more accommodating */
 .image-upload-grid {

@@ -6,16 +6,26 @@
 {% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=2.0" />
-  <link rel="stylesheet" href="{% static 'css/user_section/product_card.css' %}?v=1.2" />
+  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}" />
 {% endblock %}
 
 {% block content %}
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="message-item {{ message.tags }}">
+          <span class="message-text">{{ message }}</span>
+          <button class="message-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <section class="hero-section">
     <div class="hero-content">
       <h1>Welcome to Her Choice</h1>
       <p>Discover stylish collections designed to empower every woman.</p>
-      <a href="{% url "product_listing" %}" class="btn-shop">Shop Now</a>
+      <a href="{% url 'product_listing' %}" class="btn-shop">Shop Now</a>
     </div>
   </section>
 
@@ -26,9 +36,7 @@
 
       <div class="product-grid">
         {% for product in search_results %}
-          <div class="product-card">
-  
-          </div>
+          <div class="product-card"></div>
         {% empty %}
           <div style="grid-column: span 12; text-align: center; padding: 40px;">
             <p>No products found matching "{{ search_query }}".</p>

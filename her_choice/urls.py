@@ -23,10 +23,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("accounts/google/login/callback/", google_callback_safe, name="google_callback"),
-    path("accounts/", include("allauth.socialaccount.providers.google.urls")),
+    # path("accounts/google/login/callback/", google_callback_safe, name="google_callback"),
+    # path("accounts/", include("allauth.socialaccount.providers.google.urls")),
+    path("accounts/", include("allauth.urls")),
 
-    # Admin urls
     path("admin-panel/", include("adminpanel.urls")),
     path("", include("user_section.urls")),
 ]

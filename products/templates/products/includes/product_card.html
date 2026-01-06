@@ -5,7 +5,7 @@
 
 <div class="product-card">
   <div class="product-img-container">
-    {% comment %} <a href="{% url 'product_detail' product.slug %}"> {% endcomment %}
+    <a href="{% url 'product_detail' product.slug %}"> 
     
       {% if product.images.all %}
         <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image" />

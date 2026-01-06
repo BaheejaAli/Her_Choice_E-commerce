@@ -10,10 +10,11 @@
       {% endblock %}
     </title>
 
-    <link rel="stylesheet" href="{% static 'css/user_section/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/user_section/base.css' %}?v=1.1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     {% block extra_css %}
+
     {% endblock %}
   </head>
 
@@ -32,10 +33,10 @@
             <a href="/">Home</a>
           </li>
           <li>
-            <a href="#">Shop</a>
+            <a href="{% url "about" %}">About</a>
           </li>
           <li>
-            <a href="#">About</a>
+            <a href="{% url "product_listing" %}">Shop</a>
           </li>
           <li>
             <a href="#">Contact</a>
@@ -44,21 +45,20 @@
 
         <!-- Search box -->
         <div class="nav-search">
-  <form action="{% url 'product_listing' %}" method="GET" class="nav-search-form">
-    <div class="search-box">
-      <input type="hidden" name="sort" value="{{ current_sort|default:'newest' }}">
-      <input type="text" name="search" placeholder="Search for products, brands, or categories..." value="{{ search_query|default:'' }}" />
-      <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
-    </div>
-    
-    {% if search_query %}
-      <a href="{% url 'product_listing' %}" class="btn-clear-search" title="Clear Search">
-        <i class="fas fa-times"></i>
-      </a>
-    {% endif %}
-  </form>
-</div>
+          <form action="{% url 'product_listing' %}" method="GET" class="nav-search-form">
+            <div class="d-flex align-items-center">
+              <div class="search-box">
+                <input type="hidden" name="sort" value="{{ current_sort|default:'newest' }}" />
+                <input type="text" name="search" placeholder="Search for products..." value="{{ search_query|default:'' }}" />
+                <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
+              </div>
 
+              {% if search_query %}
+                <a href="{% url 'product_listing' %}" class="btn-clear-search ms-2" title="Clear Search"><i class="fas fa-times"></i></a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
 
         <!-- Icons + Auth -->
         <div class="icons">
@@ -73,10 +73,8 @@
             <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
           {% endif %}
 
-          <a href="#" class="icon-btn" title="Wishlist">
-            <i class="fa-regular fa-heart"></i>
-          </a>
-          
+          <a href="#" class="icon-btn" title="Wishlist"><i class="fa-regular fa-heart"></i></a>
+
           <a href="#" class="icon-btn" title="Cart"><i class="fa-solid fa-cart-shopping"></i></a>
         </div>
       </nav>
@@ -85,11 +83,12 @@
     <!-- ====================== CONTENT ====================== -->
     <main>
       {% block content %}
+
       {% endblock %}
     </main>
 
     <!-- ====================== FOOTER ====================== -->
-  
+
     <footer class="footer">
       <div class="footer-top">
         <!-- Column 1: Brand -->
@@ -164,6 +163,7 @@
     </footer>
 
     {% block extra_js %}
+
     {% endblock %}
   </body>
 </html>

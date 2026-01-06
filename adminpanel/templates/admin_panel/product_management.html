@@ -78,7 +78,7 @@
           <th>Product</th>
           <th>Brand</th>
           <th>Category</th>
-          <th>Images</th>
+          <th>Stock</th>
           <th>Price</th>
           <th>Status</th>
           <th>Action</th>
@@ -88,7 +88,8 @@
       <tbody>
         {% for product in products %}
         <tr>
-          <td>{{ forloop.counter }}</td>
+          {% comment %} <td>{{ forloop.counter }}</td> {% endcomment %}
+          <td>{{product.id}}</td>
 
           <td>
             <h6>{{ product.name }}</h6>
@@ -97,13 +98,7 @@
 
           <td>{{ product.brand.name }}</td>
           <td>{{ product.category.name }}</td>
-
-          <td>
-            {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }} Image" width="200">
-            {% endif %}
-            <p>Images</p>
-          </td>
+          <td>{{product.stock}}</td>
 
           <td>
             {% if product.offer_price %}

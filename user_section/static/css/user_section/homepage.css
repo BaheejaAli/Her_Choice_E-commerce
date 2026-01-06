@@ -93,3 +93,72 @@
     text-align: center;
     border-radius: 0 0 12px 12px;
 }
+
+/* Container positioning */
+.messages-container {
+    position: fixed; /* Changed to fixed so it stays visible if they scroll */
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%); /* Perfectly centers the container horizontally */
+    width: 90%;
+    max-width: 600px; /* Limits width on desktop */
+    z-index: 10000; /* Ensures it is above everything else */
+}
+
+/* Individual message styling */
+.message-item {
+    background: #ffffff;
+    border-left: 6px solid #ff4081; 
+    padding: 18px 25px; /* Increased padding */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    
+    /* Centering Logic */
+    display: flex;
+    justify-content: center; /* Centers content horizontally */
+    align-items: center;     /* Centers content vertically */
+    text-align: center;
+    
+    margin-bottom: 15px;
+    animation: slideDown 0.5s ease-out;
+}
+
+/* Increased Font Size */
+.message-text {
+    font-size: 18px; /* Bigger, more readable font */
+    font-weight: 600;
+    color: #282c3f;
+    flex-grow: 1; /* Pushes the close button to the end while text stays centered */
+}
+
+/* Close Button Styling */
+.message-close {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 28px; /* Larger close button */
+    color: #94969f;
+    line-height: 1;
+    margin-left: 20px;
+    transition: color 0.2s;
+}
+
+.message-close:hover {
+    color: #ff4081;
+}
+
+/* Type colors */
+.message-item.success { border-left-color: #2e7d32; }
+.message-item.error { border-left-color: #d32f2f; }
+
+/* Entry Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

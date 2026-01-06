@@ -40,5 +40,8 @@ class HomePageView(TemplateView):
     #     context["search_query"] = search_query
     #     return context
 
+class AboutPageView(TemplateView):
+    template_name = "user_section/about.html"
+
 
 

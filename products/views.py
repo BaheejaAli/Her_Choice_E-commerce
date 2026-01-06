@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .models import Product
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
 from django.db.models import Case, When, F, DecimalField, Count
-
+from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
 # Create your views here.
 
 class ProductListingView(ListView):
@@ -66,6 +67,7 @@ class ProductListingView(ListView):
             queryset = queryset.order_by('-created_at')
         return queryset
     
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search_query"] = self.request.GET.get('search','').strip()
@@ -81,5 +83,48 @@ class ProductListingView(ListView):
         ).order_by('-product_count')
         context["selected_brands"] = self.request.GET.getlist('brand')
         return context
+    
+
+# class ProductDetailView(DetailView):
+#     model = Product
+#     template_name = "products/product_detail.html"
+#     context_object_name = "product"
+#     slug_url_kwarg = 'slug'
+
+#     def get(self, request, *args, **kwargs):
+
+#         # Redirect if product is blocked/unavailable
+#         product = self.get_object()
+#         if not product.is_active:
+#             messages.warning(request,"This product is currently unavailable.")
+#             return redirect('product_listing')
+#         return super().get(request, *args, **kwargs)
+    
+#     def get_context_data(self, **kwargs):
+#             # Related product recommendations
+#             context = super().get_context_data(**kwargs)
+#             context["related_products"] = Product.objects.filter(
+#                 category= self.object.category, is_active = True
+#             ).exclude(id=self.object.id).prefetch_related('images')[:4]
+#             return context
+        
+def product_detail_view(request,slug):
+    product = get_object_or_404(Product,slug=slug)
+    if not product.is_active:
+        messages.warning(request, "This product is currently unavailable.")
+        return redirect('product_listing')
+    
+    related_products = Product.objects.filter(
+        category = product.category,
+        is_active = True
+    ).exclude(id=product.id).prefetch_related('images')[:4]
+
+    context = {
+        'product':product,
+        'related_products':related_products,
+    }
+
+    return render(request, "products/product_detail.html", context)
+
   
     
