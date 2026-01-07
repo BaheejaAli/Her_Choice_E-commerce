@@ -15,7 +15,8 @@
 {% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}?v=1.2" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 {% endblock %}
 
 {% block content %}
@@ -92,44 +93,6 @@
           </div>
         </div>
 
-        {% comment %} <div class="form-section mt-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="section-title m-0">Product Gallery</h5>
-            <span class="badge-requirement">Minimum 3 high-quality images required</span>
-          </div>
-
-          {{ image_formset.management_form }}
-          <div class="image-upload-grid">
-            {% for image_form in image_formset %}
-              <div class="image-upload-card">
-                {% for hidden in image_form.hidden_fields %}
-                  {{ hidden }}
-                {% endfor %}
-                <div class="upload-icon">
-                  {% if image_form.instance.image %}
-                    <img src="{{ image_form.instance.image.url }}" class="preview-thumb" />
-                  {% else %}
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                  {% endif %}
-                </div>
-                <div class="upload-controls">
-                  {{ image_form.image }}
-                  <div class="alt-text-input">{{ image_form.alt_text }}</div>
-                </div>
-                {% if image_formset.can_delete and image_form.instance.pk %}
-                  <div class="delete-overlay">
-                    {{ image_form.DELETE }}
-                    <span class="text-danger"><i class="fa-solid fa-trash"></i>Remove</span>
-                  </div>
-                {% endif %} {% if image_form.errors %}
-                  {% for error in image_form.image.errors %}
-                    <span class="error-text">{{ error }}</span>
-                  {% endfor %}
-                {% endif %}
-              </div>
-            {% endfor %}
-          </div>
-        </div> {% endcomment %}
         <div class="form-section mt-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="section-title m-0">Product Gallery</h5>
@@ -185,4 +148,108 @@
       </div>
     </form>
   </div>
+
+
+  {% comment %} modal {% endcomment %}
+  <div class="crop-modal" id="cropModal">
+    <div class="crop-container">
+        <div class="crop-header">
+            <h4>Crop & Resize Image</h4>
+            <button type="button" class="close-btn" id="cropClose">&times;</button>
+        </div>
+        <div class="crop-image-container">
+            <img id="cropImage" style="max-width: 100%;">
+        </div>
+        <div class="crop-actions">
+            <button type="button" class="btn btn-secondary" id="cropCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="cropSave">Apply Crop</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let cropper = null;
+    let currentFileInput = null;
+    let currentPreviewElement = null; // Track which img tag to update
+
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const cropSaveBtn = document.getElementById('cropSave');
+
+    function closeModal() {
+        cropModal.style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'file' && e.target.name.includes('image')) {
+            const file = e.target.files[0];
+            if (file) {
+                currentFileInput = e.target;
+                
+                // --- NEW: Find the preview image element in this specific card ---
+                const card = currentFileInput.closest('.image-upload-card');
+                currentPreviewElement = card ? card.querySelector('.preview-thumb') : null;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    cropImage.src = event.target.result;
+                    cropModal.style.display = 'flex';
+                    
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: NaN,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    cropSaveBtn.addEventListener('click', function(e) {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            maxWidth: 1000,
+            maxHeight: 1000,
+        });
+
+        canvas.toBlob((blob) => {
+            if (blob && currentFileInput) {
+                const fileName = currentFileInput.files[0].name;
+                const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+                
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                currentFileInput.files = dataTransfer.files;
+
+                // --- NEW: Update the visible preview on the form ---
+                if (currentPreviewElement) {
+                    currentPreviewElement.src = URL.createObjectURL(blob);
+                } else {
+                    // If there was no preview image (new upload), replace the icon
+                    const card = currentFileInput.closest('.image-upload-card');
+                    const uploadIcon = card.querySelector('.upload-icon');
+                    if (uploadIcon) {
+                        uploadIcon.innerHTML = `<img src="${URL.createObjectURL(blob)}" class="preview-thumb">`;
+                    }
+                }
+            }
+            closeModal();
+        }, 'image/jpeg', 0.9);
+    });
+
+    document.getElementById('cropCancel').onclick = closeModal;
+    document.getElementById('cropClose').onclick = closeModal;
+});
+</script>
 {% endblock %}
