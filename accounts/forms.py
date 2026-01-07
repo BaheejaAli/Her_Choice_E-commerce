@@ -76,12 +76,12 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser   
-        fields = ("first_name","last_name", "email", "phone") 
+        fields = ("first_name","last_name", "email") 
         widgets = {
             "first_name" : forms.TextInput(attrs={"placeholder":"First Name", "class":"form-control"}),
             "last_name" : forms.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}),
             "email" : forms.EmailInput(attrs={"placeholder":"Email Address", "class":"form-control"}),
-            "phone" : forms.TextInput(attrs={"placeholder":"Phone (Optional)", "class":"form-control"}) 
+           
         }
     
     def clean(self):
@@ -148,3 +148,5 @@ class UserResetPasswordForm(forms.Form):
                 self.add_error("new_password", e)
 
         return cleaned_data
+    
+    

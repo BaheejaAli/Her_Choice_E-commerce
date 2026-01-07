@@ -1,0 +1,51 @@
+{% extends 'user_section/profile_base.html' %}
+{% load static %}
+
+{% block title %} Her Choice | My Addresses {% endblock %}
+
+{% block profile_content %}
+<div class="address-container">
+    <div class="address-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 class="page-title">My Addresses</h1>
+            <p class="page-subtitle">Manage your shipping and billing locations</p>
+        </div>
+        <a href="#" class="edit-button" style="text-decoration: none;">
+            <i class="fas fa-plus"></i> Add New Address
+        </a>
+        {% comment %} {% url 'add_address' %} {% endcomment %}
+    </div>
+
+    <div class="address-grid">
+        {% for addr in addresses %}
+        <div class="address-card {% if addr.is_default %}default-border{% endif %}">
+            <div class="card-header">
+                <span class="badge">{{ addr.get_address_type_display }}</span>
+                {% if addr.is_default %}
+                    <span class="default-tag">Default</span>
+                {% endif %}
+            </div>
+
+            <div class="address-details">
+                <p class="user-name"><strong>{{ user.get_full_name }}</strong></p>
+                <p>{{ addr.address_line_1 }}</p>
+                {% if addr.address_line_2 %}<p>{{ addr.address_line_2 }}</p>{% endif %}
+                <p>{{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}</p>
+                <p>{{ addr.country }}</p>
+                <p class="phone">Phone: {{ addr.user.phone|default:"N/A" }}</p>
+            </div>
+
+            <div class="card-actions">
+                <a href="#" class="action-link edit">Edit</a>
+                <a href="#" class="action-link delete">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state" style="text-align: center; padding: 50px;">
+            <i class="fas fa-map-marker-alt" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+            <p>No addresses found. Add a new one to speed up checkout!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock profile_content %}

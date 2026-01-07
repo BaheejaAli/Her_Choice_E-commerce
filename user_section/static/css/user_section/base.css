@@ -180,6 +180,10 @@ body {
     color: #333;
 }
 
+.btn-profile{
+    text-decoration: none;
+}
+
 /* Logout */
 .logout-btn {
     background: none;

@@ -32,10 +32,16 @@ class UserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    GENDER_CHOICES = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    )
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     profile_pic = models.URLField( max_length=200, blank=True,null=True)
 
     # Permission/Status Flags
@@ -64,10 +70,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
 
 
-# from cloudinary.models import CloudinaryField
-# from django.db import models
 
-# class Profile(models.Model):
-#     user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
-#     profile_image = CloudinaryField('image', blank=True, null=True)
 
