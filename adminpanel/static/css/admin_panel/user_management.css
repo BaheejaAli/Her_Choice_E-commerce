@@ -94,6 +94,10 @@
     border: 1px solid var(--border-light);
 }
 
+/* =========================
+   TABLE FIX (IMPORTANT)
+========================= */
+
 .user-table {
     width: 100%;
     border-collapse: collapse;
@@ -102,8 +106,17 @@
 .user-table th,
 .user-table td {
     padding: 14px 12px;
+}
+
+.user-table thead tr {
+    border-bottom: 2px solid var(--border-light);
+}
+
+.user-table tbody tr {
     border-bottom: 1px solid var(--border-light);
 }
+
+/* ========================= */
 
 .user-table th {
     font-weight: 700;

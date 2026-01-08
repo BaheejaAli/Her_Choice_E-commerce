@@ -47,9 +47,20 @@ class BrandForm(forms.ModelForm):
             qs = qs.exclude(pk=self.instance.pk)
 
         if qs.exists():
-            raise forms.ValidationError("A brand with this name already exists.")
+            raise forms.ValidationError(
+                "A brand with this name already exists.")
 
         return name
+
+    def clean_logo(self):
+        image = self.cleaned_data.get("logo")
+        if not image:
+            raise forms.ValidationError("Brand logo is required.")
+            
+        if image and not isinstance(image, str):
+            if image.size > 2 * 1024 * 1024:
+                raise forms.ValidationError("Image file too large. Max size is 2MB.")
+        return image
 
 
 class CategoryForm(forms.ModelForm):
@@ -115,9 +126,6 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError("Category image is required.")
         if image and not isinstance(image, str):
             if image and image.size > 2 * 1024 * 1024:
-                raise forms.ValidationError("Image file too large. Max size is 2MB.")
+                raise forms.ValidationError(
+                    "Image file too large. Max size is 2MB.")
         return image
-    
-
-
-   

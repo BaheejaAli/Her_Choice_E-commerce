@@ -2,7 +2,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif; /* Recommended over Arial for your brand */
+    font-family: 'Arial', sans-serif;
     background: #f9f9f9;
 }
 
@@ -27,7 +27,8 @@ body {
     color: #ff1680;
 }
 
-/* Search Section */
+/* Search */
+/* ========= NAVBAR SEARCH (Updated) ========= */
 
 .nav-search {
     flex: 1; 
@@ -35,52 +36,50 @@ body {
     margin: 0 30px;
 }
 
-/* NEW: This ensures the form's inner div is a flex row */
-.nav-search-form .d-flex {
-    display: flex !important;
-    flex-direction: row;
+/* The horizontal wrapper for Box + Clear Button */
+.search-row {
+    display: flex;
     align-items: center;
+    gap: 12px; /* Space between the bar and the X button */
     width: 100%;
-    gap: 10px; /* Space between search box and clear button */
 }
 
-/* The Search Box Container */
+/* The Main Search Box (Input + Search Button) */
 .search-box {
     display: flex;
-    flex: 1; /* Makes the search box take up remaining space */
+    flex: 1; /* Grows to fill space */
     align-items: center;
-    background-color: #f8f9fa; 
+    background-color: #f8f9fa;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
+    height: 42px;
     transition: all 0.3s ease;
 }
 
 .search-box:focus-within {
-    background-color: #ffffff;
-    border-color: #ff1680; 
-    box-shadow: 0 4px 12px rgba(255, 22, 128, 0.15);
+    border-color: #ff1680;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 22, 128, 0.1);
 }
 
 .search-box input {
     flex: 1;
-    padding: 9px 15px;
     border: none;
     background: transparent;
+    padding: 0 15px;
     outline: none;
     font-size: 14px;
-    color: #333;
-    width: 100%; /* Ensures input fills the box */
 }
 
+/* The Pink Search Button inside the box */
 .btn-search {
-    background: #ff1680; 
+    background: #ff1680;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 0 20px;
+    height: 100%;
     cursor: pointer;
-    display: flex;
-    align-items: center;
     transition: background 0.3s ease;
 }
 
@@ -88,32 +87,45 @@ body {
     background: #e61473;
 }
 
-/* Clear Search Button Styles */
-.btn-clear-search {
-    display: inline-flex;
+/* The Clear Button placed BESIDE the search bar */
+.btn-clear-outside {
+    display: flex;
     align-items: center;
     justify-content: center;
-    height: 38px; /* Match height of search box */
-    padding: 0 15px;
-    background-color: #f5f5f6; 
-    color: #535766;
-    border: 1px solid #d4d5d9;
-    border-radius: 4px;
+    min-width: 42px; /* Makes it a perfect square */
+    height: 42px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #888;
     text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap; 
+    font-size: 18px;
     transition: all 0.2s ease;
-    flex-shrink: 0; /* Prevents the button from being squashed */
 }
 
-.btn-clear-search:hover {
-    background-color: #ff3f6c; 
-    color: #ffffff;
-    border-color: #ff3f6c;
+.btn-clear-outside:hover {
+    background: #fff0f6;
+    color: #ff1680;
+    border-color: #ff1680;
 }
 
-/* ========= MENU ========= */
+/* 5. Mobile Responsiveness */
+@media (max-width: 992px) {
+    .nav-search {
+        max-width: 300px;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-search {
+        order: 3; /* Push below logo/menu in mobile toggle if needed */
+        margin: 10px auto;
+        max-width: 95%;
+    }
+}
+
+/* Menu */
 .menu {
     list-style: none;
     display: flex;
@@ -150,6 +162,7 @@ body {
     color: #ff1680;
 }
 
+/* Auth Buttons */
 .btn-login {
     font-size: 14px;
     padding: 10px 25px;
@@ -165,6 +178,16 @@ body {
     background: #d10068;
 }
 
+.user-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-profile{
+    text-decoration: none;
+}
+
+/* Logout */
 .logout-btn {
     background: none;
     border: none;
@@ -172,17 +195,19 @@ body {
     cursor: pointer;
     color: #333;
 }
-
 .logout-btn:hover {
     color: #ff1680;
 }
 
 /* ========= FOOTER ========= */
+
+/* FOOTER MAIN SECTION */
 .footer {
     background: #f3f3f5;
     padding: 60px 80px;
     margin-top: 80px;
     color: #333;
+    font-family: Arial, sans-serif;
 }
 
 .footer-top {
@@ -192,6 +217,7 @@ body {
     flex-wrap: wrap;
 }
 
+/* COLUMNS */
 .footer-col {
     flex: 1;
     min-width: 220px;
@@ -213,6 +239,7 @@ body {
 .footer-col h4 {
     margin-bottom: 15px;
     font-size: 17px;
+    color: #000;
 }
 
 .footer-col ul {
@@ -227,12 +254,14 @@ body {
 .footer-col ul li a {
     text-decoration: none;
     color: #555;
+    font-size: 15px;
 }
 
 .footer-col ul li a:hover {
     color: #ff1680;
 }
 
+/* NEWSLETTER */
 .newsletter-form {
     display: flex;
     margin-top: 10px;
@@ -244,29 +273,39 @@ body {
     border-radius: 6px 0 0 6px;
     border: 1px solid #ccc;
     width: 65%;
-    outline: none;
 }
 
 .newsletter-form button {
     padding: 10px 18px;
+    font-size: 15px;
+    border: none;
     background: #ff1680;
     color: white;
-    border: none;
     border-radius: 0 6px 6px 0;
     cursor: pointer;
 }
 
+.newsletter-form button:hover {
+    background: #e01473;
+}
+
+/* DIVIDER */
 .footer hr {
     border: none;
     border-top: 1px solid #ddd;
     margin: 30px 0;
 }
 
+/* BOTTOM ROW */
 .footer-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+}
+
+.footer-bottom p {
+    color: #666;
 }
 
 .footer-links a {
@@ -275,15 +314,6 @@ body {
     text-decoration: none;
 }
 
-/* ========= MOBILE RESPONSIVENESS ========= */
-@media (max-width: 992px) {
-    .header { padding: 18px 30px; }
-    .nav-search { max-width: 40%; margin: 0 10px; }
-    .menu { gap: 15px; }
-}
-
-@media (max-width: 768px) {
-    .nav-container { flex-direction: column; gap: 15px; }
-    .nav-search { max-width: 100%; width: 100%; margin: 10px 0; }
-    .footer { padding: 40px 20px; }
+.footer-links a:hover {
+    color: #ff1680;
 }

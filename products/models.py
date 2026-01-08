@@ -1,5 +1,5 @@
 from django.db import models
-from brandsandcategories.models import Brand,Category
+from brandsandcategories.models import Brand, Category
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from PIL import Image
@@ -7,9 +7,11 @@ from PIL import Image
 # Create your models here.
 
 # ================== PRODUCT MODEL ==================
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=120, unique=True,blank=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(
         max_length=250,
         help_text="Brief description of the category",
@@ -22,11 +24,14 @@ class Product(models.Model):
         max_digits=8, decimal_places=2, null=True, blank=True
     )
 
-    stock = models.PositiveIntegerField(default=0, help_text="Current inventory count")
-    
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name= "products")
-    
+    stock = models.PositiveIntegerField(
+        default=0, help_text="Current inventory count")
+
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="products")
+    brand = models.ForeignKey(
+        Brand, on_delete=models.CASCADE, related_name="products")
+
     # Status flags
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
@@ -35,28 +40,29 @@ class Product(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["category","is_active"]),
-            models.Index(fields= ["is_featured"]),
-            models.Index(fields= ["is_most_demanded"]),
+            models.Index(fields=["category", "is_active"]),
+            models.Index(fields=["is_featured"]),
+            models.Index(fields=["is_most_demanded"]),
             models.Index(fields=["-created_at"]),
             models.Index(fields=["slug"])
-            ]
+        ]
 
     def __str__(self):
         return self.name
-    
+
     # Calculate Discount Percentage for Template
     @property
     def discount_percentage(self):
         if self.offer_price and self.base_price > self.offer_price:
-            discount = ((self.base_price - self.offer_price) / self.base_price) * 100
+            discount = ((self.base_price - self.offer_price) /
+                        self.base_price) * 100
             return int(discount)
         return 0
-    
+
     # Auto slug generation
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -71,12 +77,20 @@ class Product(models.Model):
 
     # Price validation
     def clean(self):
-        if self.base_price <= 0:
-            raise ValidationError("Base price must be greater than zero")
-    
-        if self.offer_price and self.offer_price >= self.base_price:
-            raise ValidationError("Offer price must be less than base price")
+        super().clean() 
+        errors = {}
+        if self.base_price is not None:
+            if self.base_price <= 0:
+                errors['base_price'] = "Base price must be greater than zero."
 
+            if self.offer_price and self.offer_price >= self.base_price:
+                errors['offer_price'] = "Offer price must be less than the base price."
+            
+        if self.stock is not None and self.stock < 0:
+            errors['stock'] = "Stock cannot be negative."
+
+        if errors:
+            raise ValidationError(errors)
 
 # ================== PRODUCT IMAGE MODEL ==================
 class ProductImage(models.Model):
@@ -92,15 +106,14 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"{self.product.name} Image"
-    
+
     # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs) 
+    #     super().save(*args, **kwargs)
 
     #     if self.image:
     #         img = Image.open(self.image.path)
 
-        
     #         if img.height > 800 or img.width > 800:
     #             output_size = (800, 800)
-    #             img.thumbnail(output_size) 
+    #             img.thumbnail(output_size)
     #             img.save(self.image.path)

@@ -1,0 +1,102 @@
+{% extends 'user_section/profile_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_address.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
+{% endblock %}
+
+{% block title %}
+  Her Choice | My Address
+{% endblock %}
+
+{% block profile_content %}
+  <div class="main-container">
+    <main class="content-area">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">My Account</h1>
+          <p class="page-subtitle">Manage your profile and orders</p>
+        </div>
+        <a href="{% url 'profile_add_address' %}">
+          <button class="add-address-btn">
+            <i class="fas fa-plus"></i>
+            Add New Address
+          </button>
+        </a>
+      </div>
+
+      <section>
+        <h2 class="section-title">My Address</h2>
+        <div class="addresses-grid">
+          {% for address in addresses %}
+            <div class="address-card">
+              <div class="address-header">
+                <div>
+                  <div class="address-type">{{ address.get_address_type_display }}</div>
+                  {% if address.is_default %}
+                    <span class="default-badge">Default</span>
+                  {% endif %}
+                </div>
+              </div>
+              <br />
+              <div class="address-name">{{ user.get_full_name }}</div>
+              <div class="address-details">
+                {{ address.address_line_1 }}<br />
+                {{ address.address_line_2 }}<br />
+                {{ address.country }}
+              </div>
+              <div class="address-phone">{{ user.phone }}</div>
+              <div class="address-actions">
+                <button class="action-btn edit">
+                  <i class="far fa-edit"></i>
+                  Edit
+                </button>
+                <button class="action-btn delete">
+                  <i class="far fa-trash-alt"></i>
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <!-- Work Address -->
+            {% comment %} <div class="address-card">
+              <div class="address-header">
+                <div>
+                  <div class="address-type">Work</div>
+                </div>
+              </div>
+              <div class="address-name">Jane Doe</div>
+              <div class="address-details">
+                456 Business Ave, Floor 8<br />
+                New York, NY 10002<br />
+                United States
+              </div>
+              <div class="address-phone">(123) 456-7890</div>
+              <div class="address-actions">
+                <button class="action-btn edit">
+                  <i class="far fa-edit"></i>
+                  Edit
+                </button>
+                <button class="action-btn delete">
+                  <i class="far fa-trash-alt"></i>
+                  Delete
+                </button>
+                <button class="action-btn set-default">Set as Default</button>
+              </div>
+            </div> {% endcomment %}
+          {% empty %}
+            <div class="empty-address-state">
+              <div class="empty-state-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <h3>No Address Found</h3>
+              <p>You haven't added any shipping addresses yet.</p>
+              {% comment %} <a href="{% url 'add_address' %}" class="add-address-btn-secondary">Add Your First Address</a> {% endcomment %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+  </div>
+{% endblock %}

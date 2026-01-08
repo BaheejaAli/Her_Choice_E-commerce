@@ -1,0 +1,115 @@
+{% extends 'user_section/profile_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/profilie_add_address.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
+{% endblock %}
+
+{% block title %}
+  Her Choice | My Address |Add
+{% endblock %}
+
+{% block profile_content %}
+  <main class="content-area">
+    <div id="addPage" class="page-content active">
+      <div class="breadcrumb">
+        <a href="{% url 'profile_address' %}">My Addresses</a>
+        <i class="fas fa-chevron-right"></i>
+        <span class="current">Add New Address</span>
+      </div>
+
+      <h1 class="page-title">Add New Address</h1>
+      <p class="page-subtitle">Please fill in the information below</p>
+
+      <form method="POST" class="form-section">
+        {% csrf_token %}
+
+        <div class="section-title" style="margin-top: 40px;">Address Details</div>
+
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Address Line 1 <span class="required">*</span></label>
+            {{ form.address_line_1 }}
+            {% if form.address_line_1.errors %}
+              <span class="error-text">{{ form.address_line_1.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Address Line 2</label>
+            {{ form.address_line_2 }}
+            {% if form.address_line_2.errors %}
+              <span class="error-text">{{ form.address_line_2.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>City <span class="required">*</span></label>
+            {{ form.city }}
+            {% if form.city.errors %}
+              <span class="error-text">{{ form.city.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label>State<span class="required">*</span></label>
+            {{ form.state }}
+            {% if form.state.errors %}
+              <span class="error-text">{{ form.state.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pincode/ZIP Code <span class="required">*</span></label>
+            {{ form.pincode }}
+            {% if form.pincode.errors %}
+              <span class="error-text">{{ form.pincode.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label>Country <span class="required">*</span></label>
+            {{ form.country }}
+            {% if form.country.errors %}
+              <span class="error-text">{{ form.country.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 40px;">Address Type</div>
+
+        <div class="form-group">
+          <label>Select address type <span class="required">*</span></label>
+          <div class="radio-group">
+            {% for radio in form.address_type %}
+              <div class="radio-option">
+                {{ radio.tag }}
+                <label for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 24px;">
+          <div class="checkbox-group">
+            <input type="checkbox" id="setDefault" name="setDefault" />
+            <label for="setDefault">Set as default address</label>
+          </div>
+          <p class="helper-text">This address will be used as your default shipping address</p>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Save Address</button>
+          <a href="{% url 'profile_info' %}" class="edit-button">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+{% endblock %}

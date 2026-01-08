@@ -7,20 +7,23 @@
 
 {% block page_title %}
   Dashboard /
-  <a href="{% url 'product_list' %}" class="breadcrumb-link">Product Management</a> /{% if object %}
-    Edit Product
-  {% else %}
-    Add Product
-  {% endif %}
+  <a href="{% url 'product_list' %}" class="breadcrumb-link">Product Management</a> /
+  {% if object %} Edit Product {% else %} Add Product {% endif %}
 {% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}?v=1.2" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+  <style>
+    /* Styling for the error messages to ensure visibility */
+    .error-text { color: #dc3545; font-size: 0.85rem; display: block; margin-top: 5px; font-weight: 500; }
+    .custom-alert.alert-danger { background: #fff5f5; color: #c0392b; border: 1px solid #f5c6cb; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+  </style>
 {% endblock %}
 
 {% block content %}
   <div class="product-form-wrapper">
+    
     {% if messages %}
       {% for message in messages %}
         <div class="custom-alert alert-{{ message.tags }}">{{ message }}</div>
@@ -30,13 +33,22 @@
     <form method="POST" enctype="multipart/form-data" novalidate class="elegant-form">
       {% csrf_token %}
 
+      {% if form.non_field_errors %}
+        <div class="custom-alert alert-danger">
+          {% for error in form.non_field_errors %}
+            <p class="mb-0"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <div class="form-main-card">
         <div class="form-section">
           <h5 class="section-title">General Information</h5>
           <div class="input-grid">
             <div class="input-field-group narrow-full-width">
               <label>Product Name</label>
-              {{ form.name }} {% if form.name.errors %}
+              {{ form.name }} 
+              {% if form.name.errors %}
                 <span class="error-text">{{ form.name.errors.0 }}</span>
               {% endif %}
             </div>
@@ -44,16 +56,25 @@
             <div class="input-field-group">
               <label>Category</label>
               {{ form.category }}
+              {% if form.category.errors %}
+                <span class="error-text">{{ form.category.errors.0 }}</span>
+              {% endif %}
             </div>
 
             <div class="input-field-group">
               <label>Brand</label>
               {{ form.brand }}
+              {% if form.brand.errors %}
+                <span class="error-text">{{ form.brand.errors.0 }}</span>
+              {% endif %}
             </div>
 
             <div class="input-field-group narrow-full-width">
               <label>Description</label>
               {{ form.description }}
+              {% if form.description.errors %}
+                <span class="error-text">{{ form.description.errors.0 }}</span>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -64,11 +85,19 @@
             <div class="input-field-group">
               <label>Regular Price (₹)</label>
               {{ form.base_price }}
+              {% if form.base_price.errors %}
+                <span class="error-text">{{ form.base_price.errors.0 }}</span>
+              {% endif %}
             </div>
+            
             <div class="input-field-group">
               <label>Offer Price (₹)</label>
               {{ form.offer_price }}
+              {% if form.offer_price.errors %}
+                <span class="error-text">{{ form.offer_price.errors.0 }}</span>
+              {% endif %}
             </div>
+
             <div class="input-field-group">
               <label>Inventory Stock (Units)</label>
               {{ form.stock }}
@@ -77,9 +106,13 @@
               {% endif %}
               <small class="text-muted">Setting this to 0 triggers "Sold Out" on site.</small>
             </div>
+
             <div class="input-field-group">
               <label>Visibility Status</label>
               {{ form.is_active }}
+              {% if form.is_active.errors %}
+                <span class="error-text">{{ form.is_active.errors.0 }}</span>
+              {% endif %}
             </div>
 
             <div class="checkbox-group-wrapper">
@@ -99,6 +132,12 @@
             <span class="badge-requirement">Minimum 3 high-quality images required</span>
           </div>
 
+          {% if image_formset.non_form_errors %}
+            <div class="custom-alert alert-danger">
+              <i class="fa-solid fa-images"></i> {{ image_formset.non_form_errors.0 }}
+            </div>
+          {% endif %}
+
           {{ image_formset.management_form }}
           <div class="image-upload-grid">
             {% for image_form in image_formset %}
@@ -116,16 +155,10 @@
                 </div>
 
                 <div class="upload-controls-stack">
-                  {% if image_form.instance.image %}
-                    <div class="current-file-link">{{ image_form.image }}</div>
-                  {% else %}
-                    <div class="new-file-input">{{ image_form.image }}</div>
+                  <div class="new-file-input">{{ image_form.image }}</div>
+                  {% if image_form.image.errors %}
+                    <span class="error-text">{{ image_form.image.errors.0 }}</span>
                   {% endif %}
-
-                  {% comment %} <div class="alt-text-group">
-                    <label>Alt Text (SEO)</label>
-                    {{ image_form.alt_text }}
-                  </div> {% endcomment %}
                 </div>
 
                 {% if image_formset.can_delete and image_form.instance.pk %}
@@ -142,15 +175,13 @@
         </div>
 
         <div class="form-actions">
-          <button type="reset" class="btn-cancel">Reset</button>
+          <a href="{% url 'product_list' %}" class="btn-cancel" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
           <button type="submit" class="btn-save">Confirm & Publish Product</button>
         </div>
       </div>
     </form>
   </div>
 
-
-  {% comment %} modal {% endcomment %}
   <div class="crop-modal" id="cropModal">
     <div class="crop-container">
         <div class="crop-header">
@@ -165,7 +196,7 @@
             <button type="button" class="btn btn-primary" id="cropSave">Apply Crop</button>
         </div>
     </div>
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
@@ -174,7 +205,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     let cropper = null;
     let currentFileInput = null;
-    let currentPreviewElement = null; // Track which img tag to update
+    let currentPreviewElement = null;
 
     const cropModal = document.getElementById('cropModal');
     const cropImage = document.getElementById('cropImage');
@@ -193,8 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = e.target.files[0];
             if (file) {
                 currentFileInput = e.target;
-                
-                // --- NEW: Find the preview image element in this specific card ---
                 const card = currentFileInput.closest('.image-upload-card');
                 currentPreviewElement = card ? card.querySelector('.preview-thumb') : null;
 
@@ -202,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = (event) => {
                     cropImage.src = event.target.result;
                     cropModal.style.display = 'flex';
-                    
                     if (cropper) cropper.destroy();
                     cropper = new Cropper(cropImage, {
                         aspectRatio: NaN,
@@ -217,26 +245,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     cropSaveBtn.addEventListener('click', function(e) {
         if (!cropper) return;
-
-        const canvas = cropper.getCroppedCanvas({
-            maxWidth: 1000,
-            maxHeight: 1000,
-        });
-
+        const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
         canvas.toBlob((blob) => {
             if (blob && currentFileInput) {
                 const fileName = currentFileInput.files[0].name;
                 const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
-                
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(croppedFile);
                 currentFileInput.files = dataTransfer.files;
 
-                // --- NEW: Update the visible preview on the form ---
                 if (currentPreviewElement) {
                     currentPreviewElement.src = URL.createObjectURL(blob);
                 } else {
-                    // If there was no preview image (new upload), replace the icon
                     const card = currentFileInput.closest('.image-upload-card');
                     const uploadIcon = card.querySelector('.upload-icon');
                     if (uploadIcon) {
