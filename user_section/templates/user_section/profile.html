@@ -13,6 +13,17 @@
       <h1 class="page-title">My Account</h1>
       <p class="page-subtitle">Manage your profile and orders</p>
 
+
+{% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <div class="alert {{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
       <section class="section">
         <h2 class="section-title">Profile Details</h2>
 

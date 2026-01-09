@@ -1,18 +1,30 @@
-     {% extends 'user_section/profile_base.html' %}
+{% extends 'user_section/profile_base.html' %}
 {% load static %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/user_section/profile_edit.css' %}?v=1.1" />
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
 {% endblock %}
 
 {% block profile_content %}
   <div class="main-container">
     <main class="content-area">
       <h1 class="page-title">Edit Personal Information</h1>
-      <br>
+      <br />
       <form method="POST">
         {% csrf_token %}
+
+        {% if messages %}
+          <div class="messages-container">
+            {% for message in messages %}
+              <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% if form.non_field_errors %}
+          <div class="form-error-box">{{ form.non_field_errors }}</div>
+        {% endif %}
+
         <section class="section">
           <div class="form-row">
             <div class="form-group">
@@ -28,6 +40,9 @@
             <div class="form-group">
               <label>Email</label>
               {{ form.email }}
+              {% if form.email.errors %}
+                <div class="field-error">{{ form.email.errors }}</div>
+              {% endif %}
             </div>
             <div class="form-group">
               <label>Phone Number</label>

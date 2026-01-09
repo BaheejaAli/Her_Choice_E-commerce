@@ -56,7 +56,7 @@
           </a>
         </li>
         <li>
-          <a href="#" class="{% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
+          <a href="{% url "profile_change_password" %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
             <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
             Change Password
           </a>

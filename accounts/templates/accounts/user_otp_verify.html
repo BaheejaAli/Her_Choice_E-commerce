@@ -1,75 +1,75 @@
-{% extends "accounts/user_base.html" %}
+{% extends 'accounts/user_base.html' %}
 {% load static %}
-{% block title %}Verify Account{% endblock %}
+{% block title %}
+  Verify Account
+{% endblock %}
 
 {% block content %}
-<div class="auth-container">
+  <div class="auth-container">
     <div class="content-container">
-        <h3 class="fw-bold mb-2">Verify Your Email</h3>
+      <h3 class="fw-bold mb-2">
+        {% if request.session.profile_email %}
+          Verify Your New Email
+        {% else %}
+          Verify Your Email
+        {% endif %}
+      </h3>
 
-        <p class="text-muted mb-4">
-            We've sent a 6-digit code to
-            {% if request.session.verification_email %}
-            <strong>{{ request.session.verification_email }}</strong>
-            {% elif request.session.reset_email %}
-            <strong>{{ request.session.reset_email }}</strong>
-            {% endif %}
-        </p>
+      <p class="text-muted mb-4">
+        We've sent a 6-digit code to{% if request.session.verification_email %}
+          <strong>{{ request.session.verification_email }}</strong>
+        {% elif request.session.reset_email %}
+          <strong>{{ request.session.reset_email }}</strong>
+        {% elif request.session.profile_email %}
+          <strong>{{ request.session.profile_email }}</strong>
+        {% endif %}
+      </p>
 
-        <form method="POST" id="otpForm">
-            {% csrf_token %}
+      <form method="POST" id="otpForm">
+        {% csrf_token %}
 
-            <label class="fw-medium">Enter Verification Code</label>
+        <label class="fw-medium">Enter Verification Code</label>
 
-            <div id="otp-timer" class="text-muted small mb-2 text-center">
-                Time remaining: <span id="time" class="fw-bold">--:--</span>
-            </div>
-
-            <div class="d-flex gap-2 my-3 justify-content-center">
-                <input type="text" maxlength="1" class="otp-input" />
-                <input type="text" maxlength="1" class="otp-input" />
-                <input type="text" maxlength="1" class="otp-input" />
-                <input type="text" maxlength="1" class="otp-input" />
-                <input type="text" maxlength="1" class="otp-input" />
-                <input type="text" maxlength="1" class="otp-input" />
-            </div>
-
-            <input type="hidden" name="otp" id="otpHidden">
-
-            <button type="submit" class="btn btn-custom w-100 mt-2">
-                Verify Account
-            </button>
-
-            {% if messages %}
-            {% for message in messages %}
-            <p class="text-{{ message.tags }} text-center mt-3">{{ message }}</p>
-            {% endfor %}
-            {% endif %}
-
-        </form>
-
-        <p class="text-center mt-3" style="font-size: 14px;" id="resend-section">
-            Did not receive the code?
-        <form method="POST" action="{% url 'user_resend_otp' %}" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-link" 
-                style="color: #d6336c; font-size: 14px; padding: 0; vertical-align: baseline; text-decoration: none;">
-                Click here to resend it.
-            </button>
-        </form>
-        </p>
-
-        <div class="text-center mt-3">
-            <a href="{% url 'user_login' %}" class="text-muted">Back to Login</a>
+        <div id="otp-timer" class="text-muted small mb-2 text-center">
+          Time remaining: <span id="time" class="fw-bold">--:--</span>
         </div>
 
-    </div>
-</div>
+        <div class="d-flex gap-2 my-3 justify-content-center">
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+        </div>
 
-<link rel="stylesheet" href="{% static 'css/accounts/user_otp_verify.css' %}">
-<script>
+        <input type="hidden" name="otp" id="otpHidden" />
+
+        <button type="submit" class="btn btn-custom w-100 mt-2">Verify Account</button>
+
+        {% if messages %}
+          {% for message in messages %}
+            <p class="text-{{ message.tags }} text-center mt-3">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      </form>
+
+      <div class="text-center mt-3" style="font-size: 14px;" id="resend-section">
+        Did not receive the code?<form method="POST" action="{% url 'user_resend_otp' %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link" style="color: #d6336c; font-size: 14px; padding: 0; vertical-align: baseline; text-decoration: none;">Click here to resend it.</button>
+        </form>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{% url 'user_login' %}" class="text-muted">Back to Login</a>
+      </div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="{% static 'css/accounts/user_otp_verify.css' %}" />
+  <script>
     window.otpExpiry = {{ otp_expiry|default_if_none:0 }};
 </script>
-<script src="{% static 'js/accounts/user_otp_verify.js' %}"></script>
-
+  <script src="{% static 'js/accounts/user_otp_verify.js' %}"></script>
 {% endblock %}

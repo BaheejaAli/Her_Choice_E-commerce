@@ -12,9 +12,11 @@ urlpatterns = [
     path("profile-info/edit/",views.edit_profile, name="edit_profile"),
     path("profile-info/upload-profile-pic/",views.upload_profile_pic, name="upload_profile_pic"),
     path("profile-address/", views.profile_address, name= "profile_address"),
-    path("profile-ddress/add/", views.profile_add_address, name= "profile_add_address"),
+    path("profile-address/add/", views.profile_add_address, name= "profile_add_address"),
     path("profile-address/edit/<int:address_id>/", views.profile_edit_address, name= "profile_edit_address"),
     path("profile-address/delete/<int:address_id>/", views.profile_delete_address, name= "profile_delete_address"),
-    path("profile-change-password/",views.profile_change_password, name="profile_change_password")
+    path("profile-change-password/",views.profile_change_password, name="profile_change_password"),
+    path("profile-change-password/profile_otp_verify",views.profile_otp_verify, name="profile_otp_verify"),
+
     
 ]

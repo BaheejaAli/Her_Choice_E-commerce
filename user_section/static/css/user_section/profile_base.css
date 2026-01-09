@@ -166,3 +166,75 @@
     background: #ff4d6d;
     color: #fff;
 }
+/* ===============================
+   DJANGO MESSAGES (GLOBAL)
+================================ */
+
+.messages-container {
+    margin-bottom: 25px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.alert.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert.error {
+    background: #fdecea;
+    color: #b91c1c;
+    border: 1px solid #f5c2c7;
+}
+
+.alert.info {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.alert.warning {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+/* ===== FORM ERROR STYLING ===== */
+
+/* Top error box (non-field errors) */
+.form-error-box {
+    background-color: #fdecea;
+    color: #b02a37;
+    border: 1px solid #f5c2c7;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* Remove default Django ul style */
+.form-error-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+/* Field-specific error text */
+.field-error {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Highlight input with error */
+input:has(+ .field-error),
+select:has(+ .field-error),
+textarea:has(+ .field-error) {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}

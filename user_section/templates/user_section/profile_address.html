@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_address.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_address.css' %}?v=1.2" />
   <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
 {% endblock %}
 
@@ -48,7 +48,7 @@
               </div>
               <div class="address-phone">{{ user.phone }}</div>
               <div class="address-actions">
-                <a href="{% url 'profile_edit_address' address.id %}">
+                <a href="{% url 'profile_edit_address' address.id %}" style="text-decoration: none;">
                   <button class="action-btn edit">
                     <i class="far fa-edit"></i>
                     Edit
