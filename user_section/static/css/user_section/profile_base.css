@@ -1,7 +1,6 @@
-/* Main Layout Container */
+/* LAYOUT */
 .main-container {
     display: flex;
-    align-items: stretch; 
     max-width: 1400px;
     margin: 40px auto;
     padding: 0 20px;
@@ -9,57 +8,90 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Sidebar Styling */
-
- .sidebar {
+/* SIDEBAR */
+.sidebar {
     width: 280px;
-    background: white;
+    background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
     padding: 30px 0;
-    display: flex;       
-    flex-direction: column;
-    /* ADD THESE TWO LINES */
-    min-height: 600px; 
-    height: auto;
+    min-height: 600px;
 }
 
-.profile-header {
+/* .profile-header {
     text-align: center;
     padding: 0 20px 25px;
     border-bottom: 1px solid #f0f0f0;
+    
+} */
+.profile-header {
+    text-align: center;
+    padding: 20px 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+
+
+
+/* AVATAR CONTAINER */
+/* Avatar wrapper */
+.avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 100px;   /* 🔥 THIS FIXES OVERLAP */
+}
+
+
+/* Main avatar circle */
 .avatar-circle {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
+    background-color: #eee;
+   
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 15px;
 }
 
-.avatar-icon {
-    font-size: 36px;
-    color: white;
+/* Avatar image */
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
-.profile-header h3 {
-    margin: 0 0 5px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
+/* Camera icon badge */
+.avatar-edit {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-.profile-header p {
-    margin: 0;
-    font-size: 13px;
-    color: #888;
+/* Camera icon */
+.avatar-edit i {
+    font-size: 14px;
+    color: #666;
 }
 
-/* Sidebar Menu Navigation */
+
+/* MENU */
 .sidebar-menu {
     list-style: none;
     padding: 0;
@@ -72,68 +104,65 @@
     padding: 15px 25px;
     color: #666;
     text-decoration: none;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-menu a:hover {
-    background: #fef5f9;
-    color: #ff1493;
 }
 
 .sidebar-menu a.active {
     background: #fef5f9;
     color: #ff1493;
-    border-left-color: #ff1493;
+    border-left: 3px solid #ff1493;
     font-weight: 500;
 }
 
 .menu-icon {
     width: 20px;
     margin-right: 12px;
-    display: inline-flex;
+}
+
+/* CONTENT */
+.content-area {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
+}
+
+
+/* Crop modal */
+.crop-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
     align-items: center;
     justify-content: center;
+    z-index: 999;
 }
 
-/* Main Content Area */
-
- .content-area {
-    flex: 1;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 40px;
-    /* MATCH THE MIN-HEIGHT HERE TOO */
-    min-height: 600px;
+.crop-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
 }
 
-.page-title {
-    margin: 0 0 5px;
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
+.crop-box img {
+    max-width: 100%;
 }
 
-.page-subtitle {
-    margin: 0 0 40px;
-    font-size: 14px;
-    color: #888;
+.crop-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
 }
 
-/* Responsive Rules for the Base Layout */
-@media (max-width: 968px) {
-    .main-container {
-        flex-direction: column;
-    }
+.crop-actions button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
 
-    .sidebar {
-        width: 100%;
-        position: static;
-    }
-
-    .content-area {
-        padding: 30px 20px;
-    }
+#cropSave {
+    background: #ff4d6d;
+    color: #fff;
 }

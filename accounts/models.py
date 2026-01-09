@@ -42,7 +42,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
-    profile_pic = models.URLField( max_length=200, blank=True,null=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     # Permission/Status Flags
     is_superuser = models.BooleanField(default=False)

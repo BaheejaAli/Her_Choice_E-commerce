@@ -2,12 +2,16 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profilie_add_address.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/user_section/profilie_add_edit_address.css' %}?v=1.1" />
   <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
 {% endblock %}
 
 {% block title %}
-  Her Choice | My Address |Add
+  Her Choice | My Address |{% if edit_mode %}
+    Edit
+  {% else %}
+    Add
+  {% endif %}
 {% endblock %}
 
 {% block profile_content %}
@@ -16,11 +20,25 @@
       <div class="breadcrumb">
         <a href="{% url 'profile_address' %}">My Addresses</a>
         <i class="fas fa-chevron-right"></i>
-        <span class="current">Add New Address</span>
+        <span class="current">
+          {% if edit_mode %}
+            Edit Address
+          {% else %}
+            Add New Address
+          {% endif %}
+        </span>
       </div>
 
-      <h1 class="page-title">Add New Address</h1>
-      <p class="page-subtitle">Please fill in the information below</p>
+      <h1 class="page-title">
+        {% if edit_mode %}
+          Edit Address
+        {% else %}
+          Add New Address
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">
+        {% if edit_mode %}Modify your shipping information below
+        {% else %}Please fill in the information below{% endif %}</p>
 
       <form method="POST" class="form-section">
         {% csrf_token %}
