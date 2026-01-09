@@ -27,7 +27,6 @@
           </div>
           <h3>{{ user.get_full_name }}</h3>
           <p>{{ user.email }}</p>
-
         </div>
       </div>
 
@@ -39,8 +38,8 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' %}active{% endif %}">
-            <span class="menu-icon"><i class="far fa-user"></i></span>
+          <a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' or request.resolver_match.url_name == 'profile_add_address' or request.resolver_match.url_name == 'profile_edit_address' or request.resolver_match.url_name == 'profile_delete_address' %}active{% endif %}">
+            <span class="menu-icon"><i class="fa-solid fa-address-card"></i></span>
             My Addresses
           </a>
         </li>
@@ -54,6 +53,12 @@
           <a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
             <span class="menu-icon"><i class="fas fa-wallet"></i></span>
             Wallet
+          </a>
+        </li>
+        <li>
+          <a href="#" class="{% if request.resolver_match.url_name == 'change_password' %}active{% endif %}">
+            <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
+            Change Password
           </a>
         </li>
         <li>
@@ -72,15 +77,15 @@
     </main>
   </div>
   <!-- Crop Modal -->
-<div class="crop-modal" id="cropModal">
+  <div class="crop-modal" id="cropModal">
     <div class="crop-box">
-        <img id="cropImage">
-        <div class="crop-actions">
-            <button id="cropCancel">Cancel</button>
-            <button id="cropSave">Save</button>
-        </div>
+      <img id="cropImage" />
+      <div class="crop-actions">
+        <button id="cropCancel">Cancel</button>
+        <button id="cropSave">Save</button>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}

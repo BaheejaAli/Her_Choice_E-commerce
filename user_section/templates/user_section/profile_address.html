@@ -48,23 +48,22 @@
               </div>
               <div class="address-phone">{{ user.phone }}</div>
               <div class="address-actions">
-                <a href="{% url "profile_edit_address" address.id %}"><button class="action-btn edit">
-                  <i class="far fa-edit"></i>
-                  Edit
-                </button></a>
-                <form action="#" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this address?');">
-    {% csrf_token %}
-    <button type="submit" class="action-btn delete">
-      <i class="far fa-trash-alt"></i> Delete
-    </button>
-  </form>
-                {% comment %} <button class="action-btn delete">
+                <a href="{% url 'profile_edit_address' address.id %}">
+                  <button class="action-btn edit">
+                    <i class="far fa-edit"></i>
+                    Edit
+                  </button>
+                </a>
+                <form action="{% url "profile_delete_address" address.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this address?');">
+                  {% csrf_token %}
+                <button class="action-btn delete">
                   <i class="far fa-trash-alt"></i>
                   Delete
-                </button> {% endcomment %}
+                </button> 
+                </form>
+               
               </div>
             </div>
-
           {% empty %}
             <div class="empty-address-state">
               <div class="empty-state-icon">

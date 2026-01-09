@@ -43,53 +43,15 @@ def profile_info(request):
     }
     return render(request, "user_section/profile.html", context)
 
-
-# @login_required
-# def upload_profile_pic(request):
-#     print("REQUEST METHOD:", request.method)
-#     print("FILES:", request.FILES)
-#     if request.method == 'POST' and request.FILES.get('profile_pic'):
-#         user = request.user
-#         user.profile_pic = request.FILES['profile_pic']
-#         user.save()
-#         print("IMAGE SAVED")
-#         return JsonResponse({'status':'success',
-#                              "image_url": user.profile_pic.url})
-#     return JsonResponse({'status':'error'}, status=400)
 @login_required
 def upload_profile_pic(request):
-    print("METHOD:", request.method)
-    print("FILES:", request.FILES)
-
     if request.method == "POST":
         if "profile_image" in request.FILES:
-            print("IMAGE RECEIVED ✅")
             user = request.user
             user.profile_pic = request.FILES["profile_image"]
             user.save()
-            print("IMAGE SAVED ✅")
-            return JsonResponse({"status": "success"})
-        else:
-            print("NO IMAGE ❌")
-
+            return JsonResponse({"status": "success","image_url": user.profile_pic.url})
     return JsonResponse({"status": "error"})
-
-#     print("REQUEST METHOD:", request.method)
-#     print("FILES:", request.FILES)
-
-#     if request.method == 'POST' and request.FILES.get('profile_image'):
-#         user = request.user
-#         user.profile_pic = request.FILES['profile_image']
-#         user.save()
-
-#         return JsonResponse({
-#             'status': 'success',
-#             'image_url': user.profile_pic.url
-#         })
-
-#     return JsonResponse({'status': 'error'}, status=400)
-
-
 
 @login_required
 def edit_profile(request):
@@ -152,6 +114,9 @@ def profile_delete_address(request,address_id):
     if request.method == "POST":
         address.delete()
     return redirect('profile_address')
+
+def profile_change_password(request):
+    return render(request, "profile_change_password.html")
 
    
     
