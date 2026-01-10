@@ -16,7 +16,8 @@ urlpatterns = [
     path("profile-address/edit/<int:address_id>/", views.profile_edit_address, name= "profile_edit_address"),
     path("profile-address/delete/<int:address_id>/", views.profile_delete_address, name= "profile_delete_address"),
     path("profile-change-password/",views.profile_change_password, name="profile_change_password"),
-    path("profile-change-password/profile_otp_verify",views.profile_otp_verify, name="profile_otp_verify"),
+    path("profile-change-password/profile-otp-verify",views.profile_otp_verify, name="profile_otp_verify"),
+    path("profile-change-password/profile-resend-otp",views.profile_resend_otp, name="profile_resend_otp"),
 
     
 ]

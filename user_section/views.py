@@ -141,19 +141,21 @@ def profile_otp_verify(request):
     email = request.session.get('profile_email')
     otp_expiry = request.session.get('profile_otp_expiry')
 
-    if not otp or not email or not otp_expiry:
-        messages.error(request, 'OTP session expired')
+    if not email:
+        messages.error(request, 'Verification session expired.')
         return redirect('profile_info')
-    
-    if timezone.now().timestamp() > float(otp_expiry):
+
+    if not otp_expiry or timezone.now().timestamp() > float(otp_expiry):
+        messages.error(request, 'OTP expired. Please resend.')
+
         # clean session
         request.session.pop('profile_otp', None)
-        request.session.pop('profile_email', None)
+        # request.session.pop('profile_email', None)
         request.session.pop('profile_otp_expiry', None)
 
 
-        messages.error(request, 'OTP expired')
-        return redirect('profile_info')
+     
+        return redirect('profile_otp_verify')
     
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
@@ -172,9 +174,33 @@ def profile_otp_verify(request):
             return redirect('profile_info')
         else:
             messages.error(request, 'Invalid OTP')
-    return render(request, 'accounts/user_otp_verify.html', {
-    'otp_expiry': request.session.get('profile_otp_expiry')
-})
+    return render(request, 'user_section/profile_otp_verify.html',{'otp_expiry': otp_expiry})
+
+@login_required
+def profile_resend_otp(request):
+    email = request.session.get('profile_email')
+
+    if not email:
+        messages.error(request,'Verification session expired.')
+        return redirect('profile_info')
+    
+    otp = str(random.randint(100000, 999999))
+    
+    request.session['profile_otp'] = otp
+    request.session['profile_otp_expiry'] = (
+        timezone.now() + timedelta(minutes=2)
+    ).timestamp()
+
+    send_mail(
+        subject='Verify your email',
+        message=f'Your OTP is {otp}',
+        from_email=None,
+        recipient_list=[email],
+        fail_silently=False,
+    )
+
+    messages.success(request, 'A new OTP has been sent.')
+    return redirect('profile_otp_verify')
 
 
 @login_required
