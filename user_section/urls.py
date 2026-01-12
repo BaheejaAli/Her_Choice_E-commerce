@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from products.views import ProductListingView, product_detail_view
 
@@ -6,7 +6,8 @@ urlpatterns = [
     path("", views.HomePageView.as_view(), name="user_homepage"),
     path("about/", views.AboutPageView.as_view(), name="about"),
     path('shop/', ProductListingView.as_view(), name='product_listing'),
-    path('product/<slug:slug>/', product_detail_view, name='product_detail'),
+    path("product/", include('products.urls')),
+    # path('product/<slug:slug>/', product_detail_view, name='product_detail'),
     
     path("profile-info/",views.profile_info, name="profile_info"),
     path("profile-info/edit/",views.edit_profile, name="edit_profile"),
@@ -18,6 +19,8 @@ urlpatterns = [
     path("profile-change-password/",views.profile_change_password, name="profile_change_password"),
     path("profile-change-password/profile-otp-verify",views.profile_otp_verify, name="profile_otp_verify"),
     path("profile-change-password/profile-resend-otp",views.profile_resend_otp, name="profile_resend_otp"),
+
+    path("cart/", include("cart.urls")),
 
     
 ]

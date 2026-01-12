@@ -1,7 +1,7 @@
 {% extends 'accounts/user_base.html' %}
 {% load static %}
 {% block title %}
-  Verify Account
+  Verify Email
 {% endblock %}
 
 {% block content %}
@@ -47,8 +47,7 @@
       </form>
 
       <div class="text-center mt-3" style="font-size: 14px;" id="resend-section">
-        Did not receive the code?
-        <form method="POST" action="{% url 'profile_resend_otp' %}" style="display: inline;">
+        Did not receive the code?<form method="POST" action="{% url 'profile_resend_otp' %}" style="display: inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-link" style="color: #d6336c; font-size: 14px; padding: 0; vertical-align: baseline; text-decoration: none;">Click here to resend it.</button>
         </form>
@@ -58,7 +57,8 @@
 
   <link rel="stylesheet" href="{% static 'css/accounts/user_otp_verify.css' %}" />
   <script>
-    window.otpExpiry = {{ otp_expiry|default_if_none:0 }};
+    window.otpExpiry = {{ otp_expiry|default_if_none:"0" }};
 </script>
+
   <script src="{% static 'js/accounts/user_otp_verify.js' %}"></script>
 {% endblock %}

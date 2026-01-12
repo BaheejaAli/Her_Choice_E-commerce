@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "brandsandcategories",
     "products",
     "user_section",
+    "cart",
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"

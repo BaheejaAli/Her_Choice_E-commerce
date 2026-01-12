@@ -65,6 +65,7 @@ class Product(models.Model):
 
     # Auto slug generation
     def save(self, *args, **kwargs):
+
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
@@ -73,6 +74,10 @@ class Product(models.Model):
                 slug = f"{base_slug}-{count}"
                 count += 1
             self.slug = slug
+
+        if not self.category.is_active or not self.brand.is_active:
+            self.is_active=False
+
         super().save(*args, **kwargs)
 
     # Price validation
@@ -91,6 +96,10 @@ class Product(models.Model):
 
         if errors:
             raise ValidationError(errors)
+        
+    @property
+    def effective_price(self):
+        return self.offer_price if self.offer_price else self.base_price
 
 # ================== PRODUCT IMAGE MODEL ==================
 class ProductImage(models.Model):

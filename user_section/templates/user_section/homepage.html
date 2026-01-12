@@ -91,7 +91,8 @@
         <h2 class="section-title">Shop by Category</h2>
         <div class="category-grid">
           {% for category in categories %}
-            <div class="category-box">
+           <a href="{% url 'product_listing' %}?category={{ category.id }}"
+       class="category-box">
               {% if category.image %}
                 <img src="{{ category.image.url }}" alt="{{ category.name }}" />
                 <span>{{ category.name }}</span>
@@ -100,7 +101,7 @@
                   <span class="placeholder-title">{{ category.name }}</span>
                 </div>
               {% endif %}
-            </div>
+              </a>
           {% endfor %}
         </div>
       </section>

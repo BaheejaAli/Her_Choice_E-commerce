@@ -180,6 +180,11 @@ def toggle_brand_status(request, brand_id):
     brand.is_active = not brand.is_active
     brand.save(update_fields=['is_active'])
 
+    if brand.is_active:
+        Product.objects.filter(brand=brand,category__is_active=True).update(is_active=True)
+    else:
+        Product.objects.filter(brand=brand).update(is_active=False)
+
     return JsonResponse({
         'success': True,
         'is_active': brand.is_active,
@@ -320,6 +325,11 @@ def toggle_category_status(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.is_active = not category.is_active
     category.save(update_fields=['is_active'])
+
+    if category.is_active:
+        Product.objects.filter(category=category,brand__is_active=True).update(is_active=True)
+    else:
+        Product.objects.filter(category=category).update(is_active=False)
 
     return JsonResponse({
         'success': True,

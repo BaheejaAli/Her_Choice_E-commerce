@@ -1,3 +1,27 @@
+.toast-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.toast-message.show {
+  opacity: 1;
+}
+
+.toast-message.success {
+  background-color: #28a745;
+}
+
+.toast-message.error {
+  background-color: #dc3545;
+}
+
 /* ========= GENERAL ========= */
 body {
     margin: 0;

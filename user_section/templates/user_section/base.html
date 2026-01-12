@@ -17,6 +17,8 @@
       {% endblock %}
     </head>
 
+
+
     <body>
       <!-- ====================== NAVBAR ====================== -->
       <header class="header">
@@ -79,7 +81,7 @@
               <i class="fa-regular fa-heart"></i>
             </a>
             
-            <a href="#" class="icon-btn" title="Cart"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="{% url "cart" %}" class="icon-btn" title="Cart"><i class="fa-solid fa-cart-shopping"></i></a>
           </div>
         </nav>
       </header>
@@ -165,7 +167,10 @@
         </div>
       </footer>
 
+
       {% block extra_js %}
       {% endblock %}
     </body>
   </html>
+
+  
