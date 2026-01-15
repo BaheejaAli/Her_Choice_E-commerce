@@ -1,24 +1,12 @@
-{% extends 'admin_base.html' %}
+
+{% extends "admin_panel/admin_base.html" %}
 {% load static %}
 
-{% block title %}
-  Product Management | Her Choice
-{% endblock %}
-
-{% block page_title %}
-  Dashboard /
-  <a href="{% url 'product_list' %}" class="breadcrumb-link">Product Management</a> /
-  {% if object %} Edit Product {% else %} Add Product {% endif %}
-{% endblock %}
-
+{% block title %}Product Management | Her Choice{% endblock %}
+{% block page_title %}Product Management{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}?v=1.2" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
-  <style>
-    /* Styling for the error messages to ensure visibility */
-    .error-text { color: #dc3545; font-size: 0.85rem; display: block; margin-top: 5px; font-weight: 500; }
-    .custom-alert.alert-danger { background: #fff5f5; color: #c0392b; border: 1px solid #f5c6cb; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}?v=1.3" />
+  {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"> {% endcomment %}
 {% endblock %}
 
 {% block content %}
@@ -76,39 +64,71 @@
                 <span class="error-text">{{ form.description.errors.0 }}</span>
               {% endif %}
             </div>
+
+            <div class="input-field-group narrow-full-width">
+            <label>Material</label>
+            {{ form.material }}
+            {% if form.material.errors %}
+              <span class="error-text">{{ form.material.errors.0 }}</span>
+            {% endif %}
+          </div>
+
           </div>
         </div>
 
+        <!-- ================= PRODUCT IMAGE ================= -->
+        {% comment %} <div class="form-section mt-4">
+          <h5 class="section-title">Product Image</h5>
+
+          <div class="single-image-upload">
+            {% if form.instance.image %}
+              <img src="{{ form.instance.image.url }}" class="preview-thumb mb-2">
+            {% endif %}
+
+            {{ form.image }}
+
+            {% if form.image.errors %}
+              <span class="error-text">{{ form.image.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div> {% endcomment %}
         <div class="form-section mt-4">
-          <h5 class="section-title">Pricing & Visibility</h5>
+  <h5 class="section-title">Product Image</h5>
+
+  <div class="product-image-card">
+    <label class="product-image-label">
+<div>
+      {% if form.instance.image %}
+        <img
+          src="{{ form.instance.image.url }}"
+          class="product-image-preview"
+          id="productImagePreview"
+        >
+      {% else %}
+        <div class="product-image-placeholder" id="productImagePreview">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <p>Click to upload product image</p>
+          <small>Recommended: 800×1000px</small>
+        </div>
+      {% endif %}</div>
+<br>
+      {{ form.image }}
+    </label>
+
+    {% if form.image.errors %}
+      <span class="error-text">{{ form.image.errors.0 }}</span>
+    {% endif %}
+  </div>
+</div>
+
+
+        <!-- ================= VISIBILITY & FLAGS ================= -->
+        <div class="form-section mt-4">
+          <h5 class="section-title">Visibility & Promotion</h5>
           <div class="input-grid">
-            <div class="input-field-group">
-              <label>Regular Price (₹)</label>
-              {{ form.base_price }}
-              {% if form.base_price.errors %}
-                <span class="error-text">{{ form.base_price.errors.0 }}</span>
-              {% endif %}
-            </div>
-            
-            <div class="input-field-group">
-              <label>Offer Price (₹)</label>
-              {{ form.offer_price }}
-              {% if form.offer_price.errors %}
-                <span class="error-text">{{ form.offer_price.errors.0 }}</span>
-              {% endif %}
-            </div>
 
             <div class="input-field-group">
-              <label>Inventory Stock (Units)</label>
-              {{ form.stock }}
-              {% if form.stock.errors %}
-                <span class="error-text">{{ form.stock.errors.0 }}</span>
-              {% endif %}
-              <small class="text-muted">Setting this to 0 triggers "Sold Out" on site.</small>
-            </div>
-
-            <div class="input-field-group">
-              <label>Visibility Status</label>
+              <label>Status</label>
               {{ form.is_active }}
               {% if form.is_active.errors %}
                 <span class="error-text">{{ form.is_active.errors.0 }}</span>
@@ -126,7 +146,9 @@
           </div>
         </div>
 
-        <div class="form-section mt-4">
+
+       {% comment %}   <div class="form-section mt-4">
+         
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="section-title m-0">Product Gallery</h5>
             <span class="badge-requirement">Minimum 3 high-quality images required</span>
@@ -172,16 +194,17 @@
               </div>
             {% endfor %}
           </div>
-        </div>
-
+        </div> {% endcomment %}
+        <br>
+        
         <div class="form-actions">
           <a href="{% url 'product_list' %}" class="btn-cancel" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
-          <button type="submit" class="btn-save">Confirm & Publish Product</button>
+          <button type="submit" class="btn-save">Add Product</button>
         </div>
       </div>
     </form>
   </div>
-
+{% comment %} 
   <div class="crop-modal" id="cropModal">
     <div class="crop-container">
         <div class="crop-header">
@@ -196,7 +219,7 @@
             <button type="button" class="btn btn-primary" id="cropSave">Apply Crop</button>
         </div>
     </div>
-  </div>
+  </div> {% endcomment %}
 {% endblock %}
 
 {% block extra_js %}

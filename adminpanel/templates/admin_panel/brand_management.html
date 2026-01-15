@@ -1,10 +1,10 @@
-{% extends "admin_base.html" %}
+{% extends "admin_panel/admin_base.html" %}
 {% load static %} 
 
 {% block title %}Brand Management | Her Choice{% endblock %} 
 {% block page_title %}Brand Management{%endblock %} 
 
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_panel/brand_management.css' %}?v=1.8"/>
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_panel/brand_management.css' %}"/>
 {% endblock %} 
 
 {% block content %}
@@ -89,9 +89,12 @@
         <tr>
           <td>{{ brand.id }}</td>
           <td>
-            <h6>{{ brand.name }}</h6>
-            <div class="sub-text">{{ brand.description }}</div>
+            <div class="brand-cell">
+              <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
+              <span class="brand-name">{{ brand.name }}</span>
+            </div>
           </td>
+
 
           <td>{{ brand.product_count }}
             <p>Items</p>

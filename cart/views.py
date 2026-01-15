@@ -5,6 +5,7 @@ from products.models import Product
 from .models import Cart, CartItem
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from user_section.models import UserAddress
 
 # Create your views here.
 @require_POST
@@ -162,6 +163,24 @@ def remove_cart_item(request):
         "status": "success",
         "message": "Item removed from cart",
         "data": {
-            "item_id": item_id
+            "item_id": item_id,
+            "cart_total":cart_item.cart.get_total_price
         }
     })
+
+@login_required
+def checkout(request):
+    cart = get_object_or_404(Cart, user= request.user,is_active=True)
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    addresses = UserAddress.objects.filter(user=request.user)
+
+    if not cart_items.exists():
+        return redirect("cart")
+    
+    context = {
+        'cart_items' : cart_items,
+        'total' : cart.get_total_price,
+        'addresses' : addresses
+    }
+    return render(request, "cart/checkout.html",context)

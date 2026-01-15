@@ -1,0 +1,606 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if is_edit %}Edit Product Variant{% else %}Add Product Variant{% endif %} | Her Choice
+{% endblock %}
+
+{% block page_title %}
+  {% if is_edit %}Edit Product Variant{% else %}Add Product Variant{% endif %}
+{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_panel/product_variant_form.css' %}?v=1.1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="variant-form-wrapper">
+
+  <!-- Header -->
+  <div class="form-header">
+    <h2>
+      {% if is_edit %}
+        Edit Variant
+      {% else %}
+        Add New Variant
+      {% endif %}
+    </h2>
+
+    <div class="product-info">
+      {% if product.images.first %}
+        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        <div class="no-thumb"></div>
+      {% endif %}
+      <div class="product-info-text">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.brand.name }} • {{ product.category.name }}</p>
+      </div>
+    </div>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" id="variantForm">
+    {% csrf_token %}
+
+    <!-- Error Messages -->
+    {% if form.errors %}
+    <div class="alert alert-danger">
+      <strong>Please correct the following errors:</strong>
+      <ul style="margin: 10px 0 0 20px;">
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <li>{{ field }}: {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="variant-form-card">
+      
+      <!-- Basic Information -->
+      <div class="form-section-title">Basic Information</div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="id_size">Size<span class="required">*</span></label>
+          {{ form.size }}
+          {% if form.size.errors %}
+            <span class="error-message">{{ form.size.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_color">Color<span class="required">*</span></label>
+          {{ form.color }}
+          {% if form.color.errors %}
+            <span class="error-message">{{ form.color.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="id_stock">Stock Quantity<span class="required">*</span></label>
+          {{ form.stock }}
+          <span class="help-text">Available quantity in inventory</span>
+          {% if form.stock.errors %}
+            <span class="error-message">{{ form.stock.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="form-section-title" style="margin-top: 30px;">Pricing</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="id_base_price">Base Price<span class="required">*</span></label>
+          {{ form.base_price }}
+          <span class="help-text">Original price in ₹</span>
+          {% if form.base_price.errors %}
+            <span class="error-message">{{ form.base_price.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_offer_price">Offer Price</label>
+          {{ form.offer_price }}
+          <span class="help-text">Discounted price (optional)</span>
+          {% if form.offer_price.errors %}
+            <span class="error-message">{{ form.offer_price.errors.0 }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Price Preview -->
+      <div class="price-preview">
+        <div class="price-preview-item">
+          <span>Base Price:</span>
+          <span id="pricePreview">₹0.00</span>
+        </div>
+        <div class="price-preview-item">
+          <span>Offer Price:</span>
+          <span id="offerPricePreview">-</span>
+        </div>
+        <div class="price-preview-item">
+          <span>Discount:</span>
+          <span id="discountPreview">0%</span>
+        </div>
+        <div class="price-preview-item">
+          <span>Final Price:</span>
+          <span id="effectivePricePreview">₹0.00</span>
+        </div>
+      </div>
+
+      <!-- Additional Details Section -->
+      <div class="form-section-title mt-4">Variant Images</div>
+
+      <p class="text-muted" style="font-size:13px;">
+        Upload at least <strong>3 images</strong>. First 3 are mandatory.
+      </p>
+
+      {% if is_edit %}
+        <p class="text-muted" style="font-size:13px;">
+          Current images: <strong>{{ variant.images.count }}</strong>
+        </p>
+      {% endif %}
+
+
+          {% comment %} {% if image_formset.non_form_errors %}
+            <div class="custom-alert alert-danger">
+              <i class="fa-solid fa-images"></i> {{ image_formset.non_form_errors.0 }}
+            </div>
+          {% endif %} {% endcomment %}
+
+          {{ image_formset.management_form }}
+          <div class="image-upload-grid" id="imageUploadGrid">
+            {% for image_form in image_formset %}
+              <div class="image-upload-card {% if image_form.image.errors and not image_form.instance.image %}has-error{% endif %}">
+                {% for hidden in image_form.hidden_fields %}
+                  {{ hidden }}
+                {% endfor %}
+
+                <div class="upload-icon">
+                  {% if image_form.instance.image %}
+                    <img src="{{ image_form.instance.image.url }}" class="preview-thumb" />
+                  {% else %}
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                  {% endif %}
+                </div>
+
+                <div class="upload-controls-stack">
+                  <div class="new-file-input">
+                      {{ image_form.image }}
+                      <span class="file-name">Choose file</span>
+                  </div>
+
+                  {% if image_form.image.errors and not image_form.instance.image %}
+                    <span class="image-error">
+                      <i class="fa-solid fa-circle-exclamation"></i>
+                      {{ image_form.image.errors.0 }}
+                    </span>
+
+                  {% endif %}
+                </div>
+
+                {% if image_formset.can_delete and image_form.instance.pk %}
+                  <div class="delete-checkbox-zone">
+                    <label class="custom-delete">
+                      {{ image_form.DELETE }} 
+                      <span class="delete-text"><i class="fa-solid fa-trash"></i> Remove</span>
+                    </label>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="form-actions">
+      <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a> 
+    
+
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i>
+        {% if is_edit %}Update Variant{% else %}Save Variant{% endif %}
+      </button>
+
+    </div>
+    </div> 
+        
+    </div> 
+
+  </form>
+
+</div>
+
+  <div class="crop-modal" id="cropModal">
+    <div class="crop-container">
+        <div class="crop-header">
+            <h4>Crop & Resize Image</h4>
+            <button type="button" class="close-btn" id="cropClose">&times;</button>
+        </div>
+        <div class="crop-image-container">
+            <img id="cropImage" style="max-width: 100%;">
+        </div>
+        <div class="crop-actions">
+            <button type="button" class="btn btn-secondary" id="cropCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="cropSave">Apply Crop</button>
+        </div>
+    </div>
+  </div> 
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<script>  
+  // Price Preview Calculation
+  function updatePricePreview() {
+    const priceInput = document.getElementById('id_base_price');
+    const offerPriceInput = document.getElementById('id_offer_price');
+    
+    const price = parseFloat(priceInput.value) || 0;
+    const offerPrice = parseFloat(offerPriceInput.value) || 0;
+    
+    document.getElementById('pricePreview').textContent = '₹' + price.toFixed(2);
+    
+    if (offerPrice > 0 && offerPrice < price) {
+      const discount = ((price - offerPrice) / price * 100).toFixed(0);
+      document.getElementById('offerPricePreview').textContent = '₹' + offerPrice.toFixed(2);
+      document.getElementById('discountPreview').textContent = discount + '%';
+      document.getElementById('effectivePricePreview').textContent = '₹' + offerPrice.toFixed(2);
+    } else {
+      document.getElementById('offerPricePreview').textContent = '-';
+      document.getElementById('discountPreview').textContent = '0%';
+      document.getElementById('effectivePricePreview').textContent = '₹' + price.toFixed(2);
+    }
+  }
+
+  // Add event listeners for price inputs
+  document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.getElementById('id_base_price');
+    const offerPriceInput = document.getElementById('id_offer_price');
+    
+    if (priceInput) {
+      priceInput.addEventListener('input', updatePricePreview);
+      updatePricePreview();
+    }
+    
+    if (offerPriceInput) {
+      offerPriceInput.addEventListener('input', updatePricePreview);
+    }
+  });
+
+// Add event listeners for cropper
+{% comment %} document.addEventListener('DOMContentLoaded', function () {
+
+    let cropper = null;
+    let currentFileInput = null;
+    let currentPreviewImg = null;
+
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const cropSaveBtn = document.getElementById('cropSave');
+    const cropCancelBtn = document.getElementById('cropCancel');
+    const cropCloseBtn = document.getElementById('cropClose');
+    const variantForm = document.getElementById('variantForm');
+
+    /* ===============================
+       HELPERS
+       =============================== */
+    function destroyCropper() {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+
+    function closeCropModal(resetInput = true) {
+        cropModal.style.display = 'none';
+        destroyCropper();
+
+        if (resetInput && currentFileInput) {
+            currentFileInput.value = '';
+        }
+
+        currentFileInput = null;
+        currentPreviewImg = null;
+    }
+
+    /* ===============================
+       FILE SELECT → OPEN CROP MODAL
+       =============================== */
+    document.addEventListener('change', function (e) {
+        if (
+            e.target.tagName === 'INPUT' &&
+            e.target.type === 'file' &&
+            e.target.name.includes('image')
+        ) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            currentFileInput = e.target;
+
+            const card = currentFileInput.closest('.image-upload-card');
+            currentPreviewImg = card.querySelector('.preview-thumb');
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+
+                destroyCropper();
+
+                cropImage.src = '';
+                cropImage.removeAttribute('style');
+                cropImage.src = event.target.result;
+
+                cropModal.style.display = 'flex';
+
+                cropImage.onload = function () {
+                    cropper = new Cropper(cropImage, {
+                        viewMode: 1,
+                        autoCropArea: 0.9,
+                        responsive: true,
+                        background: false,
+                        checkOrientation: false,
+                        movable: true,
+                        zoomable: true,
+                        scalable: true,
+                        rotatable: false,
+
+                        ready() {
+                            const imageData = cropper.getImageData();
+                            const cropBoxData = cropper.getCropBoxData();
+
+                            const zoomRatio = Math.max(
+                                cropBoxData.width / imageData.naturalWidth,
+                                cropBoxData.height / imageData.naturalHeight
+                            );
+
+                            cropper.zoomTo(zoomRatio);
+                            cropper.center();
+                        }
+                    });
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+
+    /* ===============================
+       APPLY CROP
+       =============================== */
+    cropSaveBtn.addEventListener('click', function () {
+        if (!cropper || !currentFileInput) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            maxWidth: 1200,
+            maxHeight: 1200,
+            imageSmoothingQuality: 'high'
+        });
+
+        canvas.toBlob(function (blob) {
+            if (!blob) return;
+
+            const originalName = currentFileInput.files[0].name;
+            const croppedFile = new File([blob], originalName, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+            });
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            currentFileInput.files = dataTransfer.files;
+
+            const previewURL = URL.createObjectURL(blob);
+
+            if (currentPreviewImg) {
+                currentPreviewImg.src = previewURL;
+            } else {
+                const card = currentFileInput.closest('.image-upload-card');
+                card.querySelector('.upload-icon').innerHTML =
+                    `<img src="${previewURL}" class="preview-thumb">`;
+            }
+
+            closeCropModal(false);
+        }, 'image/jpeg', 0.9);
+    });
+
+    /* ===============================
+       CANCEL / CLOSE
+       =============================== */
+    cropCancelBtn.addEventListener('click', () => closeCropModal(true));
+    cropCloseBtn.addEventListener('click', () => closeCropModal(true));
+
+    /* ===============================
+       PREVENT FORM SUBMIT WHILE CROPPING
+       =============================== */
+    variantForm.addEventListener('submit', function (e) {
+        if (cropModal.style.display === 'flex') {
+            e.preventDefault();
+            alert('Please apply crop before saving.');
+        }
+    });
+
+});
+
+
+
+document.addEventListener('change', function (e) {
+    if (e.target.type === 'file') {
+        const fileInput = e.target;
+        const fileNameSpan = fileInput
+            .closest('.new-file-input')
+            .querySelector('.file-name');
+
+        if (fileInput.files.length > 0) {
+            fileNameSpan.textContent = fileInput.files[0].name;
+        } else {
+            fileNameSpan.textContent = 'Choose file';
+        }
+    }
+}); {% endcomment %}
+document.addEventListener('DOMContentLoaded', function () {
+
+    let cropper = null;
+    let currentFileInput = null;
+    let currentPreviewImg = null;
+
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    const cropSaveBtn = document.getElementById('cropSave');
+    const cropCancelBtn = document.getElementById('cropCancel');
+    const cropCloseBtn = document.getElementById('cropClose');
+    const variantForm = document.getElementById('variantForm');
+
+    /* ===============================
+       HELPERS
+       =============================== */
+    function destroyCropper() {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+
+    function closeCropModal(resetInput = true) {
+        cropModal.style.display = 'none';
+        destroyCropper();
+
+        if (resetInput && currentFileInput) {
+            currentFileInput.value = '';
+            const nameSpan = currentFileInput
+                .closest('.new-file-input')
+                .querySelector('.file-name');
+            nameSpan.textContent = 'Choose file';
+        }
+
+        currentFileInput = null;
+        currentPreviewImg = null;
+    }
+
+    /* ===============================
+       FILE SELECT → UPDATE NAME → OPEN CROP
+       =============================== */
+    document.addEventListener('change', function (e) {
+
+        if (
+            e.target.tagName !== 'INPUT' ||
+            e.target.type !== 'file' ||
+            !e.target.name.includes('image')
+        ) return;
+
+        const fileInput = e.target;
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        // 🔹 Update filename
+        const nameSpan = fileInput
+            .closest('.new-file-input')
+            .querySelector('.file-name');
+        nameSpan.textContent = file.name;
+
+        currentFileInput = fileInput;
+
+        const card = fileInput.closest('.image-upload-card');
+        currentPreviewImg = card.querySelector('.preview-thumb');
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+
+            destroyCropper();
+
+            cropImage.src = event.target.result;
+            cropModal.style.display = 'flex';
+
+            cropImage.onload = function () {
+                cropper = new Cropper(cropImage, {
+                    viewMode: 1,
+                    autoCropArea: 0.9,
+                    responsive: true,
+                    background: false,
+                    checkOrientation: false,
+                    movable: true,
+                    zoomable: true,
+                });
+            };
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+    /* ===============================
+       APPLY CROP
+       =============================== */
+    cropSaveBtn.addEventListener('click', function () {
+        if (!cropper || !currentFileInput) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            maxWidth: 1200,
+            maxHeight: 1200,
+            imageSmoothingQuality: 'high'
+        });
+
+        canvas.toBlob(function (blob) {
+            if (!blob) return;
+
+            const croppedFile = new File(
+                [blob],
+                currentFileInput.files[0].name,
+                { type: 'image/jpeg', lastModified: Date.now() }
+            );
+
+            const dt = new DataTransfer();
+            dt.items.add(croppedFile);
+            currentFileInput.files = dt.files;
+
+            const previewURL = URL.createObjectURL(blob);
+
+            if (currentPreviewImg) {
+                currentPreviewImg.src = previewURL;
+            } else {
+                currentFileInput
+                    .closest('.image-upload-card')
+                    .querySelector('.upload-icon')
+                    .innerHTML = `<img src="${previewURL}" class="preview-thumb">`;
+            }
+
+            closeCropModal(false);
+        }, 'image/jpeg', 0.9);
+    });
+
+    /* ===============================
+       CANCEL / CLOSE
+       =============================== */
+    cropCancelBtn.addEventListener('click', () => closeCropModal(true));
+    cropCloseBtn.addEventListener('click', () => closeCropModal(true));
+
+    /* ===============================
+       PREVENT SUBMIT WHILE CROPPING
+       =============================== */
+    variantForm.addEventListener('submit', function (e) {
+        if (cropModal.style.display === 'flex') {
+            e.preventDefault();
+            alert('Please apply crop before saving.');
+        }
+    });
+});
+
+
+
+  // Form Validation
+  document.getElementById('variantForm').addEventListener('submit', function(e) {
+    const price = parseFloat(document.getElementById('id_base_price').value);
+    const offerPrice = parseFloat(document.getElementById('id_offer_price').value);
+    
+    if (offerPrice > 0 && offerPrice >= price) {
+      e.preventDefault();
+      alert('Offer price must be less than the base price');
+      return false;
+    }
+  });
+</script>
+{% endblock %}

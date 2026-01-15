@@ -3,41 +3,26 @@ from brandsandcategories.models import Brand, Category
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from PIL import Image
+from django.core.validators import FileExtensionValidator
 
 # Create your models here.
 
-# ================== PRODUCT MODEL ==================
-
-
+# =========================
+# PRODUCT 
+# =========================
 class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
-    description = models.TextField(
-        max_length=250,
-        help_text="Brief description of the category",
-        blank=True,
-        null=True,
-    )
-
-    base_price = models.DecimalField(max_digits=8, decimal_places=2)
-    offer_price = models.DecimalField(
-        max_digits=8, decimal_places=2, null=True, blank=True
-    )
-
-    stock = models.PositiveIntegerField(
-        default=0, help_text="Current inventory count")
-
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, related_name="products")
-    brand = models.ForeignKey(
-        Brand, on_delete=models.CASCADE, related_name="products")
-
-    # Status flags
+    description = models.TextField(max_length=250,blank=True,null=True)
+    image = models.ImageField(upload_to="products/images/",
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],null=True,blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products")
+    material = models.CharField(max_length=100,blank=True,null=True)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     is_selective = models.BooleanField(default=False)
     is_most_demanded = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -54,6 +39,74 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    # Auto slug generation
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            count = 1
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
+            self.slug = slug
+        if not self.category.is_active or not self.brand.is_active:
+            self.is_active = False
+        super().save(*args, **kwargs)
+
+# =========================
+# SIZE
+# =========================
+class Size(models.Model):
+    name = models.CharField(max_length=10, unique=True)
+    def __str__(self):
+        return self.name
+
+
+# =========================
+# COLOR
+# =========================
+class Color(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    def __str__(self):
+        return self.name
+    
+# =========================
+# PRODUCT VARIANT 
+# =========================
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="variants")
+
+    size = models.ForeignKey(Size, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+
+    base_price = models.DecimalField(max_digits=8, decimal_places=2)
+    offer_price = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True
+    )
+
+    stock = models.PositiveIntegerField(default=0)
+    sku = models.CharField(max_length=100, unique=True, blank=True)
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('product', 'size', 'color')
+        indexes = [
+            models.Index(fields=['product', 'is_active']),
+            models.Index(fields=['sku']),
+        ]
+
+    def __str__(self):
+        return f"{self.product.name} - {self.size} / {self.color}"
+
+    # ---------- Derived values ----------
+
+    @property
+    def final_price(self):
+        return self.offer_price if self.offer_price else self.base_price
+
     # Calculate Discount Percentage for Template
     @property
     def discount_percentage(self):
@@ -63,66 +116,31 @@ class Product(models.Model):
             return int(discount)
         return 0
 
-    # Auto slug generation
-    def save(self, *args, **kwargs):
-
-        if not self.slug:
-            base_slug = slugify(self.name)
-            slug = base_slug
-            count = 1
-            while Product.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{count}"
-                count += 1
-            self.slug = slug
-
-        if not self.category.is_active or not self.brand.is_active:
-            self.is_active=False
-
-        super().save(*args, **kwargs)
-
-    # Price validation
+    # ---------- Validation ----------
     def clean(self):
-        super().clean() 
         errors = {}
-        if self.base_price is not None:
-            if self.base_price <= 0:
-                errors['base_price'] = "Base price must be greater than zero."
 
-            if self.offer_price and self.offer_price >= self.base_price:
-                errors['offer_price'] = "Offer price must be less than the base price."
-            
-        if self.stock is not None and self.stock < 0:
-            errors['stock'] = "Stock cannot be negative."
+        if self.base_price <= 0:
+            errors['base_price'] = "Base price must be greater than zero."
+
+        if self.offer_price and self.offer_price >= self.base_price:
+            errors['offer_price'] = "Offer price must be less than base price."
 
         if errors:
             raise ValidationError(errors)
         
-    @property
-    def effective_price(self):
-        return self.offer_price if self.offer_price else self.base_price
-
-# ================== PRODUCT IMAGE MODEL ==================
-class ProductImage(models.Model):
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name="images"
-    )
-    image = models.ImageField(upload_to="products/images/")
+# =========================
+# PRODUCT VARIANT IMAGE
+# =========================
+class ProductVariantImage(models.Model):
+    variant = models.ForeignKey(ProductVariant,on_delete=models.CASCADE,related_name="images")
+    image = models.ImageField(upload_to="products/variant-images/",validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])])
     alt_text = models.CharField(max_length=250, blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
-        return f"{self.product.name} Image"
+        return f"{self.variant} Image"
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
 
-    #     if self.image:
-    #         img = Image.open(self.image.path)
 
-    #         if img.height > 800 or img.width > 800:
-    #             output_size = (800, 800)
-    #             img.thumbnail(output_size)
-    #             img.save(self.image.path)
+        
+   

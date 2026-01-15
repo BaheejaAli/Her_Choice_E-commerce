@@ -209,12 +209,28 @@
         .then((response) => response.json())
         .then((data) => {
           if (data.status === 'success') {
-            alert(data.message)
+            Swal.fire({
+              icon: 'success',
+              title: 'Added to Cart',
+              text: data.message,
+              timer: 2000,
+              showConfirmButton: false
+            })
           } else {
-            alert(data.message)
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops!',
+              text: data.message
+            })
           }
         })
-        .catch((error) => console.error(error))
+        .catch(() => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.'
+          })
+        })
     }
   </script>
 {% endblock %}

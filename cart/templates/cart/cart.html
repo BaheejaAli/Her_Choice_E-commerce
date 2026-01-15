@@ -70,7 +70,7 @@
             <span id="total">₹ {{ cart.get_total_price }}</span>
           </div>
 
-          <button class="checkout-btn">Proceed to Checkout</button>
+          <a href="checkout"><button class="checkout-btn">Proceed to Checkout</button></a>
 
           <button class="continue-btn">Continue Shopping</button>
         </div>
@@ -101,16 +101,85 @@
             document.getElementById(`item-subtotal-${itemId}`).innerText = data.data.item_subtotal
     
             // Update cart total
-            document.getElementById('subtotal').innerText = '₹ ' + data.data.cart_total
+            document.getElementById('total').innerText = '₹ ' + data.data.cart_total
           } else {
-            alert(data.message)
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: data.message
+          })
           }
         })
-        .catch((err) => console.error('Quantity error:', err))
+         .catch(() => {
+        Swal.fire('Error', 'Something went wrong!', 'error')
+      })
     }
     
     /* ================= DELETE ITEM ================= */
     function removeItem(itemId) {
+    Swal.fire({
+      title: 'Remove item?',
+      text: 'Do you want to remove this product from your cart?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ff1493',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: 'Yes, remove',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        deleteCartItem(itemId)
+      }
+    })
+  }
+
+  function deleteCartItem(itemId) {
+    fetch("{% url 'remove_cart_item' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `item_id=${itemId}`
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+
+          // Remove item from DOM
+          const item = document.querySelector(
+            `.cart-item[data-item-id="${itemId}"]`
+          )
+          if (item) item.remove()
+
+          // Update cart total
+          document.getElementById('total').innerText =
+            '₹ ' + data.data.cart_total
+
+          // Empty cart handling
+          if (document.querySelectorAll('.cart-item').length === 0) {
+            document.querySelector('.cart-items').innerHTML =
+              '<p>Your cart is empty.</p>'
+          }
+
+          // Success alert
+          Swal.fire({
+            icon: 'success',
+            title: 'Removed!',
+            text: 'Item removed from cart',
+            timer: 1500,
+            showConfirmButton: false
+          })
+
+        } else {
+          Swal.fire('Error', data.message, 'error')
+        }
+      })
+      .catch(() => {
+        Swal.fire('Error', 'Something went wrong!', 'error')
+      })
+  }
+    {% comment %} function removeItem(itemId) {
       if (!confirm('Remove this item from cart?')) return
     
       fetch("{% url 'remove_cart_item' %}", {
@@ -132,6 +201,6 @@
           }
         })
         .catch((err) => console.error('Delete error:', err))
-    }
+    } {% endcomment %}
   </script>
 {% endblock %}

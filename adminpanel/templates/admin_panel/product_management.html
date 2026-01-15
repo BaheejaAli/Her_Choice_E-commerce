@@ -1,11 +1,11 @@
-{% extends "admin_base.html" %}
+{% extends "admin_panel/admin_base.html" %}
 {% load static %}
 
 {% block title %}Product Management | Her Choice{% endblock %}
 {% block page_title %}Product Management{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.6">
+<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.1">
 {% endblock %}
 
 {% block content %}
@@ -30,10 +30,12 @@
   <div class="page-header-section">
     <div class="header-content"></div>
 
-    <a href="{% url 'product_add' %}" class="btn-add-new-product"> 
-      <i class="fas fa-plus"></i>
-      <span>Add New Product</span>
-    </a>
+ <a href="{% url 'product_add' %}" class="btn-add-new-product">
+  <i class="fas fa-plus"></i>
+  <span>Add New Product</span>
+</a>
+
+
   </div>
 
   <!-- SEARCH & FILTER -->
@@ -78,8 +80,6 @@
           <th>Product</th>
           <th>Brand</th>
           <th>Category</th>
-          <th>Stock</th>
-          <th>Price</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -87,51 +87,111 @@
 
       <tbody>
         {% for product in products %}
-        <tr>
-          {% comment %} <td>{{ forloop.counter }}</td> {% endcomment %}
-          <td>{{product.id}}</td>
+<tr>
+  <td>{{ product.id }}</td>
 
-          <td>
-            <h6>{{ product.name }}</h6>
-            <div class="sub-text">{{ product.description|default:"—" }}</div>
-          </td>
+  <td>
+    <div class="product-cell">
+      <div class="product-thumb-wrapper">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="product-thumb">
+        {% else %}
+          <div class="no-thumb">No Image</div>
+        {% endif %}
+      </div>
 
-          <td>{{ product.brand.name }}</td>
-          <td>{{ product.category.name }}</td>
-          <td>{{product.stock}}</td>
 
-          <td>
-            {% if product.offer_price %}
-              ₹ {{ product.offer_price }}
-              <div class="sub-text"><del>₹ {{ product.base_price }}</del></div>
-            {% else %}
-              ₹ {{ product.base_price }}
-            {% endif %}
-          </td>
+      <div class="product-info">
+        <h6 class="product-name">{{ product.name }}</h6>
+        <span class="variant-count">
+          {{ product.variants.count }} variants
+        </span>
+      </div>
+    </div>
+  </td>
 
-          <td>
-            <!-- STATUS BUTTON -->
-            <button
-              type="button"
-              class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-              data-url="{% url 'toggle_product_status' product.id %}"
-              onclick="toggleProductStatus(this)">
-              {{ product.is_active|yesno:"Active,Inactive" }}
-            </button> 
-          </td>
+  <td>{{ product.brand.name }}</td>
+  <td>{{ product.category.name }}</td>
 
-          <td>
-            <!-- EDIT BUTTON -->
-            <a href="{% url 'product_edit' product.id %}" class="action-btn edit">
-              <i class="fa-solid fa-pen-to-square"></i> Edit
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8" class="empty-text">No products found</td>
-        </tr>
-        {% endfor %}
+  <td>
+    <button
+      class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+      data-url="{% url 'toggle_product_status' product.id %}"
+      onclick="toggleProductStatus(this)">
+      {{ product.is_active|yesno:"Active,Inactive" }}
+    </button>
+  </td>
+
+  <td class="action-buttons">
+    <a href="{% url 'product_edit' product.id %}" class="action-btn">
+      <i class="fa-solid fa-pen"></i>
+    </a>
+
+    <a href="javascript:void(0)"
+       class="action-btn"
+       onclick="toggleVariants({{ product.id }})">
+      <i class="fa-solid fa-chevron-down"></i>
+    </a>
+  </td>
+</tr>
+
+<!-- VARIANT DROPDOWN ROW -->
+<tr id="variants-{{ product.id }}" class="variant-row" style="display:none;">
+  <td colspan="6">
+    <div class="variant-dropdown">
+
+      <div class="variant-header">
+        <strong>Variants</strong>
+        <a href="{% url 'product_variant_add' product.id %}" class="btn-add-variant">
+          + Add Variant
+        </a>
+      </div>
+
+      {% if product.variants.exists %}
+      <table class="variant-table">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for variant in product.variants.all %}
+          <tr>
+            <td>{{ variant.size.name }}</td>
+            <td>{{ variant.color.name }}</td>
+            <td>₹ {{ variant.final_price }}</td>
+            <td>{{ variant.stock }}</td>
+            <td>{{ variant.is_active|yesno:"Active,Inactive" }}</td>
+            <td>
+              <a href="{% url 'product_variant_edit' variant.id %}">
+                <i class="fa-solid fa-pen"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p class="empty-text">No variants added yet</p>
+      {% endif %}
+
+    </div>
+  </td>
+</tr>
+
+{% empty %}
+<tr>
+  <td colspan="6" class="empty-text">No products found</td>
+</tr>
+{% endfor %}
+
+        
+      
       </tbody>
     </table>
 
@@ -139,6 +199,7 @@
     {% include "admin_panel/pagination.html" %}
   </div>
 </div>
+
 {% endblock content %}
 
 {% block extra_js %}
@@ -170,5 +231,28 @@
       btn.disabled = false;
     });
   }
+
+ 
+function toggleVariants(productId) {
+  const currentRow = document.getElementById(`variants-${productId}`);
+
+  // Close all other variant rows
+  document.querySelectorAll('.variant-row').forEach(row => {
+    if (row !== currentRow) {
+      row.style.display = 'none';
+    }
+  });
+
+  // Toggle current row
+  if (currentRow.style.display === 'table-row') {
+    currentRow.style.display = 'none';
+  } else {
+    currentRow.style.display = 'table-row';
+  }
+}
+
+
+
+
 </script>
 {% endblock %}

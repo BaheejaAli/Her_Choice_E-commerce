@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
 from .models import Product
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
@@ -83,30 +83,6 @@ class ProductListingView(ListView):
         ).order_by('-product_count')
         context["selected_brands"] = self.request.GET.getlist('brand')
         return context
-    
-
-# class ProductDetailView(DetailView):
-#     model = Product
-#     template_name = "products/product_detail.html"
-#     context_object_name = "product"
-#     slug_url_kwarg = 'slug'
-
-#     def get(self, request, *args, **kwargs):
-
-#         # Redirect if product is blocked/unavailable
-#         product = self.get_object()
-#         if not product.is_active:
-#             messages.warning(request,"This product is currently unavailable.")
-#             return redirect('product_listing')
-#         return super().get(request, *args, **kwargs)
-    
-#     def get_context_data(self, **kwargs):
-#             # Related product recommendations
-#             context = super().get_context_data(**kwargs)
-#             context["related_products"] = Product.objects.filter(
-#                 category= self.object.category, is_active = True
-#             ).exclude(id=self.object.id).prefetch_related('images')[:4]
-#             return context
         
 def product_detail_view(request,slug):
     product = get_object_or_404(Product,slug=slug)

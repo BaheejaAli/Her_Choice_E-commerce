@@ -1,7 +1,7 @@
 from django import forms
 from .models import Brand, Category
 
-
+# ================== BRAND MODELFORM ==================
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
@@ -9,14 +9,12 @@ class BrandForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "placeholder": "Brand name (e.g., Her Choice)",
                     "class": "form-input-field",
                 }
             ),
             "description": forms.Textarea(
                 attrs={
                     "rows": 4,
-                    "placeholder": "Brief description of the brand",
                     "class": "form-input-field",
                 }
             ),
@@ -62,11 +60,11 @@ class BrandForm(forms.ModelForm):
                 raise forms.ValidationError("Image file too large. Max size is 2MB.")
         return image
 
-
+# ================== CATEGORY MODELFORM ==================
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ["name", "description", "image", "is_active"]
+        fields = ["name", "description", "is_active"]
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -88,10 +86,6 @@ class CategoryForm(forms.ModelForm):
         }
         labels = {
             "is_active": "Status",
-        }
-        help_texts = {
-            "name": "Category name must be unique.",
-            "image": "Upload JPG, PNG, or WEBP image.",
         }
 
     def clean_name(self):
@@ -120,12 +114,4 @@ class CategoryForm(forms.ModelForm):
 
         return description
 
-    def clean_image(self):
-        image = self.cleaned_data.get("image")
-        if not image:
-            raise forms.ValidationError("Category image is required.")
-        if image and not isinstance(image, str):
-            if image and image.size > 2 * 1024 * 1024:
-                raise forms.ValidationError(
-                    "Image file too large. Max size is 2MB.")
-        return image
+    

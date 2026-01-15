@@ -1,0 +1,160 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.1" />
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="checkout-wrapper">
+      <!-- Main Content -->
+      <div class="main-content">
+        <a href="{% url 'cart' %}" class="back-btn">← Back</a>
+        <h1 class="page-title">Your Order</h1>
+
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="payment_method" id="payment_method" value="Google Pay" />
+
+          <div class="checkout-grid">
+            <!-- Left Column -->
+            <div>
+              <!-- Delivery Address -->
+              <div class="section">
+                <h2 class="section-title">Delivery address</h2>
+                {% for address in addresses %}
+                  <label class="address-card">
+                    {% if address.is_default %}
+                      <input type="radio" name="address_id" value="{{ address.id }}" checked />
+                    {% else %}
+                      <input type="radio" name="address_id" value="{{ address.id }}" />
+                    {% endif %}
+
+                    <div class="address-header">
+                      <strong>{{ address.user.get_full_name }}</strong>
+                      {% comment %} {% if address.is_default %}
+                        <span class="default-badge">Default</span>
+                      {% endif %} {% endcomment %}
+                    </div>
+
+                    <div class="address-type">
+                      {{ address.address_type }}</div>
+                      <div class="address-text">
+                      {{ address.address_line_1 }}<br />
+                      {% if address.address_line_2 %}
+                        {{ address.address_line_2 }}<br />
+                      {% endif %}
+                      {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br />
+                      {{ address.country }}<br />
+                      {{ address.user.phone }}
+                    </div>
+                  </label>
+                {% endfor %}
+
+                <button class="add-address-btn">Add new address</button>
+              </div>
+
+              <!-- Payment Method -->
+              <div class="section">
+                <h2 class="section-title">💳 Payment Method</h2>
+                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Choose your preferred payment method</p>
+
+                <div class="payment-options">
+                  <div class="payment-option">
+                    <div class="payment-option-content">
+                      <div class="radio"></div>
+                      <div>
+                        <div class="payment-label">Credit Card</div>
+                        <div class="payment-desc">Visa, Mastercard, Amex</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="payment-option selected">
+                    <div class="payment-option-content">
+                      <div class="radio"></div>
+                      <div>
+                        <div class="payment-label">Google Pay</div>
+                        <div class="payment-desc">Quick and secure</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="payment-option">
+                    <div class="payment-option-content">
+                      <div class="radio"></div>
+                      <div>
+                        <div class="payment-label">Net Banking</div>
+                        <div class="payment-desc">Direct bank transfer</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="payment-option">
+                    <div class="payment-option-content">
+                      <div class="radio"></div>
+                      <div>
+                        <div class="payment-label">Cash on Delivery</div>
+                        <div class="payment-desc">Pay at doorstep</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="secure-payment">
+                  <span>🔒</span>
+                  <span><strong>Secure Payment</strong> - Your payment information is encrypted and secure. We never store your card details.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column - Order Summary -->
+            <div>
+              <div class="section">
+                <h2 class="section-title">Order Summary</h2>
+                {% for item in cart_items %}
+                  <div class="order-item">
+                    <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="item-image green" />
+
+                    <div class="item-details">
+                      <div class="item-name">{{ item.product.name }}</div>
+                      <div class="item-color">Color: White</div>
+                      <div class="item-color">Qty: {{ item.quantity }}</div>
+                      <div class="item-price">{{ item.sub_total }}</div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <div class="summary-row total">
+                  <span>Total</span>
+                  <span>{{ total }}</span>
+                </div>
+
+                {% comment %} <div class="promo-code">
+                  <span class="promo-text">Have a promo code?</span>
+                  <button class="apply-btn">Apply</button>
+                </div> {% endcomment %}
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="complete-payment-btn">🔒 Complete Payment</button>
+          <div class="terms">By completing this payment, you agree to our terms and conditions</div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block extra_js %}
+  <script>
+    // Payment option selection
+    document.querySelectorAll('.payment-option').forEach((option) => {
+      option.addEventListener('click', function () {
+        document.querySelectorAll('.payment-option').forEach((opt) => {
+          opt.classList.remove('selected')
+        })
+        this.classList.add('selected')
+      })
+    })
+  </script>
+{% endblock %}

@@ -4,6 +4,30 @@
     padding: 20px;
 }
 
+/* ===== Brand Cell (Logo Left, Name Right) ===== */
+.brand-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f9fafb;
+    padding: 4px;
+}
+
+.brand-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+}
+
+
 /* ===== Header Section ===== */
 .page-header-section {
     display: flex;

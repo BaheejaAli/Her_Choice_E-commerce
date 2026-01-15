@@ -1,19 +1,21 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Product, ProductImage
+from .models import Product, ProductVariant, ProductVariantImage
+from django.forms.widgets import ClearableFileInput
 
-
+# =========================
+# PRODUCT FORM
+# =========================
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
             "name",
             "description",
-            "base_price",
-            "offer_price",
+            "material",
+            "image",
             "category",
             "brand",
-            "stock",
             "is_active",
             "is_featured",
             "is_selective",
@@ -35,21 +37,14 @@ class ProductForm(forms.ModelForm):
                     "class": "form-input-field",
                 }
             ),
-            "base_price": forms.NumberInput(
+            "material": forms.TextInput(
                 attrs={
-                    "placeholder": "Base price",
-                    "class": "form-input-field",
-                }
-            ),
-            "offer_price": forms.NumberInput(
-                attrs={
-                    "placeholder": "Offer price (optional)",
+                    "placeholder": "Material (e.g. Cotton, Rayon)",
                     "class": "form-input-field",
                 }
             ),
             "category": forms.Select(attrs={"class": "form-input-field"}),
             "brand": forms.Select(attrs={"class": "form-input-field"}),
-            "stock": forms.NumberInput(attrs={"class": "form-control", "min": '0'}),
             "is_active": forms.Select(
                 choices=[(True, "Active"), (False, "Inactive")],
                 attrs={"class": "form-input-field"},
@@ -66,55 +61,105 @@ class ProductForm(forms.ModelForm):
             "is_most_demanded": "Most Demanded",
         }
 
-        help_texts = {
-            "name": "Product name must be unique.",
-            "base_price": "Enter the original product price.",
-            "offer_price": "Offer price must be less than base price.",
-        }
-
     # ---------- FIELD VALIDATIONS ----------
     def clean_name(self):
         name = self.cleaned_data.get("name", "").strip()
-
         if not name:
             raise forms.ValidationError("Product name is required.")
-        qs = Product.objects.filter(name__iexact=name)
 
-        # Exclude current instance during edit
+        qs = Product.objects.filter(name__iexact=name)
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
-
         if qs.exists():
-            raise forms.ValidationError("A product with this name already exists.")
+            raise forms.ValidationError(
+                "A product with this name already exists.")
 
         return name
+    
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if not image and not self.instance.pk:
+            raise forms.ValidationError("Product image is required.")
+        if image and image.size > 2 * 1024 * 1024:
+            raise forms.ValidationError("Image file too large. Max size is 2MB.")
+
+        return image
+
+
+
+
+# =========================
+# PRODUCT VARIANT FORM
+# =========================
+class ProductVariantForm(forms.ModelForm):
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "size",
+            "color",
+            "base_price",
+            "offer_price",
+            "stock",
+            "is_active",
+        ]
+        widgets = {
+            "size": forms.Select(attrs={"class": "form-input-field"}),
+            "color": forms.Select(attrs={"class": "form-input-field"}),
+            "base_price": forms.NumberInput(
+                attrs={"class": "form-input-field", "min": 0}
+            ),
+            "offer_price": forms.NumberInput(
+                attrs={"class": "form-input-field", "min": 0}
+            ),
+            "stock": forms.NumberInput(
+                attrs={"class": "form-input-field", "min": 0}
+            ),
+            "is_active": forms.Select(
+                choices=[(True, "Active"), (False, "Inactive")],
+                attrs={"class": "form-input-field"},
+            ),
+        }
 
     def clean_base_price(self):
         base_price = self.cleaned_data.get("base_price")
-
         if base_price is None or base_price <= 0:
-
             raise forms.ValidationError("Base price must be greater than zero")
         return base_price
 
     def clean_offer_price(self):
         offer_price = self.cleaned_data.get("offer_price")
         base_price = self.cleaned_data.get("base_price")
-
         if offer_price is not None and base_price is not None:
             if offer_price >= base_price:
-                raise forms.ValidationError("Offer price must be less than base price.")
-
+                raise forms.ValidationError(
+                    "Offer price must be less than base price.")
         return offer_price
+    
+# =========================
+# PRODUCT VARIANT IMAGE FORM
+# =========================
+class ProductVariantImageForm(forms.ModelForm):
+    class Meta:
+        model = ProductVariantImage
+        fields = ("image",)
 
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        return image
 
-# Define the Image Formset
-ProductImageFormSet = inlineformset_factory(
-    Product,
-    ProductImage,
-    fields=("image", "alt_text"),
-    extra=1,  # This creates exactly 3 empty slots by default
-    min_num=3,  # Ensures at least 3 forms are present
-    validate_min=True,  # Tells Django to enforce the minimum of 3
-    can_delete=True,  # Allows you to swap/remove images later
+# =========================
+# PRODUCT IMAGE FORMSET
+# =========================
+ProductVariantImageFormSet = inlineformset_factory(
+    ProductVariant,
+    ProductVariantImage,
+    form=ProductVariantImageForm,  
+    fields=("image",),
+    extra=2,
+    min_num=3, 
+    validate_min=True,
+    can_delete=True, 
 )
+
+ 
