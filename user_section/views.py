@@ -27,8 +27,7 @@ def attach_display_image(products):
         ).first()
 
         if primary:
-            product.display_image = primary.image
-            print("IMAGE FOUND →", product.name, product.display_image)
+            product.display_image = primary.image         
         else:
             print("NO IMAGE →", product.name)
 

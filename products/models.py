@@ -3,6 +3,8 @@ from brandsandcategories.models import Brand, Category
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from PIL import Image
+from django.core.files.base import ContentFile
+from io import BytesIO
 from django.core.validators import FileExtensionValidator
 
 # Create your models here.
@@ -140,9 +142,13 @@ class ProductVariantImage(models.Model):
     alt_text = models.CharField(max_length=250, blank=True)
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.variant} Image"
+    
     def save(self, *args, **kwargs):
+
+        # PRIMARY IMAGE LOGIC (unchanged)
         if not ProductVariantImage.objects.filter(variant=self.variant).exists():
             self.is_primary = True
 
@@ -153,6 +159,33 @@ class ProductVariantImage(models.Model):
             ).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
 
+         # IMAGE RESIZE LOGIC (NEW)
+        # -------------------------------
+        # if self.image:
+        #     img = Image.open(self.image)
+        #     TARGET_WIDTH = 800
+        #     TARGET_HEIGHT = 1000
+        #     if img.mode in ("RGBA", "P"):
+        #         img = img.convert("RGB")
+        #     img.thumbnail((TARGET_WIDTH, TARGET_HEIGHT))
+        #     background = Image.new(
+        #         "RGB",
+        #         (TARGET_WIDTH, TARGET_HEIGHT),
+        #         (255, 255, 255)
+        #     )
+        #     x = (TARGET_WIDTH - img.width) // 2
+        #     y = (TARGET_HEIGHT - img.height) // 2
+        #     background.paste(img, (x, y))
+        #     buffer = BytesIO()
+        #     background.save(buffer, format="JPEG", quality=90)
+
+        #     self.image.save(
+        #         self.image.name,
+        #         ContentFile(buffer.getvalue()),
+        #         save=False
+        #     )
+
+        #     super().save(update_fields=["image"])
 
 
 
