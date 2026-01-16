@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=1.2" />
   {% comment %} <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" /> {% endcomment %}
 {% endblock %}
-
 {% block content %}
   {% if messages %}
     <div class="messages-container">
@@ -30,174 +29,378 @@
     </div>
   </section>
 
-  <!-- New Arrivals -->
-  <section class="featured-section">
-    <h2 class="section-title">New Arrivals</h2>
-    <div class="product-grid">
-      {% for product in new_arrivals %}
-        <div class="product-card">
-          <div class="product-img-container">
-            {% if product.display_image %}
-              <img src="{{ product.display_image.url }}" alt="{{ product.display_image.alt_text }}" />
-            {% else %}
-              <img src="{% static 'images/no-image.png' %}" alt="No image" />
-            {% endif %}
-          </div>
-          <div class="product-info">
-            <p class="product-name">{{ product.name }}</p>
-            <div class="price">
-              <span class="offer-price">
-                From ₹ {{ product.variants.first.final_price }}
-              </span>
-              <del class="old-price">₹ {{ product.variants.first.base_price }}</del>
+    <!-- New Arrivals -->
+    <section class="featured-section">
+        <h2 class="section-title">New Arrivals</h2>
+        <div class="product-grid">
+            <!-- Repeat this card structure for each product -->
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=600&fit=crop" alt="Floral Summer Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Floral Summer Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹89.00</span>
+                        <del class="old-price">₹120.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(1)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
             </div>
-            <div class="button-group">
-              <button class="btn-add" onclick="addToCart(13)">🛍️ ADD TO CART</button>
-              <button class="btn-buy">🛍️ Buy Now</button>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1617019114583-cacb66e51-6a3?w=400&h=600&fit=crop" alt="Elegant Blue Gown" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Elegant Blue Gown</p>
+                    <div class="price">
+                        <span class="regular-price">₹145.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(2)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
 
-  <!-- Featured Collection -->
-  <section class="featured-section">
-    <h2 class="section-title">Featured Collection</h2>
-    <div class="product-grid">
-      {% for variant in featured_products %}
-        <!-- Product 1 -->
-        <div class="product-card">
-          <div class="product-img-container">
-            <a href="#"><img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&h=600&fit=crop" alt="Stylish Pink Dress" class="product-image" /></a>
-          </div>
-          <div class="product-info">
-            <p>Stylish Pink Dress</p>
-            <div class="price">
-              <span class="offer-price">₹72.00</span>
-              <del class="old-price">₹85.00</del>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1612423284934-2850a4ea6b0f?w=400&h=600&fit=crop" alt="White Lace Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>White Lace Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹78.00</span>
+                        <del class="old-price">₹95.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(3)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
             </div>
-            <div class="button-group">
-              <button class="btn-add" onclick="addToCart(1)">🛍️ ADD TO CART</button>
-              <button class="btn-buy">🛍️ Buy Now</button>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400&h=600&fit=crop" alt="Burgundy Maxi Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Burgundy Maxi Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹112.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(4)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
 
-  <!-- Trending Products -->
-  <section class="featured-section">
-    <h2 class="section-title">Trending Products</h2>
-    <div class="product-grid">
-      
-      <!-- Product 1 -->
-      <div class="product-card">
-        <div class="product-img-container">
-          <a href="#"><img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&h=600&fit=crop" alt="Denim Mini Dress" class="product-image" /></a>
-        </div>
-        <div class="product-info">
-          <p>Denim Mini Dress</p>
-          <div class="price">
-            <span class="offer-price">₹68.00</span>
-            <del class="old-price">₹90.00</del>
-          </div>
-          <div class="button-group">
-            <button class="btn-add" onclick="addToCart(21)">🛍️ ADD TO CART</button>
-            <button class="btn-buy">🛍️ Buy Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&h=600&fit=crop" alt="Mint Green Sundress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Mint Green Sundress</p>
+                    <div class="price">
+                        <span class="regular-price">₹85.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(5)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
 
-  <!-- Shop by Category -->
-  {% comment %} <section class="category-section">
-    <h2 class="section-title">Shop by Category</h2>
-    <div class="category-grid">
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&h=300&fit=crop" alt="Evening Dresses" />
-        <div class="category-overlay">
-          <div class="category-name">Evening Dresses</div>
-        </div>
-      </div>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400&h=600&fit=crop" alt="Coral Evening Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Coral Evening Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹95.00</span>
+                        <del class="old-price">₹125.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(6)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
 
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=300&fit=crop" alt="Summer Dress" />
-        <div class="category-overlay">
-          <div class="category-name">Summer Dress</div>
-        </div>
-      </div>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1605763240-4fe6c0fab1e7?w=400&h=600&fit=crop" alt="Navy Cocktail Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Navy Cocktail Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹105.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(7)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
 
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&h=300&fit=crop" alt="Beach Wear" />
-        <div class="category-overlay">
-          <div class="category-name">Beach Wear</div>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=400&h=600&fit=crop" alt="Peach Midi Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Peach Midi Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹92.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(8)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1562137369-1a1a0bc66744?w=500&h=300&fit=crop" alt="Casual Dresses" />
-        <div class="category-overlay">
-          <div class="category-name">Casual Dresses</div>
-        </div>
-      </div>
+    <!-- Featured Collection -->
+    <section class="featured-section">
+        <h2 class="section-title">Featured Collection</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&h=600&fit=crop" alt="Stylish Pink Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Stylish Pink Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹72.00</span>
+                        <del class="old-price">₹85.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(9)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
 
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=500&h=300&fit=crop" alt="Party Dresses" />
-        <div class="category-overlay">
-          <div class="category-name">Party Dresses</div>
-        </div>
-      </div>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=600&fit=crop" alt="High Waisted Red Lace" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>High Waisted Red Lace</p>
+                    <div class="price">
+                        <span class="regular-price">₹65.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(10)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
 
-      <div class="category-card">
-        <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&h=300&fit=crop" alt="Formal Dresses" />
-        <div class="category-overlay">
-          <div class="category-name">Formal Dresses</div>
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&h=600&fit=crop" alt="Vintage Red Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Vintage Red Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹98.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(11)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=600&fit=crop" alt="Blue Hat Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Blue Hat Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹85.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-disabled" disabled>OUT OF STOCK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1596783071568-8dbfb23e6e3e?w=400&h=600&fit=crop" alt="Pink Maxi Gown Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Pink Maxi Gown Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹95.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(12)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1562137369-1a1a0bc66744?w=400&h=600&fit=crop" alt="Bridgette Mini Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Bridgette Mini Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹75.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(13)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1624206112918-f140f087f9b5?w=400&h=600&fit=crop" alt="Elisha Dani Collection" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Elisha Dani Collection</p>
+                    <div class="price">
+                        <span class="regular-price">₹88.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(14)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1467043153537-a4fba2cd39ef?w=400&h=600&fit=crop" alt="Miss Blue Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Miss Blue Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹92.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(15)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section> {% endcomment %}
-{% endblock %}
-<script>
-  function addToCart(variantId) {
-    // Simulated add to cart - replace with actual Django implementation
-    alert(`Adding product ${variantId} to cart!`)
-  
-    /* Django implementation:
-              fetch('/cart/add/', {
-                  method: 'POST',
-                  headers: {
-                      'X-CSRFToken': getCookie('csrftoken'),
-                      'Content-Type': 'application/x-www-form-urlencoded'
-                  },
-                  body: `variant_id=${variantId}`
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      alert(data.message);
-                  } else {
-                      alert(data.message);
-                  }
-              })
-              .catch(error => console.error(error));
-              */
-  }
-  
-  function getCookie(name) {
-    let cookieValue = null
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';')
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim()
-        if (cookie.substring(0, name.length + 1) === name + '=') {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
-          break
-        }
-      }
-    }
-    return cookieValue
-  }
-</script>
+    </section>
+{% comment %} 
+    <!-- Trending Products -->
+    <section class="featured-section">
+        <h2 class="section-title">Trending Products</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&h=600&fit=crop" alt="Denim Mini Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Denim Mini Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹68.00</span>
+                        <del class="old-price">₹90.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(16)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=400&h=600&fit=crop" alt="Striped Casual Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Striped Casual Dress</p>
+                    <div class="price">
+                        <span class="regular-price">₹75.00</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(17)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1610652447-dc6783c860db?w=400&h=600&fit=crop" alt="Yellow Wrap Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Yellow Wrap Dress</p>
+                    <div class="price">
+                        <span class="offer-price">₹82.00</span>
+                        <del class="old-price">₹110.00</del>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-add" onclick="addToCart(18)">Add to Cart</button>
+                        <button class="btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-container">
+                    <a href="#">
+                        <img src="https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?w=400&h=600&fit=crop" alt="Lavender Midi Dress" class="product-image">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p>Lavender Midi Dress</p>
+                    <div class="price">
+                        <span class {% endcomment %}
+          {% endblock %}

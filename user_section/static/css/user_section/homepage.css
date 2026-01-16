@@ -156,19 +156,21 @@
 
         .product-img-container {
             width: 100%;
-            height: 280px;
+            height: 350px;
             overflow: hidden;
+            position: relative;
+            background: #f8f8f8;
         }
 
         .product-image {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             transition: transform 0.3s;
         }
 
         .product-card:hover .product-image {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .product-info {
@@ -204,39 +206,40 @@
 
         .button-group {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 0.5rem;
         }
 
         .btn-add,
         .btn-buy {
-            width: 100%;
+            flex: 1;
             padding: 0.6rem;
-            background: #e91e63;
-            color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
             font-weight: 500;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
+            transition: all 0.3s;
         }
 
-        .btn-add:hover,
-        .btn-buy:hover {
-            background: #c2185b;
+        .btn-add {
+            background: #FFE5B4;
+            color: #333;
+        }
+
+        .btn-add:hover {
+            background: #FFD700;
         }
 
         .btn-buy {
-            background: #333;
+            background: white;
+            color: #333;
+            border: 2px solid #FFE5B4;
         }
 
         .btn-buy:hover {
-            background: #555;
+            background: #FFE5B4;
+            border-color: #FFD700;
         }
 
         .btn-disabled {
@@ -245,7 +248,7 @@
             background: #ccc;
             color: #666;
             border: none;
-            border-radius: 20px;
+            border-radius: 4px;
             font-weight: 500;
             font-size: 0.85rem;
             cursor: not-allowed;
@@ -430,3 +433,39 @@
                 grid-template-columns: 1fr;
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
