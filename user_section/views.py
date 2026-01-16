@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from products.models import Product
+from products.models import Product, ProductVariantImage
 from brandsandcategories.models import Category
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -16,26 +16,63 @@ from django.utils import timezone
 from accounts.models import CustomUser
 
 # Create your views here.
+def attach_display_image(products):
+    for product in products:
+        product.display_image = None
 
+        primary = ProductVariantImage.objects.filter(
+            variant__product=product,
+            variant__is_active=True,
+            is_primary=True
+        ).first()
 
-class HomePageView(TemplateView):
-    template_name = "user_section/homepage.html"
+        if primary:
+            product.display_image = primary.image
+            print("IMAGE FOUND →", product.name, product.display_image)
+        else:
+            print("NO IMAGE →", product.name)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+def homepage(request):
+    new_arrivals = (
+        Product.objects
+        .filter(is_active=True)
+        .prefetch_related("variants__images")
+        .order_by("-created_at")[:8]
+    )
 
-        context["new_arrivals"] = Product.objects.filter(
-            is_active=True).order_by("-created_at")[:8]
-        context["featured_products"] = Product.objects.filter(
-            is_active=True, is_featured=True).order_by('?')[:6]
-        context["categories"] = Category.objects.filter(
-            is_active=True).order_by('?')[:4]
-        context["trending_products"] = Product.objects.filter(
-            is_most_demanded=True, is_active=True).order_by('?')[:8]
+    featured_products = (
+        Product.objects
+        .filter(is_active=True, is_featured=True)
+        .prefetch_related("variants__images")
+        .order_by("?")[:6]
+    )
 
-        return context
+    trending_products = (
+        Product.objects
+        .filter(is_active=True, is_most_demanded=True)
+        .prefetch_related("variants__images")
+        .order_by("?")[:8]
+    )
 
+    # 🔑 CALL THE FUNCTION HERE
+    attach_display_image(new_arrivals)
+    attach_display_image(featured_products)
+    attach_display_image(trending_products)
 
+    categories = Category.objects.filter(is_active=True).order_by("?")[:4]
+
+    return render(
+        request,
+        "user_section/homepage.html",
+        {
+            "new_arrivals": new_arrivals,
+            "featured_products": featured_products,
+            "trending_products": trending_products,
+            "categories": categories,
+        }
+    )
+
+   
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"
 
@@ -85,7 +122,7 @@ def edit_profile(request):
                 if existing_otp and existing_expiry:
                     messages.info(request, 'OTP already sent. Please verify.')
                     return redirect('profile_otp_verify')
-                
+
                 otp = str(random.randint(100000, 999999))
 
                 # Save other fields EXCEPT email
@@ -120,9 +157,9 @@ def edit_profile(request):
 
             form.save()
             messages.success(request, 'Profile updated successfully')
-            return redirect('profile_info') 
+            return redirect('profile_info')
     else:
-       
+
         form = UserProfileUpdateForm(instance=request.user)
     if not form.is_valid():
         print("FORM ERRORS:", form.errors)
@@ -132,8 +169,8 @@ def edit_profile(request):
     # print("OLD EMAIL:", old_email)
     # print("NEW EMAIL:", form.cleaned_data.get('email') if form.is_valid() else None)
 
-    
     return render(request, 'user_section/profile_edit.html', {'form': form})
+
 
 @login_required
 def profile_otp_verify(request):
@@ -153,10 +190,8 @@ def profile_otp_verify(request):
         # request.session.pop('profile_email', None)
         request.session.pop('profile_otp_expiry', None)
 
-
-     
         return redirect('profile_otp_verify')
-    
+
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
 
@@ -169,23 +204,23 @@ def profile_otp_verify(request):
             request.session.pop('profile_email', None)
             request.session.pop('profile_otp_expiry', None)
 
-
             messages.success(request, 'Email updated successfully')
             return redirect('profile_info')
         else:
             messages.error(request, 'Invalid OTP')
-    return render(request, 'user_section/profile_otp_verify.html',{'otp_expiry': otp_expiry})
+    return render(request, 'user_section/profile_otp_verify.html', {'otp_expiry': otp_expiry})
+
 
 @login_required
 def profile_resend_otp(request):
     email = request.session.get('profile_email')
 
     if not email:
-        messages.error(request,'Verification session expired.')
+        messages.error(request, 'Verification session expired.')
         return redirect('profile_info')
-    
+
     otp = str(random.randint(100000, 999999))
-    
+
     request.session['profile_otp'] = otp
     request.session['profile_otp_expiry'] = (
         timezone.now() + timedelta(minutes=2)
@@ -207,11 +242,12 @@ def profile_resend_otp(request):
 def profile_address(request):
     user = request.user
     addresses = user.addresses.all().order_by('-is_default')
-    return render(request, "user_section/profile_address.html",{'user':user,'addresses':addresses})           
+    return render(request, "user_section/profile_address.html", {'user': user, 'addresses': addresses})
+
 
 @login_required
 def profile_add_address(request):
-    if request.method =="POST":
+    if request.method == "POST":
         form = UserAddressForm(request.POST)
         if form.is_valid():
             address = form.save(commit=False)
@@ -221,17 +257,18 @@ def profile_add_address(request):
                 address.is_default = True
             address.save()
             return redirect('profile_address')
-        
+
     else:
-        form = UserAddressForm()  
-    return render(request, "user_section/profile_add_edit_address.html",{'form':form,'edit_mode':False})
+        form = UserAddressForm()
+    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': False})
+
 
 @login_required
 def profile_edit_address(request, address_id):
     address = get_object_or_404(request.user.addresses, id=address_id)
 
     if request.method == 'POST':
-        form = UserAddressForm(request.POST,instance=address)
+        form = UserAddressForm(request.POST, instance=address)
         if form.is_valid():
             updated_address = form.save(commit=False)
             if request.POST.get('setDefault') == 'on':
@@ -242,16 +279,17 @@ def profile_edit_address(request, address_id):
     else:
         form = UserAddressForm(instance=address)
 
-    
-    return render(request, "user_section/profile_add_edit_address.html",{'form':form,'edit_mode':True})
+    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': True})
+
 
 @login_required
-def profile_delete_address(request,address_id):
+def profile_delete_address(request, address_id):
     address = get_object_or_404(request.user.addresses, id=address_id)
 
     if request.method == "POST":
         address.delete()
     return redirect('profile_address')
+
 
 @login_required
 def profile_change_password(request):
@@ -266,15 +304,15 @@ def profile_change_password(request):
         if not user.check_password(old_password):
             messages.error(request, 'Current password is incorrect')
             return render(request, 'user_section/profile_change_password.html')
-        
+
         if new_password != confirm_password:
             messages.error(request, 'New passwords do not match')
             return render(request, 'user_section/profile_change_password.html')
-        
+
         if len(new_password) < 8:
-                messages.error(request, 'Password must be at least 8 characters')
-                return render(request, 'user_section/profile_change_password.html')
-        
+            messages.error(request, 'Password must be at least 8 characters')
+            return render(request, 'user_section/profile_change_password.html')
+
         user.set_password(new_password)
         user.save()
 
@@ -283,11 +321,3 @@ def profile_change_password(request):
         messages.success(request, 'Password updated successfully')
         return redirect('profile_info')
     return render(request, "user_section/profile_change_password.html")
-
-
-
-   
-    
-
-
-

@@ -217,7 +217,7 @@ class BrandUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, "Please fix the errors.")
+        # messages.error(self.request, "Please fix the errors.")
         return self.render_to_response(self.get_context_data(form=form))
 
 # ============== Brand Create View ===================
@@ -460,6 +460,9 @@ def toggle_product_status(request, product_id):
     product.is_active = not product.is_active
     product.save(update_fields=['is_active'])
 
+    if not product.is_active:
+        product.variants.update(is_active=False)
+
     return JsonResponse({
         'success': True,
         'is_active': product.is_active,
@@ -483,23 +486,28 @@ def product_variant_add(request, product_id):
         image_formset = ProductVariantImageFormSet(
                 request.POST,
                 request.FILES,
+                prefix="images"
             )
 
         if form.is_valid() and image_formset.is_valid():
             with transaction.atomic():
                 variant = form.save(commit=False)
                 variant.product = product
-                variant.sku = f"{product.id}-{variant.size.id}-{variant.color.id}"
+                if not variant.sku:
+                    variantSize = variant.size.id if variant.size else "FREESIZE"
+                    variantColor = variant.color.name.replace(" ", "").upper()
+                    variant.sku = f"{product.id}-{variantSize}-{variantColor}"
+                
                 variant.save()
-
-                image_formset.instance = variant    # parent=variant
+                product.save(update_fields=["updated_at"])
+                image_formset.instance = variant        
                 image_formset.save()
             messages.success(request, "Product variant added successfully.")
             return redirect("product_list")
 
     else:
         form = ProductVariantForm()
-        image_formset = ProductVariantImageFormSet()
+        image_formset = ProductVariantImageFormSet(prefix="images")
         
 
     return render(
@@ -527,7 +535,8 @@ def product_variant_update(request, variant_id):
         image_formset = ProductVariantImageFormSet(
             request.POST,
             request.FILES,
-            instance=variant
+            instance=variant,
+            prefix="images"
         )
 
         if form.is_valid() and image_formset.is_valid():
@@ -551,6 +560,7 @@ def product_variant_update(request, variant_id):
                 with transaction.atomic():
                     form.save()
                     image_formset.save()
+                    variant.product.save(update_fields=["updated_at"])
 
                 messages.success(request, "Product variant updated successfully.")
                 return redirect("product_list")
@@ -558,7 +568,7 @@ def product_variant_update(request, variant_id):
         
     else:
         form = ProductVariantForm(instance=variant)
-        image_formset = ProductVariantImageFormSet(instance=variant)
+        image_formset = ProductVariantImageFormSet(instance=variant,prefix="images")
 
     return render(
         request,
@@ -578,17 +588,15 @@ def product_variant_update(request, variant_id):
 @user_passes_test(is_admin)
 def toggle_variant_status(request, variant_id):
     variant = get_object_or_404(ProductVariant, id=variant_id)
-    if not variant.is_active:
-        if variant.images.count() < 3:
-            return JsonResponse(
-                {
-                    "success": False,
-                    "message": "Variant must have at least 3 images to activate."
-                },
-                status=400
-            )
+    if not variant.product.is_active:
+        return JsonResponse({
+            "success": False,
+            "message": "Product is inactive"
+        }, status=400)
     variant.is_active = not variant.is_active
     variant.save(update_fields=["is_active"])
+    variant.product.save(update_fields=["updated_at"])
+
 
     return JsonResponse({
         "success": True,

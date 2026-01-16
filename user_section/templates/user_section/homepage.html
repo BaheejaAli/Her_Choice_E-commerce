@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=1.2" />
+  {% comment %} <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" /> {% endcomment %}
 {% endblock %}
 
 {% block content %}
@@ -29,83 +30,174 @@
     </div>
   </section>
 
-  {% comment %} {% if search_query %}
-    {% endcomment %}
-    {% comment %} <section class="featured-section">
-      <h2 class="section-title">Search Results for "{{ search_query }}"</h2>
-
-      <div class="product-grid">
-        {% for product in search_results %}
-          <div class="product-card"></div>
-        {% empty %}
-          <div style="grid-column: span 12; text-align: center; padding: 40px;">
-            <p>No products found matching "{{ search_query }}".</p>
-            <a href="." class="btn-shop" style="display:inline-block; margin-top:10px;">View All Collections</a>
+  <!-- New Arrivals -->
+  <section class="featured-section">
+    <h2 class="section-title">New Arrivals</h2>
+    <div class="product-grid">
+      {% for product in new_arrivals %}
+        <div class="product-card">
+          <div class="product-img-container">
+            {% if product.display_image %}
+              <img src="{{ product.display_image.url }}" alt="{{ product.display_image.alt_text }}" />
+            {% else %}
+              <img src="{% static 'images/no-image.png' %}" alt="No image" />
+            {% endif %}
           </div>
-        {% endfor %}
+          <div class="product-info">
+            <p class="product-name">{{ product.name }}</p>
+            <div class="price">
+              <span class="offer-price">
+                From ₹ {{ product.variants.first.final_price }}
+              </span>
+              <del class="old-price">₹ {{ product.variants.first.base_price }}</del>
+            </div>
+            <div class="button-group">
+              <button class="btn-add" onclick="addToCart(13)">🛍️ ADD TO CART</button>
+              <button class="btn-buy">🛍️ Buy Now</button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Featured Collection -->
+  <section class="featured-section">
+    <h2 class="section-title">Featured Collection</h2>
+    <div class="product-grid">
+      {% for variant in featured_products %}
+        <!-- Product 1 -->
+        <div class="product-card">
+          <div class="product-img-container">
+            <a href="#"><img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&h=600&fit=crop" alt="Stylish Pink Dress" class="product-image" /></a>
+          </div>
+          <div class="product-info">
+            <p>Stylish Pink Dress</p>
+            <div class="price">
+              <span class="offer-price">₹72.00</span>
+              <del class="old-price">₹85.00</del>
+            </div>
+            <div class="button-group">
+              <button class="btn-add" onclick="addToCart(1)">🛍️ ADD TO CART</button>
+              <button class="btn-buy">🛍️ Buy Now</button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Trending Products -->
+  <section class="featured-section">
+    <h2 class="section-title">Trending Products</h2>
+    <div class="product-grid">
+      
+      <!-- Product 1 -->
+      <div class="product-card">
+        <div class="product-img-container">
+          <a href="#"><img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400&h=600&fit=crop" alt="Denim Mini Dress" class="product-image" /></a>
+        </div>
+        <div class="product-info">
+          <p>Denim Mini Dress</p>
+          <div class="price">
+            <span class="offer-price">₹68.00</span>
+            <del class="old-price">₹90.00</del>
+          </div>
+          <div class="button-group">
+            <button class="btn-add" onclick="addToCart(21)">🛍️ ADD TO CART</button>
+            <button class="btn-buy">🛍️ Buy Now</button>
+          </div>
+        </div>
       </div>
-    </section> {% endcomment %}
-    {% comment %}
-  {% else %}
-    {% endcomment %}
+    </div>
+  </section>
 
-    <!-- NEW ARRIVALS -->
-    {% if new_arrivals %}
-      <section class="featured-section">
-        <h2 class="section-title">New Arrivals</h2>
-        <div class="product-grid">
-          {% for product in new_arrivals %}
-            {% include 'products/includes/product_card.html' %}
-          {% endfor %}
+  <!-- Shop by Category -->
+  {% comment %} <section class="category-section">
+    <h2 class="section-title">Shop by Category</h2>
+    <div class="category-grid">
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&h=300&fit=crop" alt="Evening Dresses" />
+        <div class="category-overlay">
+          <div class="category-name">Evening Dresses</div>
         </div>
-      </section>
-    {% endif %}
+      </div>
 
-    <!-- Featured Collection -->
-    {% if featured_products %}
-      <section class="featured-section">
-        <h2 class="section-title">Featured Collection</h2>
-        <div class="product-grid">
-          {% for product in featured_products %}
-            {% include 'products/includes/product_card.html' %}
-          {% endfor %}
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=300&fit=crop" alt="Summer Dress" />
+        <div class="category-overlay">
+          <div class="category-name">Summer Dress</div>
         </div>
-      </section>
-    {% endif %}
+      </div>
 
-    {% comment %}----------- TRENDING PRODUCTS -------------{% endcomment %}
-    {% if trending_products %}
-      <section class="featured-section">
-        <h2 class="section-title">Trending Products</h2>
-        <div class="product-grid">
-          {% for product in trending_products %}
-            {% include 'products/includes/product_card.html' %}
-          {% endfor %}
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&h=300&fit=crop" alt="Beach Wear" />
+        <div class="category-overlay">
+          <div class="category-name">Beach Wear</div>
         </div>
-      </section>
-    {% endif %}
+      </div>
 
-    {% comment %}----------- Category -------------{% endcomment %}
-    {% if categories %}
-      <section class="category-section">
-        <h2 class="section-title">Shop by Category</h2>
-        <div class="category-grid">
-          {% for category in categories %}
-           <a href="{% url 'product_listing' %}?category={{ category.id }}"
-       class="category-box">
-              {% if category.image %}
-                <img src="{{ category.image.url }}" alt="{{ category.name }}" />
-                <span>{{ category.name }}</span>
-              {% else %}
-                <div class="category-placeholder">
-                  <span class="placeholder-title">{{ category.name }}</span>
-                </div>
-              {% endif %}
-              </a>
-          {% endfor %}
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1562137369-1a1a0bc66744?w=500&h=300&fit=crop" alt="Casual Dresses" />
+        <div class="category-overlay">
+          <div class="category-name">Casual Dresses</div>
         </div>
-      </section>
-    {% endif %}
-    {% comment %}
-  {% endif %} {% endcomment %}
+      </div>
+
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=500&h=300&fit=crop" alt="Party Dresses" />
+        <div class="category-overlay">
+          <div class="category-name">Party Dresses</div>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=500&h=300&fit=crop" alt="Formal Dresses" />
+        <div class="category-overlay">
+          <div class="category-name">Formal Dresses</div>
+        </div>
+      </div>
+    </div>
+  </section> {% endcomment %}
 {% endblock %}
+<script>
+  function addToCart(variantId) {
+    // Simulated add to cart - replace with actual Django implementation
+    alert(`Adding product ${variantId} to cart!`)
+  
+    /* Django implementation:
+              fetch('/cart/add/', {
+                  method: 'POST',
+                  headers: {
+                      'X-CSRFToken': getCookie('csrftoken'),
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  },
+                  body: `variant_id=${variantId}`
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.status === 'success') {
+                      alert(data.message);
+                  } else {
+                      alert(data.message);
+                  }
+              })
+              .catch(error => console.error(error));
+              */
+  }
+  
+  function getCookie(name) {
+    let cookieValue = null
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';')
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim()
+        if (cookie.substring(0, name.length + 1) === name + '=') {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+          break
+        }
+      }
+    }
+    return cookieValue
+  }
+</script>

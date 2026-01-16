@@ -5,7 +5,7 @@
 {% block page_title %}Product Management{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.1">
+<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
 {% endblock %}
 
 {% block content %}
@@ -92,15 +92,6 @@
 
   <td>
     <div class="product-cell">
-      <div class="product-thumb-wrapper">
-        {% if product.image %}
-          <img src="{{ product.image.url }}" class="product-thumb">
-        {% else %}
-          <div class="no-thumb">No Image</div>
-        {% endif %}
-      </div>
-
-
       <div class="product-info">
         <h6 class="product-name">{{ product.name }}</h6>
         <span class="variant-count">
@@ -166,7 +157,14 @@
             <td>{{ variant.color.name }}</td>
             <td>₹ {{ variant.final_price }}</td>
             <td>{{ variant.stock }}</td>
-            <td>{{ variant.is_active|yesno:"Active,Inactive" }}</td>
+            <td>
+              <button
+                class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                data-url="{% url 'toggle_variant_status' variant.id %}"
+                onclick="toggleVariantStatus(this)">
+                {{ variant.is_active|yesno:"Active,Inactive" }}
+              </button>
+            </td>
             <td>
               <a href="{% url 'product_variant_edit' variant.id %}">
                 <i class="fa-solid fa-pen"></i>
@@ -188,10 +186,7 @@
 <tr>
   <td colspan="6" class="empty-text">No products found</td>
 </tr>
-{% endfor %}
-
-        
-      
+{% endfor %}    
       </tbody>
     </table>
 
@@ -232,27 +227,53 @@
     });
   }
 
- 
+
+function toggleVariantStatus(btn) {
+  const url = btn.dataset.url;
+  const csrftoken =
+    document.querySelector('#csrf-form input[name=csrfmiddlewaretoken]').value;
+
+  btn.disabled = true;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      btn.textContent = data.is_active ? 'Active' : 'Inactive';
+
+      btn.classList.toggle('btn-success', data.is_active);
+      btn.classList.toggle('btn-secondary', !data.is_active);
+    } else {
+      alert(data.message || 'Action not allowed');
+    }
+  })
+  .catch(() => alert('Something went wrong'))
+  .finally(() => {
+    btn.disabled = false;
+  });
+}
+
+{% comment %} for showing the variants in dropdown{% endcomment %}
 function toggleVariants(productId) {
   const currentRow = document.getElementById(`variants-${productId}`);
 
-  // Close all other variant rows
+ 
   document.querySelectorAll('.variant-row').forEach(row => {
     if (row !== currentRow) {
       row.style.display = 'none';
     }
   });
 
-  // Toggle current row
   if (currentRow.style.display === 'table-row') {
     currentRow.style.display = 'none';
   } else {
     currentRow.style.display = 'table-row';
-  }
+  } 
 }
-
-
-
-
 </script>
 {% endblock %}

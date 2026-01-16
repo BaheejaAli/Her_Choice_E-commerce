@@ -5,16 +5,10 @@ from .models import Brand, Category
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
-        fields = ["name", "logo", "description", "is_active"]
+        fields = ["name", "logo", "is_active"]
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "form-input-field",
-                }
-            ),
-            "description": forms.Textarea(
-                attrs={
-                    "rows": 4,
                     "class": "form-input-field",
                 }
             ),
@@ -64,19 +58,12 @@ class BrandForm(forms.ModelForm):
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ["name", "description", "is_active"]
+        fields = ["name", "is_active"]
         widgets = {
             "name": forms.TextInput(
                 attrs={
                     "placeholder": "Category Name (e.g., Dresses, Accessories)",
                     "class": "form-input-field",
-                }
-            ),
-            "description": forms.Textarea(
-                attrs={
-                    "placeholder": "Enter a short description...",
-                    "class": "form-input-field",
-                    "rows": 3,
                 }
             ),
             "is_active": forms.Select(
@@ -104,14 +91,5 @@ class CategoryForm(forms.ModelForm):
             )
 
         return name
-
-    def clean_description(self):
-        description = self.cleaned_data.get("description", "").strip()
-        if len(description) > 250:
-            raise forms.ValidationError(
-                "Description must be shorter than 250 characters."
-            )
-
-        return description
 
     

@@ -137,18 +137,18 @@
 /* Preview Image */
 .product-image-preview {
     width: 100%;
-    height: 280px;
+    height: 200px;
     object-fit: cover;
-    border-radius: 14px;
+    border-radius: 12px;
     border: 2px dashed #dfe6e9;
     transition: 0.3s ease;
 }
 
 /* Placeholder */
 .product-image-placeholder {
-    height: 280px;
+    height: 200px;
     border: 2px dashed #dfe6e9;
-    border-radius: 14px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,7 +159,6 @@
 }
 
 .product-image-placeholder i {
-    font-size: 42px;
     color: #b2bec3;
     margin-bottom: 12px;
 }

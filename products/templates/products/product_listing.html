@@ -78,14 +78,17 @@
 
         <!-- Product listing -->
         <div class="product-grid">
-            {% for product in products %}
-                {% include 'products/includes/product_card.html' %}
-            {% empty %}
+            {% comment %} {% for product in products %}
+                {% include 'products/product_card.html' %}
+            {% empty %} {% endcomment %}
+            {% if products %}
+                {% include 'products/product_card.html' with products=products %}
+            {% else %}
                 <div class="no-results">
                     <p>No results found for "<strong>{{ search_query }}</strong>".</p>
                     <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
                 </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </main>
 </div>

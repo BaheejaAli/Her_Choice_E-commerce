@@ -18,10 +18,6 @@ class Brand(models.Model):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "svg", "webp"])],
     )
 
-    description = models.TextField(
-        max_length=500
-    )
-
     is_active = models.BooleanField(
         default=True
     )
@@ -38,12 +34,6 @@ class Brand(models.Model):
 # ================== CATEGORY MODEL ==================
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True, help_text="Category Name")
-    description = models.TextField(
-        max_length=250,
-        help_text="Brief description of the category",
-        blank=True,
-        null=True,
-    )
   
     is_active = models.BooleanField(
         default=True

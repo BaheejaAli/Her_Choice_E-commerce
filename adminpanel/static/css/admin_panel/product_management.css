@@ -540,6 +540,10 @@ del {
     font-size: 11px;
     color: #9ca3af;
 }
+.variant-table .status-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+}
 
 /* Product info */
 .product-info {

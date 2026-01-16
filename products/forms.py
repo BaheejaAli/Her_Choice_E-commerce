@@ -13,7 +13,6 @@ class ProductForm(forms.ModelForm):
             "name",
             "description",
             "material",
-            "image",
             "category",
             "brand",
             "is_active",
@@ -77,14 +76,14 @@ class ProductForm(forms.ModelForm):
         return name
     
 
-    def clean_image(self):
-        image = self.cleaned_data.get("image")
-        if not image and not self.instance.pk:
-            raise forms.ValidationError("Product image is required.")
-        if image and image.size > 2 * 1024 * 1024:
-            raise forms.ValidationError("Image file too large. Max size is 2MB.")
+    # def clean_image(self):
+    #     image = self.cleaned_data.get("image")
+    #     if not image and not self.instance.pk:
+    #         raise forms.ValidationError("Product image is required.")
+    #     if image and image.size > 2 * 1024 * 1024:
+    #         raise forms.ValidationError("Image file too large. Max size is 2MB.")
 
-        return image
+    #     return image
 
 
 
@@ -101,7 +100,6 @@ class ProductVariantForm(forms.ModelForm):
             "base_price",
             "offer_price",
             "stock",
-            "is_active",
         ]
         widgets = {
             "size": forms.Select(attrs={"class": "form-input-field"}),
@@ -114,10 +112,6 @@ class ProductVariantForm(forms.ModelForm):
             ),
             "stock": forms.NumberInput(
                 attrs={"class": "form-input-field", "min": 0}
-            ),
-            "is_active": forms.Select(
-                choices=[(True, "Active"), (False, "Inactive")],
-                attrs={"class": "form-input-field"},
             ),
         }
 

@@ -14,8 +14,6 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(max_length=250,blank=True,null=True)
-    image = models.ImageField(upload_to="products/images/",
-        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],null=True,blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products")
     material = models.CharField(max_length=100,blank=True,null=True)
@@ -76,7 +74,7 @@ class Color(models.Model):
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="variants")
 
-    size = models.ForeignKey(Size, on_delete=models.CASCADE)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE,null=True, blank=True)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     base_price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -115,6 +113,10 @@ class ProductVariant(models.Model):
                         self.base_price) * 100
             return int(discount)
         return 0
+    
+    @property
+    def primary_image(self):
+        return self.images.filter(is_primary=True).first()
 
     # ---------- Validation ----------
     def clean(self):
@@ -136,9 +138,22 @@ class ProductVariantImage(models.Model):
     variant = models.ForeignKey(ProductVariant,on_delete=models.CASCADE,related_name="images")
     image = models.ImageField(upload_to="products/variant-images/",validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])])
     alt_text = models.CharField(max_length=250, blank=True)
+    is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.variant} Image"
+    def save(self, *args, **kwargs):
+        if not ProductVariantImage.objects.filter(variant=self.variant).exists():
+            self.is_primary = True
+
+        if self.is_primary:
+            ProductVariantImage.objects.filter(
+                variant=self.variant,
+                is_primary=True
+            ).exclude(pk=self.pk).update(is_primary=False)
+        super().save(*args, **kwargs)
+
+
 
 
 

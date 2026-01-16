@@ -1,0 +1,81 @@
+{% load static %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" />
+{% endblock %}
+
+<div class="product-card">
+  <p style="color:red">
+  Variants count: {{ product.variants.count }}
+</p>
+
+  {% for product in products %}
+    {% with variant=product.variants.first %}
+      
+      <div class="product-img-container">
+        <a href="#">
+          {% if variant and variant.images.first %}
+            <img src="{{ variant.images.first.image.url }}" alt="{{ product.name }}" class="product-image" />
+          {% else %}
+            <img src="{% static 'images/default_product.jpg' %}" alt="No image available" class="product-image" />
+          {% endif %}
+        </a>
+      </div>
+
+      <div class="product-info">
+        <p>{{ product.name }}</p>
+        <div class="price">
+          {% if variant.offer_price %}
+            <span class="offer-price">₹ {{ variant.offer_price }}</span>
+            <del class="old-price">₹ {{ variant.base_price }}</del>
+          {% else %}
+            <span class="regular-price">₹ {{ variant.base_price }}</span>
+          {% endif %}
+        </div>
+
+        <div class="button-group">
+          {% if product.is_active and variant.is_active and variant.stock > 0 %}
+         
+            <button class="btn-add" onclick="addToCart({{ variant.id }})"><i class="fas fa-shopping-bag"></i> ADD TO CART</button>
+
+            <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
+          {% else %}
+            <button class="btn-disabled" disabled>
+              {% if not product.is_active %}
+                CURRENTLY UNAVAILABLE
+              {% elif not variant.is_active %}
+                OPTION NOT AVAILABLE
+              {% elif variant.stock <= 0 %}
+                OUT OF STOCK
+              {% else %}
+                UNAVAILABLE
+              {% endif %}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    {% endwith %}
+  {% endfor %}
+</div>
+
+<script>
+  function addToCart(variantId) {
+    fetch('/cart/add/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `variant_id=${variantId}`
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'success') {
+          alert(data.message)
+        } else {
+          alert(data.message)
+        }
+      })
+      .catch((error) => console.error(error))
+  }
+</script>
+
