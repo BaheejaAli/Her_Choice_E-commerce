@@ -15,21 +15,24 @@ from datetime import timedelta
 from django.utils import timezone
 from accounts.models import CustomUser
 
-# Create your views here.
+#  only one image
 def attach_display_image(products):
     for product in products:
         product.display_image = None
 
-        primary = ProductVariantImage.objects.filter(
-            variant__product=product,
-            variant__is_active=True,
-            is_primary=True
-        ).first()
+        variant = product.variants.filter(is_active=True).first()
+        if not variant:
+            continue
 
-        if primary:
-            product.display_image = primary.image         
-        else:
-            print("NO IMAGE →", product.name)
+        image = variant.images.filter(is_primary=True).first()
+        if image:
+            product.display_image = image.image
+
+# ONLY ONE active variant
+def attach_display_variant(products):
+    for product in products:
+        product.display_variant = product.variants.filter(is_active=True).first()
+
 
 def homepage(request):
     new_arrivals = (
@@ -53,10 +56,14 @@ def homepage(request):
         .order_by("?")[:8]
     )
 
-    # 🔑 CALL THE FUNCTION HERE
     attach_display_image(new_arrivals)
     attach_display_image(featured_products)
     attach_display_image(trending_products)
+
+    attach_display_variant(new_arrivals)
+    attach_display_variant(featured_products)
+    attach_display_variant(trending_products)
+
 
     categories = Category.objects.filter(is_active=True).order_by("?")[:4]
 

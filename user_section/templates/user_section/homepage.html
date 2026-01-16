@@ -1,142 +1,63 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 
-{% block title %}
-  Home | Her Choice
-{% endblock %}
+{% block title %}Home | Her Choice{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=1.2" />
-  {% comment %} <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" /> {% endcomment %}
+<link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=1.1">
+<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.1" />
 {% endblock %}
 
 {% block content %}
-  {% if messages %}
-    <div class="messages-container">
-      {% for message in messages %}
-        <div class="message-item {{ message.tags }}">
-          <span class="message-text">{{ message }}</span>
-          <button class="message-close" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1>Welcome to Her Choice</h1>
-      <p>Discover stylish collections designed to empower every woman.</p>
-      <a href="#shop" class="btn-shop">Shop Now</a>
+{% if messages %}
+<div class="messages-container">
+  {% for message in messages %}
+    <div class="message-item {{ message.tags }}">
+      {{ message }}
+      <span onclick="this.parentElement.remove()">×</span>
     </div>
-  </section>
+  {% endfor %}
+</div>
+{% endif %}
 
-  <!-- New Arrivals -->
-  <section class="featured-section">
-    <h2 class="section-title">New Arrivals</h2>
-    <div class="product-grid">
-      {% for product in new_arrivals %}
-        <div class="product-card">
-          <div class="product-img-container">
-            <a href="#">
-              {% if product.display_image %}
-                <img src="{{ product.display_image.url }}" alt="{{ product.name }}" class="product-image" />
-              {% else %}
-                <div class="no-image-box">No Image</div>
-              {% endif %}
-            </a>
-          </div>
-          <div class="product-info">
-            <p>{{ product.name }}</p>
-            <div class="price">
-              {% if product.variants.first.offer_price %}
-                <span class="offer-price">₹ {{ product.variants.first.offer_price }}</span>
-                <del class="old-price">₹ {{ product.variants.first.base_price }}</del>
-              {% else %}
-                <span class="regular-price">₹ {{ product.variants.first.base_price }}</span>
-              {% endif %}
-            </div>
-            <div class="button-group">
-              <a href="{% url 'cart' %}" class="btn-add">
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-              </a>
+<!-- HERO -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1>Welcome to Her Choice</h1>
+    <p>Discover stylish collections designed to empower every woman.</p>
+    <a href="{% url 'product_listing' %}" class="btn-shop">Shop Now</a>
+  </div>
+</section>
 
-              {% comment %} <button class="btn-add" onclick="addToCart(1)"><i class="fas fa-shopping-cart"></i> Add to Cart</button> {% endcomment %}
-              <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
+<!-- NEW ARRIVALS -->
+<section class="featured-section">
+  <h2 class="section-title">New Arrivals</h2>
+  <div class="home-product-grid">
+    {% for product in new_arrivals %}
+      {% include "products/product_card.html" with product=product %}
+    {% endfor %}
+  </div>
+</section>
 
-  <!-- Featured Collection -->
-  <section class="featured-section">
-    <h2 class="section-title">Featured Collection</h2>
-    <div class="product-grid">
-      {% for product in featured_products %}
-        <div class="product-card">
-          <div class="product-img-container">
-            <a href="#">
-              {% if product.display_image %}
-                <img src="{{ product.display_image.url }}" alt="{{ product.name }}" class="product-image" />
-              {% else %}
-                <div class="no-image-box">No Image</div>
-              {% endif %}
-            </a>
-          </div>
-          <div class="product-info">
-            <p>{{ product.name }}</p>
-            <div class="price">
-              {% if product.variants.first.offer_price %}
-                <span class="offer-price">₹ {{ product.variants.first.offer_price }}</span>
-                <del class="old-price">₹ {{ product.variants.first.base_price }}</del>
-              {% else %}
-                <span class="regular-price">₹ {{ product.variants.first.base_price }}</span>
-              {% endif %}
-            </div>
-            <div class="button-group">
-              <button class="btn-add" onclick="addToCart(1)"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-              <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
+<!-- FEATURED -->
+<section class="featured-section">
+  <h2 class="section-title">Featured Collection</h2>
+  <div class="home-product-grid">
+    {% for product in featured_products %}
+      {% include "products/product_card.html" with product=product %}
+    {% endfor %}
+  </div>
+</section>
 
-  <!-- Trending Products -->
-  <section class="featured-section">
-    <h2 class="section-title">Trending Products</h2>
-    <div class="product-grid">
-      {% for product in trending_products %}  
-      <div class="product-card">
-        <div class="product-img-container">
-          <a href="#">
-            {% if product.display_image %}
-              <img src="{{ product.display_image.url }}" alt="{{ product.name }}" class="product-image" />
-            {% else %}
-              <div class="no-image-box">No Image</div>
-            {% endif %}
-          </a>
-        </div>
-        <div class="product-info">
-          <p>{{ product.name }}</p>
-          <div class="price">
-            {% if product.variants.first.offer_price %}
-              <span class="offer-price">₹ {{ product.variants.first.offer_price }}</span>
-              <del class="old-price">₹ {{ product.variants.first.base_price }}</del>
-            {% else %}
-              <span class="regular-price">₹ {{ product.variants.first.base_price }}</span>
-            {% endif %}
-          </div>
-          <div class="button-group">
-            <button class="btn-add" onclick="addToCart(1)"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-            <button class="btn-buy"><i class="fas fa-shopping-bag"></i> Buy Now</button>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
+<!-- TRENDING -->
+<section class="featured-section">
+  <h2 class="section-title">Trending Products</h2>
+  <div class="home-product-grid">
+    {% for product in trending_products %}
+      {% include "products/product_card.html" with product=product %}
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}

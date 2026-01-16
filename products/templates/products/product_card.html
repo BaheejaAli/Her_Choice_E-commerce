@@ -1,0 +1,51 @@
+{% load static %}
+
+<div class="product-card">
+  <div class="product-img-container">
+    <a href="{% url 'product_detail' product.slug %}">
+      {% if product.display_image %}
+        <img src="{{ product.display_image.url }}" 
+             alt="{{ product.name }}" 
+             class="product-image">
+      {% elif product.variants.first.images.first %}
+        <img src="{{ product.variants.first.images.first.image.url }}" 
+             alt="{{ product.name }}" 
+             class="product-image">
+      {% else %}
+        <div class="no-image-box">No Image</div>
+      {% endif %}
+    </a>
+  </div>
+<br>
+  <div class="product-info">
+    <p class="product-name">
+      <a href="{% url 'product_detail' product.slug %}" style="text-decoration: none;">{{ product.name }}</a>
+    </p>
+
+    <div class="price">
+      {% with v=product.variants.first %}
+        {% if v and v.offer_price %}
+          <span class="offer-price">₹{{ v.offer_price }}</span>
+          <del class="old-price">₹{{ v.base_price }}</del>
+        {% elif v %}
+          <span class="regular-price">₹{{ v.base_price }}</span>
+        {% endif %}
+      {% endwith %}
+    </div>
+<br>
+    {% with v=product.variants.first %}
+      {% if v and v.is_active and product.is_active %}
+        <div class="button-group">
+          <button class="btn-add" onclick="addToCart({{ v.id }})">
+            Add to Cart
+          </button>
+          <a href="{% url 'product_detail' product.slug %}" class="btn-buy">
+            Buy Now
+          </a>
+        </div>
+      {% else %}
+        <span class="out-of-stock">Unavailable</span>
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>

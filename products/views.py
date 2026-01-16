@@ -1,13 +1,28 @@
 from django.shortcuts import render
 from django.views.generic import ListView
-from .models import Product
+from .models import Product, ProductVariantImage
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db.models import Case, When, F, DecimalField, Count, Min
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
-# Create your views here.
+
+def pro(request):
+    return render(request, "products/pro.html")
+#  only one image
+def attach_display_image(products):
+    for product in products:
+        product.display_image = None
+
+        variant = product.variants.filter(is_active=True).first()
+        if not variant:
+            continue
+
+        image = variant.images.filter(is_primary=True).first()
+        if image:
+            product.display_image = image.image
+
 
 def product_listing(request):
     queryset = (
@@ -66,6 +81,12 @@ def product_listing(request):
     paginator = Paginator(queryset, 12)  # 12 per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    for product in page_obj:
+        product.display_variant = product.variants.filter(is_active=True).first()
+
+    attach_display_image(page_obj)
+
 
     categories = Category.objects.annotate(
         product_count=Count('products', filter=Q(products__is_active=True))

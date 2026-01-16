@@ -2,14 +2,15 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/products/product_listing.css' %}?v=1.8" />
+  <link rel="stylesheet" href="{% static 'css/products/product_listing.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.1" />
 {% endblock %}
 
 {% block content %}
 <div class="shop-container">
     <aside class="filter-sidebar">
         <div class="results-count">
-            <span>Her Choice Fashion Store - <strong>{{ products|length }}</strong> Items</span>
+            <span>Her Choice Fashion Store </span>
         </div>
 
         <form action="" method="GET"id="filter-form">
@@ -77,18 +78,15 @@
         </div>
 
         <!-- Product listing -->
-        <div class="product-grid">
-            {% comment %} {% for product in products %}
-                {% include 'products/product_card.html' %}
-            {% empty %} {% endcomment %}
-            {% if products %}
-                {% include 'products/product_card.html' with products=products %}
-            {% else %}
+        <div class="listing-product-grid">
+            {% for product in products %}
+                {% include 'products/product_card.html' %} 
+            {% empty %}
                 <div class="no-results">
                     <p>No results found for "<strong>{{ search_query }}</strong>".</p>
                     <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
                 </div>
-            {% endif %}
+            {% endfor %}
         </div>
     </main>
 </div>
