@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Product, ProductVariantImage, Color, Size
+from .models import Product, ProductVariant, Size
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -199,3 +199,30 @@ def product_detail_view(request, slug):
     }
 
     return render(request, "products/product_detail.html", context)
+
+def variant_detail_api(request):
+    variant_id = request.GET.get("variant_id")
+
+    if not variant_id:
+        return JsonResponse({"error": "variant_id required"}, status=400)
+
+    variant = get_object_or_404(
+        ProductVariant,
+        id=variant_id,
+        is_active=True
+    )
+
+    images = [
+        img.image.url
+        for img in variant.images.all()
+    ]
+
+    return JsonResponse({
+        "variant_id": variant.id,
+        "price": str(variant.final_price),
+        "base_price": str(variant.base_price),
+        "offer_price": str(variant.offer_price) if variant.offer_price else None,
+        "stock": variant.stock,
+        "size": variant.size.name if variant.size else None,
+        "images": images
+    })

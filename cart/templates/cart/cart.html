@@ -18,17 +18,19 @@
           {% if cart_items %}
             {% for item in cart_items %}
               <div class="cart-item" data-item-id="{{ item.id }}">
-                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="item-image" />
-
+                <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}" class="item-image" />
                 <div class="item-details">
-                  <div class="item-name">{{ item.product.name }}</div>
-                  <div class="item-specs">Size: M | Color: Burgundy</div>
-
-                  {% if not item.product.is_active or not item.product.category.is_active or not item.product.brand.is_active %}
+                  <div class="item-name">{{ item.variant.product.name }}</div>
+                  <div class="item-specs">
+                    {% if item.variant.size %}
+                      Size: {{ item.variant.size.name }} |
+                    {% endif %}Color: {{ item.variant.color.name }}
+                  </div>
+                  {% if not item.variant.is_active or not item.variant.product.is_active or not item.variant.product.category.is_active or not item.variant.product.brand.is_active %}
                     <div class="stock-status unavailable">
                       <i class="fa-solid fa-ban"></i> Unavailable
                     </div>
-                  {% elif item.product.stock <= 0 %}
+                  {% elif item.variant.stock <= 0 %}
                     <div class="stock-status out-of-stock">
                       <i class="fa-solid fa-circle-xmark"></i> Out of Stock
                     </div>
@@ -45,11 +47,15 @@
 
                 <div class="item-actions">
                   <div class="quantity-control">
-                    <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'decrease')">−</button>
-
-                    <span class="quantity" id="qty-{{ item.id }}">{{ item.quantity }}</span>
-
-                    <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'increase')">+</button>
+                    {% if item.variant.stock <= 0 or not item.variant.is_active %}
+                      <button class="quantity-btn" disabled>−</button>
+                      <span class="quantity">{{ item.quantity }}</span>
+                      <button class="quantity-btn" disabled>+</button>
+                    {% else %}
+                      <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'decrease')">−</button>
+                      <span class="quantity" id="qty-{{ item.id }}">{{ item.quantity }}</span>
+                      <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'increase')">+</button>
+                    {% endif %}
                   </div>
                 </div>
 
@@ -70,9 +76,8 @@
             <span id="total">₹ {{ cart.get_total_price }}</span>
           </div>
 
-          <a href="checkout"><button class="checkout-btn">Proceed to Checkout</button></a>
-
-          <button class="continue-btn">Continue Shopping</button>
+          <a href="{% url 'checkout' %}"><button class="checkout-btn">Proceed to Checkout</button></a>
+          <a href="{% url 'product_listing' %}"><button class="continue-btn">Continue Shopping</button></a>
         </div>
       </div>
     </div>

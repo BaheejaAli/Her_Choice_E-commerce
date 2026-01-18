@@ -253,6 +253,9 @@ def profile_address(request):
 
 @login_required
 def profile_add_address(request):
+
+    next_url = request.GET.get("next") or request.POST.get("next")
+
     if request.method == "POST":
         form = UserAddressForm(request.POST)
         if form.is_valid():
@@ -262,16 +265,19 @@ def profile_add_address(request):
                 request.user.addresses.all().update(is_default=False)
                 address.is_default = True
             address.save()
+            if next_url:
+                return redirect(next_url)
             return redirect('profile_address')
 
     else:
         form = UserAddressForm()
-    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': False})
+    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': False, 'next': next_url})
 
 
 @login_required
 def profile_edit_address(request, address_id):
     address = get_object_or_404(request.user.addresses, id=address_id)
+    next_url = request.GET.get("next") or request.POST.get("next")
 
     if request.method == 'POST':
         form = UserAddressForm(request.POST, instance=address)
@@ -281,11 +287,13 @@ def profile_edit_address(request, address_id):
                 request.user.addresses.all().update(is_default=False)
                 updated_address.is_default = True
             updated_address.save()
+            if next_url:
+                return redirect(next_url)
             return redirect('profile_address')
     else:
         form = UserAddressForm(instance=address)
 
-    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': True})
+    return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': True, 'next': next_url})
 
 
 @login_required

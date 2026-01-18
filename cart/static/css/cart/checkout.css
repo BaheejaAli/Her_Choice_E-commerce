@@ -8,6 +8,10 @@
   border-radius: 12px;
   padding: 40px;
 }
+.address-card.selected {
+  border: 2px solid #ff1493;
+  background: #fff0f6;
+}
 
 /* =========================
    MAIN CONTENT
@@ -63,11 +67,6 @@
    ADDRESS SELECTION
 ========================= */
 
-/* hide radio input */
-.address-card input[type="radio"] {
-  display: none;
-}
-
 /* base card */
 .address-card {
   display: block;
@@ -87,40 +86,21 @@
   background: #fff8fc;
 }
 
-/* ===== SELECTED CARD (IMPORTANT PART) ===== */
-.address-card:has(input[type="radio"]:checked) {
-  border-color: #ff1493;
-  background: #fff8fc;
+.address-card.selected {
+  border: 2px solid #ff1493;
+  background-color: #fff5fa;
 }
 
-/* left highlight bar */
-.address-card:has(input[type="radio"]:checked)::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background: #ff1493;
-  border-radius: 12px 0 0 12px;
-}
-
-/* checkmark top-right */
-.address-card:has(input[type="radio"]:checked)::after {
-  content: "✓";
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 22px;
-  height: 22px;
-  background: #ff1493;
-  color: white;
+.edit-link {
   font-size: 14px;
-  font-weight: bold;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #ff1493;
+  text-decoration: none;
+  font-weight: 500;
+   margin-left: auto; 
+}
+
+.edit-link:hover {
+  text-decoration: underline;
 }
 
 /* address header */

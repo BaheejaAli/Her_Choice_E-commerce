@@ -37,11 +37,19 @@
         {% endif %}
       </h1>
       <p class="page-subtitle">
-        {% if edit_mode %}Modify your shipping information below
-        {% else %}Please fill in the information below{% endif %}</p>
+        {% if edit_mode %}
+          Modify your shipping information below
+        {% else %}
+          Please fill in the information below
+        {% endif %}
+      </p>
 
       <form method="POST" class="form-section">
         {% csrf_token %}
+
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}" />
+        {% endif %}
 
         <div class="section-title" style="margin-top: 40px;">Address Details</div>
 

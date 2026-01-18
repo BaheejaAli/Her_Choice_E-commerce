@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.1" />
+  <link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.2" />
 {% endblock %}
 
 {% block content %}
@@ -15,6 +15,8 @@
 
         <form method="POST">
           {% csrf_token %}
+          <input type="hidden" name="address_id" id="selected_address_id" value="{% if default_address %}{{ default_address.id }}{% endif %}" />
+
           <input type="hidden" name="payment_method" id="payment_method" value="Google Pay" />
 
           <div class="checkout-grid">
@@ -23,24 +25,19 @@
               <!-- Delivery Address -->
               <div class="section">
                 <h2 class="section-title">Delivery address</h2>
-                {% for address in addresses %}
-                  <label class="address-card">
-                    {% if address.is_default %}
-                      <input type="radio" name="address_id" value="{{ address.id }}" checked />
-                    {% else %}
-                      <input type="radio" name="address_id" value="{{ address.id }}" />
-                    {% endif %}
 
+                {% for address in addresses %}
+                  <div class="address-card {% if address.is_default %}selected{% endif %}" data-address-id="{{ address.id }}">
                     <div class="address-header">
                       <strong>{{ address.user.get_full_name }}</strong>
                       {% comment %} {% if address.is_default %}
                         <span class="default-badge">Default</span>
                       {% endif %} {% endcomment %}
+                      <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}" class="edit-link">Change</a>
                     </div>
 
-                    <div class="address-type">
-                      {{ address.address_type }}</div>
-                      <div class="address-text">
+                    <div class="address-type">{{ address.address_type }}</div>
+                    <div class="address-text">
                       {{ address.address_line_1 }}<br />
                       {% if address.address_line_2 %}
                         {{ address.address_line_2 }}<br />
@@ -49,10 +46,10 @@
                       {{ address.country }}<br />
                       {{ address.user.phone }}
                     </div>
-                  </label>
+                  </div>
                 {% endfor %}
-
-                <button class="add-address-btn">Add new address</button>
+                {% comment %} <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}" class="add-address-btn">+ Add new address</a> {% endcomment %}
+                {% comment %} <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}">Edit</a> {% endcomment %}
               </div>
 
               <!-- Payment Method -->
@@ -115,19 +112,64 @@
                 <h2 class="section-title">Order Summary</h2>
                 {% for item in cart_items %}
                   <div class="order-item">
-                    <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="item-image green" />
+                    <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}" class="item-image" />
 
                     <div class="item-details">
-                      <div class="item-name">{{ item.product.name }}</div>
-                      <div class="item-color">Color: White</div>
+                      <div class="item-name">{{ item.variant.product.name }}</div>
+
+                      <div class="item-color">
+                        {% if item.variant.size %}
+                          Size: {{ item.variant.size.name }} |
+                        {% endif %}Color: {{ item.variant.color.name }}
+                      </div>
+
                       <div class="item-color">Qty: {{ item.quantity }}</div>
-                      <div class="item-price">{{ item.sub_total }}</div>
+
+                      <div class="item-price">₹ {{ item.sub_total }}</div>
                     </div>
                   </div>
                 {% endfor %}
+
                 <div class="summary-row total">
-                  <span>Total</span>
-                  <span>{{ total }}</span>
+                  {% comment %} <span>Total</span>
+                  <span>{{ grand_total }}</span> {% endcomment %}
+                </div>
+
+                <div class="price-breakup">
+                  <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>₹ {{ subtotal }}</span>
+                  </div>
+
+                  {% if discount > 0 %}
+                    <div class="summary-row discount">
+                      <span>Discount</span>
+                      <span>- ₹ {{ discount }}</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>
+                      {% if shipping == 0 %}
+                        Free
+                      {% else %}
+                        ₹ {{ shipping }}
+                      {% endif %}
+                    </span>
+                  </div>
+
+                  {% if tax > 0 %}
+                    <div class="summary-row">
+                      <span>Tax</span>
+                      <span>₹ {{ tax }}</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="summary-row total">
+                    <strong>Total</strong>
+                    <strong>₹ {{ grand_total }}</strong>
+                  </div>
                 </div>
 
                 {% comment %} <div class="promo-code">
@@ -147,14 +189,34 @@
 {% endblock %}
 {% block extra_js %}
   <script>
-    // Payment option selection
-    document.querySelectorAll('.payment-option').forEach((option) => {
-      option.addEventListener('click', function () {
-        document.querySelectorAll('.payment-option').forEach((opt) => {
-          opt.classList.remove('selected')
-        })
-        this.classList.add('selected')
-      })
+  /* ================= PAYMENT SELECTION ================= */
+  document.querySelectorAll('.payment-option').forEach(option => {
+    option.addEventListener('click', function () {
+      document.querySelectorAll('.payment-option').forEach(opt =>
+        opt.classList.remove('selected')
+      )
+      this.classList.add('selected')
     })
-  </script>
+  })
+
+
+  /* ================= ADDRESS SELECTION ================= */
+  const cards = document.querySelectorAll('.address-card')
+  const hiddenInput = document.getElementById('selected_address_id')
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+
+      // remove highlight from all cards
+      cards.forEach(c => c.classList.remove('selected'))
+
+      // highlight clicked card
+      card.classList.add('selected')
+
+      // store selected address id
+      hiddenInput.value = card.dataset.addressId
+    })
+  })
+</script>
+
 {% endblock %}
