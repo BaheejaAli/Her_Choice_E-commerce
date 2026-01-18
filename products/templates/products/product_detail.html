@@ -17,7 +17,7 @@
     <div class="product-main-row">
       <div class="product-image-section">
         <div class="main-img-container" id="zoom-container">
-          {% with first_image=product.images.all|first %}
+          {% with first_image=selected_variant.images.all|first %}
             {% if first_image %}
               <img src="{{ first_image.image.url }}" id="product-img" alt="{{ product.name }}" />
             {% else %}
@@ -27,7 +27,7 @@
         </div>
 
         <div class="thumbnail-grid">
-          {% for image in product.images.all %}
+          {% for image in selected_variant.images.all %}
             <div class="thumb-wrapper {% if forloop.first %}active{% endif %}" onclick="changeImage(this, '{{ image.image.url }}')">
               <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail" />
             </div>
@@ -39,6 +39,32 @@
         <div class="product-header">
           <p class="brand-name">Brand: {{ product.brand.name }}</p>
           <h1 class="product-title">{{ product.name }}</h1>
+
+          <div class="variant-preview-section">
+            <h4>Other Variants</h4>
+            <div class="variant-preview-list">
+              {% for v in color_variants %}
+                {% with img=v.images.all|first %}
+                  {% if img %}
+                    <a href="?variant={{ v.id }}" class="variant-preview {% if selected_variant.id == v.id %}active{% endif %}" title="{{ v.color.name }}"><img src="{{ img.image.url }}" alt="{{ v.color.name }}" /></a>
+                  {% endif %}
+                {% endwith %}
+              {% endfor %}
+            </div>
+          </div>
+          {% if sizes %}
+            <div class="size-section">
+              <h4>Size</h4>
+
+              <div class="size-options">
+                {% for v in variants %}
+                  {% if v.color_id == selected_variant.color_id %}
+                    <button class="size-btn {% if selected_variant.id == v.id %}selected{% endif %}" onclick="window.location.href='?variant={{ v.id }}'">{{ v.size.name }}</button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
         </div>
 
         <div class="rating-container">
@@ -50,52 +76,54 @@
         <hr class="divider" />
 
         <div class="price-container">
-          <span class="current-price">₹{{ product.offer_price|default:product.base_price }}</span>
-          {% if product.offer_price and product.discount_percentage > 0 %}
-            <span class="mrp">MRP ₹{{ product.base_price }}</span>
-            <span class="discount-percent">({{ product.discount_percentage }}% OFF)</span>
+          <span class="current-price">₹{{ selected_variant.offer_price|default:selected_variant.base_price }}</span>
+          {% if selected_variant.offer_price and selected_variant.discount_percentage > 0 %}
+            <span class="mrp">MRP ₹{{ selected_variant.base_price }}</span>
+            <span class="discount-percent">({{ selected_variant.discount_percentage }}% OFF)</span>
           {% endif %}
         </div>
         <p class="tax-info">Inclusive of all taxes</p>
 
         <div class="stock-status">
-          {% if product.stock <= 0 %}
+          {% if selected_variant.stock <= 0 %}
             <span class="out-of-stock-msg">SOLD OUT</span>
             <p class="error-text">This product is currently unavailable.</p>
-          {% elif product.stock < 10 %}
-            <span class="low-stock-msg">Only {{ product.stock }} left!</span>
+          {% elif selected_variant.stock < 10 %}
+            <span class="low-stock-msg">Only {{ selected_variant.stock }} left!</span>
           {% else %}
             <span class="in-stock-msg">In Stock</span>
           {% endif %}
         </div>
-
+        <br />
         <div class="action-btns">
-          {% if product.is_active and product.stock > 0 %}
-            <!-- ADD TO CART FORM -->
-            <button type="button" class="btn-add-cart" onclick="addToCart({{ product.id }})"><i class="fas fa-shopping-bag"></i> ADD TO CART</button>
-            {% comment %} <form method="POST" action="{% url 'add_to_cart' %}" class="cart-form">
+          {% if selected_variant.is_active and selected_variant.stock > 0 %}
+            <form class="add-to-cart-form">
               {% csrf_token %}
-              <input type="hidden" name="product_id" value="{{ product.id }}" />
-              <button type="submit" class="btn-add-cart" onclick="addToCart({{ product.id }})"><i class="fas fa-shopping-bag"></i> ADD TO CART</button>
-            </form> {% endcomment %}
-
-            <!-- WISHLIST FORM -->
-            <form method="POST" action="#" class="wishlist-form">
-              {% csrf_token %}
-              <input type="hidden" name="product_id" value="{{ product.id }}" />
-
-              <button type="submit" class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
+              <input type="hidden" name="variant_id" value="{{ selected_variant.id }}" />
+              <button type="button" class="btn-add-cart" onclick="addToCart(this)"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
             </form>
+
+            <button type="button" class="btn-wishlist"><i class="far fa-heart"></i></button>
           {% else %}
-            <button class="btn-disabled" disabled>
-              {% if not product.is_active %}
-                CURRENTLY UNAVAILABLE
-              {% else %}
-                OUT OF STOCK
-              {% endif %}
-            </button>
-            <button class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
+            <button class="btn-disabled" disabled>OUT OF STOCK</button>
           {% endif %}
+
+          {% comment %} <form method="POST" action="#" class="wishlist-form">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}" />
+
+            <button type="submit" class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
+          </form>
+          {% else %}
+          <button class="btn-disabled" disabled>
+            {% if not product.is_active %}
+              CURRENTLY UNAVAILABLE
+            {% else %}
+              OUT OF STOCK
+            {% endif %}
+          </button>
+          <button class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
+          {% endif %} {% endcomment %}
         </div>
 
         <hr class="divider" />
@@ -142,22 +170,19 @@
         {% for rel in related_products %}
           <a href="{% url 'product_detail' rel.slug %}" class="related-card">
             <div class="related-img-wrapper">
-              {% if rel.images.all %}
-                <img src="{{ rel.images.all.0.image.url }}" alt="{{ rel.name }}" />
-              {% else %}
-                <img src="{% static 'images/placeholder.png' %}" alt="No image available" />
-              {% endif %}
+              {% with v=rel.variants.all|first %}
+                {% if v and v.primary_image %}
+                  <img src="{{ v.primary_image.image.url }}" alt="{{ rel.name }}" />
+                {% else %}
+                  <img src="{% static 'images/placeholder.png' %}" />
+                {% endif %}
+              {% endwith %}
             </div>
 
             <div class="related-info">
               <p class="rel-name">{{ rel.name }}</p>
               <div class="rel-pricing">
-                <span class="rel-offer">₹{{ rel.offer_price|default:rel.base_price }}</span>
-
-                {% if rel.offer_price and rel.offer_price < rel.base_price %}
-                  <span class="rel-mrp">₹{{ rel.base_price }}</span>
-                  <span class="rel-discount">({{ rel.discount_percentage }}% OFF)</span>
-                {% endif %}
+                <span class="rel-offer">₹{{ rel.display_price }}</span>
               </div>
             </div>
           </a>
@@ -197,39 +222,23 @@
       })
     }
     
-    function addToCart(productId) {
-      fetch('/cart/add/', {
+    function addToCart(button) {
+      const form = button.closest('form')
+      const formData = new FormData(form)
+    
+      fetch("{% url 'add_to_cart' %}", {
         method: 'POST',
+        body: formData,
         headers: {
-          'X-CSRFToken': '{{ csrf_token }}',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `product_id=${productId}`
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.status === 'success') {
-            Swal.fire({
-              icon: 'success',
-              title: 'Added to Cart',
-              text: data.message,
-              timer: 2000,
-              showConfirmButton: false
-            })
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops!',
-              text: data.message
-            })
-          }
+          alert(data.message)
         })
         .catch(() => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Something went wrong. Please try again.'
-          })
+          alert('Something went wrong')
         })
     }
   </script>

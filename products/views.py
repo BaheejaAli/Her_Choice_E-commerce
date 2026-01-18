@@ -1,15 +1,13 @@
 from django.shortcuts import render
-from django.views.generic import ListView
-from .models import Product, ProductVariantImage
+from .models import Product, ProductVariantImage, Color, Size
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db.models import Case, When, F, DecimalField, Count, Min
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
+from django.http import JsonResponse
 
-def pro(request):
-    return render(request, "products/pro.html")
 #  only one image
 def attach_display_image(products):
     for product in products:
@@ -111,19 +109,93 @@ def product_listing(request):
     return render(request, "products/product_listing.html", context)
 
 def product_detail_view(request, slug):
-    product = get_object_or_404(Product, slug=slug)
-    if not product.is_active:
-        messages.warning(request, "This product is currently unavailable.")
-        return redirect('product_listing')
+    product = get_object_or_404(Product, slug=slug, is_active=True)
 
-    related_products = Product.objects.filter(
-        category=product.category,
-        is_active=True
-    ).exclude(id=product.id).prefetch_related('images')[:4]
+    variants = (
+        product.variants
+        .filter(is_active=True)
+        .select_related("color", "size")
+        .prefetch_related("images")
+    )
+
+    if not variants.exists():
+        messages.warning(request, "Product unavailable")
+        return redirect("product_listing")
+    
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        color_id = request.GET.get("color")
+        size_id = request.GET.get("size")
+
+        variant = variants.filter(
+            color_id=color_id,
+            size_id=size_id
+        ).first()
+
+        if not variant:
+            return JsonResponse({"success": False}, status=404)
+
+        return JsonResponse({
+            "success": True,
+            "variant": {
+                "id": variant.id,
+                "price": str(variant.offer_price or variant.base_price),
+                "stock": variant.stock,
+                "images": [img.image.url for img in variant.images.all()],
+            }
+        })
+
+
+
+    variant_id = request.GET.get("variant")
+    color_id = request.GET.get("color")
+    size_id = request.GET.get("size")
+
+    selected_variant = None
+
+   
+    if variant_id:
+        selected_variant = variants.filter(id=variant_id).first()
+
+    if not selected_variant and color_id and size_id:
+        selected_variant = variants.filter(
+            color_id=color_id,
+            size_id=size_id
+        ).first()
+
+    if not selected_variant and color_id:
+        selected_variant = variants.filter(color_id=color_id).first()
+
+    if not selected_variant:
+        selected_variant = variants.first()
+
+    color_variant_ids = (
+        variants
+        .values("color_id")
+        .annotate(variant_id=Min("id"))
+        .values_list("variant_id", flat=True)
+    )
+
+    color_variants = (
+    variants
+    .order_by("color_id", "id")  
+    .distinct("color_id")         
+)
+
+    size_ids = (
+        variants
+        .filter(color=selected_variant.color)
+        .values_list("size_id", flat=True)
+        .distinct()
+    )
+
+    sizes = Size.objects.filter(id__in=size_ids)
 
     context = {
-        'product': product,
-        'related_products': related_products,
+        "product": product,
+        "variants": variants,
+        "selected_variant": selected_variant,  
+        "color_variants": color_variants,      
+        "sizes": sizes,                       
     }
 
     return render(request, "products/product_detail.html", context)

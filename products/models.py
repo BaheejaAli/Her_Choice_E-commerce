@@ -67,6 +67,8 @@ class Size(models.Model):
 # =========================
 class Color(models.Model):
     name = models.CharField(max_length=50, unique=True)
+    hex_code = models.CharField(max_length=7,blank=True,
+        null=True,)
     def __str__(self):
         return self.name
     
@@ -132,6 +134,10 @@ class ProductVariant(models.Model):
 
         if errors:
             raise ValidationError(errors)
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()   
+        super().save(*args, **kwargs)
         
 # =========================
 # PRODUCT VARIANT IMAGE

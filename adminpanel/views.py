@@ -417,6 +417,7 @@ class ProductListView(LoginRequiredMixin, ListView):
 
 # ============== Product Create View ===================
 
+
 @login_required
 @user_passes_test(is_admin)
 @never_cache
@@ -430,9 +431,11 @@ def product_create(request):
     else:
         form = ProductForm()
 
-    return render(request,"admin_panel/product_form.html",{"form": form})
+    return render(request, "admin_panel/product_form.html", {"form": form})
 
 # =============== Product Update View ===================
+
+
 @login_required
 @user_passes_test(is_admin)
 @never_cache
@@ -448,7 +451,7 @@ def product_update(request, pk):
     else:
         form = ProductForm(instance=product)
 
-    return render(request,"admin_panel/product_form.html",{"form": form,"product": product})
+    return render(request, "admin_panel/product_form.html", {"form": form, "product": product})
 
 
 # =============== Toggle Product Status ===================
@@ -474,6 +477,8 @@ def toggle_product_status(request, product_id):
     })
 
 # =============== Add product variant ===================
+
+
 @never_cache
 @login_required
 @user_passes_test(is_admin)
@@ -490,18 +495,35 @@ def product_variant_add(request, product_id):
             )
 
         if form.is_valid() and image_formset.is_valid():
-            with transaction.atomic():
-                variant = form.save(commit=False)
-                variant.product = product
-                if not variant.sku:
-                    variantSize = variant.size.id if variant.size else "FREESIZE"
-                    variantColor = variant.color.name.replace(" ", "").upper()
-                    variant.sku = f"{product.id}-{variantSize}-{variantColor}"
+            variant = form.save(commit=False)
+            variant.product = product
+
+            duplicate_exists = ProductVariant.objects.filter(
+            product=product,
+            color=variant.color,
+            size=variant.size
+            ).exists()
+
+            if duplicate_exists:
+                messages.error(request,"This variant with the same color and size already exists.")
+                return render(request,"admin_panel/product_variant_form.html",
+                    {
+                        "form": form,
+                        "image_formset": image_formset,
+                        "product": product,
+                        "is_edit": False,
+                    }
+                )
+
+            if not variant.sku:
+                variantSize = variant.size.id if variant.size else "FREESIZE"
+                variantColor = variant.color.name.replace(" ", "").upper()
+                variant.sku = f"{product.id}-{variantSize}-{variantColor}"
                 
-                variant.save()
-                product.save(update_fields=["updated_at"])
-                image_formset.instance = variant        
-                image_formset.save()
+            variant.save()
+            product.save(update_fields=["updated_at"])
+            image_formset.instance = variant        
+            image_formset.save()
             messages.success(request, "Product variant added successfully.")
             return redirect("product_list")
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from products.models import Product
+from products.models import Product, ProductVariant
 from .models import Cart, CartItem
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -11,61 +11,50 @@ from user_section.models import UserAddress
 @require_POST
 @login_required
 def add_to_cart(request):
-    if request.method == "POST":
-        product_id = request.POST.get("product_id")
+    variant_id = request.POST.get("variant_id")
+    quantity = int(request.POST.get("quantity",1))
 
-        if not product_id:
+    if not variant_id:
+        return JsonResponse({
+            "status":"error",
+            "message": "Variant ID is required"
+        }, status = 400)
+    
+    variant = get_object_or_404(
+        ProductVariant,
+        id=variant_id,
+        is_active=True,
+        product__is_active=True,
+        product__category__is_active=True,
+        product__brand__is_active=True
+    )
+    if variant.stock <= 0:
+        return JsonResponse({
+            "status" : "error",
+            "message" : "Out of stock"
+        })
+    
+    cart, _ = Cart.objects.get_or_create(user= request.user, is_active=True)
+    cartItem, created = CartItem.objects.get_or_create(cart=cart, variant=variant, defaults={"quantity":1})
+
+    if not created:
+        if cartItem.quantity >= min(variant.stock, 5):
             return JsonResponse({
                 "status": "error",
-                "message": "Product ID is required"}, status=400)
-
-        product = get_object_or_404(Product, id=product_id)
-
-        if not product.is_active or not product.category.is_active or not product.brand.is_active:
-            return JsonResponse({
-                "status": "error",
-                "message": "This product is currently unavailable"
-            }, status=400)
-
-        # Stock check
-        if product.stock <= 0:
-            return JsonResponse({
-                "status": "error",
-                "message": "Product is out of stock",
-            }, status=400)
-
-        cart, _ = Cart.objects.get_or_create(
-            user=request.user,
-            is_active=True
-        )
-
-        cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            defaults={
-                "quantity": 1,
-            }
-        )
-
-        if not created:
-            if cart_item.quantity >= min(product.stock, 5):
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Stock limit reached",
-                    "data": {
-                        "available_stock": product.stock
+                "message": "Stock limit reached",
+                "data": {   
+                    "available_stock": variant.stock
                     }
                 }, status=400)
 
-            cart_item.quantity += 1
-            cart_item.save()
+        cartItem.quantity += 1
+        cartItem.save(update_fields=["quantity"])
 
         return JsonResponse({
             "status": "success",
-            "message": "Product added to cart",
+            "message": "Item added to cart successfully",
             "data": {
                 "cart_count": cart.total_items,
-                "product_id": product.id
             }
         }, status=200)
 
