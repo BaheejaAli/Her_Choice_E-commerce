@@ -103,7 +103,7 @@
               <button type="button" class="btn-add-cart" onclick="addToCart(this)"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
             </form>
 
-            <button type="button" class="btn-wishlist"><i class="far fa-heart"></i></button>
+            <button type="button" class="btn-wishlist" onclick="addToWishlist({{ selected_variant.id }})"><i class="far fa-heart"></i></button>
           {% else %}
             <button class="btn-disabled" disabled>OUT OF STOCK</button>
           {% endif %}
@@ -289,5 +289,25 @@
     .then(data => alert(data.message))
     .catch(() => alert("Something went wrong"))
   }
+
+  function addToWishlist(variantId) {
+  fetch("{% url 'add_to_wishlist' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `variant_id=${variantId}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message)
+
+    {% comment %} if (data.status === "success") {
+     document.querySelector(".btn-wishlist i").classList.replace("far","fas")
+    } {% endcomment %}
+  })
+  .catch(() => alert("Wishlist error"))
+}
 </script>
 {% endblock %}

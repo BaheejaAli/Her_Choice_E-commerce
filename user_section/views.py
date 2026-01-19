@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from products.models import Product, ProductVariantImage
+from products.models import Product, ProductVariant
 from brandsandcategories.models import Category
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -11,9 +11,12 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 import random
 from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
 from datetime import timedelta
 from django.utils import timezone
 from accounts.models import CustomUser
+from .models import Wishlist, WishlistItem
+from django.db import transaction
 
 #  only one image
 def attach_display_image(products):
@@ -335,3 +338,67 @@ def profile_change_password(request):
         messages.success(request, 'Password updated successfully')
         return redirect('profile_info')
     return render(request, "user_section/profile_change_password.html")
+
+@login_required
+def wishlist_view(request):
+    wishlist, created = Wishlist.objects.get_or_create(user = request.user)
+    wishlist_items = wishlist.items.select_related(
+        "variant",
+        "variant__product",
+        "variant__color",
+        "variant__size"
+    )
+
+    context = {
+        "wishlist": wishlist,
+        "wishlist_items": wishlist_items,
+    }
+    return render(request,"user_section/wishlist.html",context)
+
+@login_required
+@require_POST
+def add_to_wishlist(request):
+    variant_id = request.POST.get("variant_id")
+    if not variant_id:
+        return JsonResponse({
+            "status" : "error",
+            "message" : "Variant ID is required"
+        },status=400)
+    variant = get_object_or_404(
+        ProductVariant,
+        id = variant_id,
+        is_active = True,
+        product__is_active = True,
+        product__category__is_active = True,
+        product__brand__is_active = True
+    )
+
+    with transaction.atomic():
+        wishlist, _ = Wishlist.objects.get_or_create(user = request.user)
+        wishlist_item, created = WishlistItem.objects.get_or_create(wishlist=wishlist, variant=variant)
+
+    if not created:
+        return JsonResponse({
+             "status" : "error",
+            "message" : "Already in wishlist"
+        },status=400)
+    
+    return JsonResponse({
+        "status": "success",
+        "message": "Added to wishlist"
+    })
+        
+@login_required
+@require_POST
+def remove_from_wishlist(request):
+    item_id = request.POST.get("item_id")
+    wishlist = get_object_or_404(Wishlist, user=request.user)
+    item = get_object_or_404(WishlistItem, id = item_id, wishlist=wishlist)
+    item.delete()
+    return JsonResponse({
+        "status":"success",
+        "message":"Removed from wishlist"
+    })
+
+
+

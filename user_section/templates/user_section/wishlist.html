@@ -1,0 +1,116 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block title %}
+  Her Choice - Wishlist
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/wishlist.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <!-- Wishlist Header -->
+    <div class="wishlist-header">
+      <div class="wishlist-title">
+        <div class="heart-icon">♡</div>
+        <div>
+          <h1>My Wishlist</h1>
+          <p>{{ wishlist_items.count }} item{{ wishlist_items.count|pluralize }}</p>
+        </div>
+      </div>
+
+      <a href="{% url 'user_homepage' %}" class="back-home">Back to Home</a>
+    </div>
+
+    <!-- Wishlist Products -->
+    <div class="products-grid">
+      {% if wishlist_items %}
+        {% for item in wishlist_items %}
+          {% with v=item.variant p=item.variant.product %}
+            <div class="product-card">
+
+              <div class="product-image-wrapper">
+                <a href="{% url 'product_detail' p.slug %}">
+                  {% if v.images.first %}
+                    <img src="{{ v.images.first.image.url }}" alt="{{ p.name }}" class="product-image" />
+                  {% else %}
+                    <div class="no-image-box">No Image</div>
+                  {% endif %}
+                </a>
+
+                <button class="remove-btn" onclick="removeFromWishlist({{ item.id }})">×</button>
+
+                {% if v.stock <= 0 %}
+                  <span class="out-of-stock">Out of Stock</span>
+                {% endif %}
+              </div>
+
+              <div class="product-info">
+                <div class="product-name">{{ p.name }}</div>
+
+                <div class="product-price">
+                  {% if v.offer_price %}
+                    ₹{{ v.offer_price }}
+                  {% else %}
+                    ₹{{ v.base_price }}
+                  {% endif %}
+                </div>
+
+                {% if v.stock > 0 %}
+                  <button class="add-to-cart-btn" onclick="addToCart({{ v.id }})">🛒 Add to Cart</button>
+                {% else %}
+                  <button class="add-to-cart-btn" disabled>Out of Stock</button>
+                {% endif %}
+              </div>
+            </div>
+          {% endwith %}
+        {% endfor %}
+      {% else %}
+        <p>Your wishlist is empty</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function removeFromWishlist(itemId) {
+      fetch("{% url 'remove_from_wishlist' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `item_id=${itemId}`
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            location.reload()
+          } else {
+            alert(data.message)
+          }
+        })
+    }
+    
+    function addToCart(variantId) {
+      fetch("{% url 'add_to_cart' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `variant_id=${variantId}`
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message)
+          if (data.status === 'success') {
+            location.reload()
+          }
+        })
+    }
+  </script>
+{% endblock %}

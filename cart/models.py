@@ -36,3 +36,6 @@ class CartItem(models.Model):
         return self.quantity * self.variant.final_price
     
 
+
+    
+

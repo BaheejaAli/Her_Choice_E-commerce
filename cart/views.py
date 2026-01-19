@@ -5,7 +5,7 @@ from products.models import Product, ProductVariant
 from .models import Cart, CartItem
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from user_section.models import UserAddress
+from user_section.models import UserAddress, WishlistItem
 
 # Create your views here.
 @require_POST
@@ -51,6 +51,9 @@ def add_to_cart(request):
             cartItem.quantity += 1
             cartItem.save(update_fields=["quantity"])
 
+            # Remove from wishlist
+            WishlistItem.objects.filter(wishlist__user = request.user, variant = variant).delete()
+
             return JsonResponse({
                 "status": "success",
                 "message": "Item added to cart successfully",
@@ -58,6 +61,7 @@ def add_to_cart(request):
                     "cart_count": cart.total_items,
                 }
             }, status=200)
+        
     except Exception as e:
         print("ADD TO CART ERROR:", e)
         return JsonResponse({
@@ -242,3 +246,4 @@ def checkout(request):
         "default_address": default_address,
     }
     return render(request, "cart/checkout.html",context)
+

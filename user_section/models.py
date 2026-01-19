@@ -1,4 +1,5 @@
 from django.db import models,transaction
+from products.models import ProductVariant
 from django.conf import settings
 
 # Create your models here.
@@ -35,3 +36,23 @@ class UserAddress(models.Model):
             if not UserAddress.objects.filter(user=self.user).exists():
                 self.is_default = True
             super().save(*args, **kwargs)
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Wishlist of {self.user.get_full_name}'
+    
+class WishlistItem(models.Model):
+    wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, related_name="items")
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name="wishlist_items")
+    added_at = models.DateTimeField( auto_now_add=True)
+    updated_at = models.DateTimeField( auto_now=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['wishlist','variant'],
+                                    name = 'unique_wishlist_variant')
+        ]
+

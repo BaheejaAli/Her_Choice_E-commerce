@@ -200,6 +200,7 @@ def product_detail_view(request, slug):
 
     return render(request, "products/product_detail.html", context)
 
+# update product details dynamically on the product detail page without reloading
 def variant_detail_api(request):
     variant_id = request.GET.get("variant_id")
 
