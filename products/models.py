@@ -2,10 +2,12 @@ from django.db import models
 from brandsandcategories.models import Brand, Category
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-from PIL import Image
 from django.core.files.base import ContentFile
 from io import BytesIO
 from django.core.validators import FileExtensionValidator
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+import cloudinary.uploader
 
 # Create your models here.
 
@@ -109,13 +111,18 @@ class ProductVariant(models.Model):
     def final_price(self):
         return self.offer_price if self.offer_price else self.base_price
 
-    # Calculate Discount Percentage for Template
     @property
     def discount_percentage(self):
         if self.offer_price and self.base_price > self.offer_price:
             discount = ((self.base_price - self.offer_price) /
                         self.base_price) * 100
             return int(discount)
+        return 0
+    
+    @property
+    def discount_value(self):
+        if self.offer_price and self.base_price > self.offer_price:
+            return self.base_price - self.offer_price
         return 0
     
     @property
@@ -144,7 +151,7 @@ class ProductVariant(models.Model):
 # =========================
 class ProductVariantImage(models.Model):
     variant = models.ForeignKey(ProductVariant,on_delete=models.CASCADE,related_name="images")
-    image = models.ImageField(upload_to="products/variant-images/",validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])])
+    image = models.ImageField(upload_to="variant-images/",validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])])
     alt_text = models.CharField(max_length=250, blank=True)
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -165,35 +172,19 @@ class ProductVariantImage(models.Model):
             ).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
 
-         # IMAGE RESIZE LOGIC (NEW)
-        # -------------------------------
-        # if self.image:
-        #     img = Image.open(self.image)
-        #     TARGET_WIDTH = 800
-        #     TARGET_HEIGHT = 1000
-        #     if img.mode in ("RGBA", "P"):
-        #         img = img.convert("RGB")
-        #     img.thumbnail((TARGET_WIDTH, TARGET_HEIGHT))
-        #     background = Image.new(
-        #         "RGB",
-        #         (TARGET_WIDTH, TARGET_HEIGHT),
-        #         (255, 255, 255)
-        #     )
-        #     x = (TARGET_WIDTH - img.width) // 2
-        #     y = (TARGET_HEIGHT - img.height) // 2
-        #     background.paste(img, (x, y))
-        #     buffer = BytesIO()
-        #     background.save(buffer, format="JPEG", quality=90)
+@receiver(post_delete, sender=ProductVariantImage)
+def delete_image_from_cloudinary(sender, instance, **kwargs):
+    """
+    Automatically deletes the image file from Cloudinary 
+    when the ProductVariantImage record is deleted.
+    """
+    if instance.image:
+        try:
+            cloudinary.uploader.destroy(instance.image.public_id)
+        except Exception as e:
+            print(f"Cloudinary deletion failed: {e}")
 
-        #     self.image.save(
-        #         self.image.name,
-        #         ContentFile(buffer.getvalue()),
-        #         save=False
-        #     )
-
-        #     super().save(update_fields=["image"])
-
-
+ 
 
 
         

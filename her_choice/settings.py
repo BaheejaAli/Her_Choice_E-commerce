@@ -13,12 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import environ
 import os
-
-# cloudinary imports
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -48,7 +43,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1",".ngrok-free.dev",]
 
 
 # Application definition
@@ -59,17 +54,18 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
     "django.contrib.sites",
+     # cloudinary
+    "cloudinary_storage",
+    "cloudinary",
+    "django.contrib.staticfiles",
     # The following apps are required:
     "allauth",
     "allauth.account",
     # Optional -- requires install using `django-allauth[socialaccount]`.
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    # cloudinary
-    "cloudinary",
-    "cloudinary_storage",
+   
     # my Apps
     "accounts",
     "adminpanel",
@@ -175,11 +171,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "/static/"
-# STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = '/media/'
+# settings.py
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# Keep this as a fallback for older logic
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -223,14 +231,13 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = "accounts.adapter.CustomSocialAccountAdapter"
 
 # cloudinary django integration
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": env("CLOUD_NAME"),
-    "API_KEY": env("API_KEY"),
-    "API_SECRET": env("API_SECRET"),
-}
+# CLOUDINARY_STORAGE = {
+#     "CLOUD_NAME": env("CLOUD_NAME"),
+#     "API_KEY": env("API_KEY"),
+#     "API_SECRET": env("API_SECRET"),
+# }
+CLOUDINARY_URL= env("CLOUDINARY_URL")
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FROM_EMAIL = 'noreply@yourapp.com'
 

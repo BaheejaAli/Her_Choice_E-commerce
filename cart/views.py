@@ -61,7 +61,7 @@ def add_to_cart(request):
                     "cart_count": cart.total_items,
                 }
             }, status=200)
-        
+            
     except Exception as e:
         print("ADD TO CART ERROR:", e)
         return JsonResponse({
@@ -69,8 +69,11 @@ def add_to_cart(request):
             "message": "Server error"
         }, status=500)
 
-@login_required
+
 def cart(request):
+    if not request.user.is_authenticated:
+        messages.info(request, "Please log in to view your shopping cart.")
+        return redirect("user_homepage")
 
     cart = Cart.objects.filter(user=request.user, is_active=True).first()
     cart_items = cart.items.select_related(
@@ -182,68 +185,70 @@ def checkout(request):
         messages.warning(request, "Your cart is empty")
         return redirect("cart")
     
+    total_mrp = 0
+    total_discount = 0
+    subtotal = 0
+    
     for item in cart_items:
         variant = item.variant
-        product = variant.product
         if (
             not variant.is_active or
-            variant.stock <= 0 or
             not variant.product.is_active or
             not variant.product.category.is_active or
             not variant.product.brand.is_active
         ):
             messages.error(
                 request,
-                "Some items in your cart are unavailable. Please remove them."
+                f"{variant.product.name} is unavailable."
             )
             return redirect("cart")
+        
+        if variant.stock <= 0 :
+            messages.error(request, f"{variant.product.name} is out of stock")
+            return redirect("cart")
+
         
         if item.quantity > variant.stock:
             item.quantity = variant.stock
             item.save(update_fields=["quantity"])
-    
-    subtotal = sum(item.variant.final_price * item.quantity for item in cart_items)
-    # discount = sum(
-    #     (item.variant.base_price - item.variant.final_price) * item.quantity
-    #     for item in cart_items
-    #     if item.variant.offer_price
-    # )
-    discount = 30
 
+        total_mrp += variant.base_price * item.quantity
+        total_discount += variant.discount_value * item.quantity
+        subtotal += variant.final_price * item.quantity
 
     shipping_charge = 40 if subtotal > 0 else 0
     tax = 0           
-
-    grand_total = subtotal + shipping_charge -discount
+    grand_total = subtotal + shipping_charge 
         
-    addresses = UserAddress.objects.filter(user=request.user)
+    # addresses = UserAddress.objects.filter(user=request.user)
 
-    default_address = addresses.filter(is_default=True).first()
-    selected_address = default_address  # fallback
+    # default_address = addresses.filter(is_default=True).first()
 
-    if request.method == "POST":
-        address_id = request.POST.get("address_id")
-        if not address_id:
-            messages.error(request, "Please select a delivery address.")
-            return redirect("checkout")
+    
+    # if request.method == "POST":
+    #     address_id = request.POST.get("address_id")
+    #     payment_method = request.POST.get("payment_method","COD")
+    #     if not address_id:
+    #         messages.error(request, "Please select a delivery address.")
+    #         return redirect("checkout")
 
-        selected_address = get_object_or_404(
-            UserAddress,
-            id=address_id,
-            user=request.user
-        )
+    #     selected_address = get_object_or_404(
+    #         UserAddress,
+    #         id=address_id,
+    #         user=request.user
+    #     )
 
 
     context = {
         "cart": cart,
         "cart_items": cart_items,
         "subtotal": subtotal,
-        "discount": discount,
+        "discount": total_discount,
         "shipping": shipping_charge,
         "tax": tax,
         "grand_total": grand_total,
-        "addresses": addresses,
-        "default_address": default_address,
+        # "addresses": addresses,
+        # "default_address": default_address,
     }
     return render(request, "cart/checkout.html",context)
 
