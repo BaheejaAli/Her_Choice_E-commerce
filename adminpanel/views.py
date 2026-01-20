@@ -478,7 +478,6 @@ def toggle_product_status(request, product_id):
 
 # =============== Add product variant ===================
 
-
 @never_cache
 @login_required
 @user_passes_test(is_admin)
@@ -495,16 +494,27 @@ def product_variant_add(request, product_id):
             )
 
         if form.is_valid() and image_formset.is_valid():
-            uploaded_count = sum(
-            1 for f in image_formset
-            if f.cleaned_data.get("image") and not f.cleaned_data.get("DELETE")
-        )
-          
+            uploaded_count = 0
+            for f in image_formset:
+                if f.cleaned_data.get("image") and not f.cleaned_data.get("DELETE"):
+                    uploaded_count += 1
+
             if uploaded_count < 3:
-                messages.error(request, f"You must upload at least 3 images. You only provided {uploaded_count}.")
-                return render(request, "admin_panel/product_variant_form.html", {
-                    "form": form, "image_formset": image_formset, "product": product, "is_edit": False
-                })
+                messages.error(
+                    request,
+                    f"You must upload at least 3 images. You uploaded {uploaded_count}."
+                )
+                return render(
+                    request,
+                    "admin_panel/product_variant_form.html",
+                    {
+                        "form": form,
+                        "image_formset": image_formset,
+                        "product": product,
+                        "is_edit": False,
+                    }
+                )
+
             variant = form.save(commit=False)
             variant.product = product
 
@@ -572,35 +582,31 @@ def product_variant_update(request, variant_id):
         )
 
         if form.is_valid() and image_formset.is_valid():
-            remaining_existing = 0
-            for f in image_formset.initial_forms:
-                if not f.cleaned_data.get('DELETE'):
-                    remaining_existing += 1
-            
-            new_uploads = 0
-            for f in image_formset.extra_forms:
-                if f.cleaned_data.get('image') and not f.cleaned_data.get('DELETE'):
-                    new_uploads += 1
-            
-            final_count = remaining_existing + new_uploads
+            deleted_forms = [
+                f for f in image_formset
+                if f.cleaned_data.get("DELETE")
+            ]
 
-            if final_count < 3:
-                messages.error(request, f"You must have at least 3 images. You currently have {final_count}.")
-                return render(request, "admin_panel/product_variant_form.html", {
-                    "form": form,
-                    "image_formset": image_formset,
-                    "product": variant.product,
-                    "variant": variant,
-                    "is_edit": True,
-                })
-            with transaction.atomic():
-                form.save()
-                image_formset.save()
-                variant.product.save(update_fields=["updated_at"])
+            final_image_count = (
+                variant.images.count()
+                - len(deleted_forms)
+                + len(request.FILES)
+            )
 
-            messages.success(request, "Product variant updated successfully.")
-            return redirect("product_list")
-            # return redirect("product_variant_add", product_id=product.id)
+            if final_image_count < 3:
+                messages.error(
+                    request,
+                    "Variant must have at least 3 images."
+                )
+            else:
+                with transaction.atomic():
+                    form.save()
+                    image_formset.save()
+                    variant.product.save(update_fields=["updated_at"])
+
+                messages.success(request, "Product variant updated successfully.")
+                return redirect("product_list")
+                # return redirect("product_variant_add", product_id=product.id)
         
     else:
         form = ProductVariantForm(instance=variant)
@@ -617,7 +623,6 @@ def product_variant_update(request, variant_id):
             "is_edit": True,
         }
     )
-
 # =============== Toggle product variant  ===================
 @require_POST
 @login_required

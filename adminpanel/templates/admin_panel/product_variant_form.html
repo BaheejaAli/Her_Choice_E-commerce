@@ -200,7 +200,7 @@
             {% endif %}
 
             <!-- Delete Checkbox - All images can be removed -->
-            {% comment %} {% if image_formset.can_delete %}
+            {% if image_formset.can_delete %}
               <div class="delete-checkbox-zone">
                 <label class="custom-delete">
                   {{ image_form.DELETE }} 
@@ -209,7 +209,7 @@
                   </span>
                 </label>
               </div>
-            {% endif %} {% endcomment %}
+            {% endif %} 
           </div>
         {% endfor %}
       </div>
@@ -413,8 +413,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create new image structure for newly uploaded image
         const uploadPlaceholder = imageContainer.querySelector('.upload-placeholder-btn');
         if (uploadPlaceholder) {
-          uploadPlaceholder.remove();
+          uploadPlaceholder.style.display = 'none';
         }
+
         
         // Create image element
         const imgElement = document.createElement('img');
@@ -442,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
           </div>
           <div class="change-image-section">
             <label class="change-image-btn">
-              ${currentFileInput.outerHTML}
+             
               <i class="fa-solid fa-rotate"></i>
               <span>Change Image</span>
             </label>
