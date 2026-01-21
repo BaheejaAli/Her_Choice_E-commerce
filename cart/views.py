@@ -6,6 +6,7 @@ from .models import Cart, CartItem
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from user_section.models import UserAddress, WishlistItem
+from orders.models import Order,OrderItem
 
 # Create your views here.
 @require_POST
@@ -33,7 +34,7 @@ def add_to_cart(request):
             return JsonResponse({
                 "status" : "error",
                 "message" : "Out of stock"
-            })
+            }, status=400)
         
         cart, _ = Cart.objects.get_or_create(user= request.user, is_active=True)
         cartItem, created = CartItem.objects.get_or_create(cart=cart, variant=variant, defaults={"quantity":1})
@@ -42,7 +43,7 @@ def add_to_cart(request):
             if cartItem.quantity >= min(variant.stock, 5):
                 return JsonResponse({
                     "status": "error",
-                    "message": "Stock limit reached",
+                    "message": "Maximum quantity reached",
                     "data": {   
                         "available_stock": variant.stock
                         }
@@ -51,17 +52,17 @@ def add_to_cart(request):
             cartItem.quantity += 1
             cartItem.save(update_fields=["quantity"])
 
-            # Remove from wishlist
-            WishlistItem.objects.filter(wishlist__user = request.user, variant = variant).delete()
+        # Remove from wishlist
+        WishlistItem.objects.filter(wishlist__user = request.user, variant = variant).delete()
 
-            return JsonResponse({
-                "status": "success",
-                "message": "Item added to cart successfully",
-                "data": {
-                    "cart_count": cart.total_items,
-                }
-            }, status=200)
-            
+        return JsonResponse({
+            "status": "success",
+            "message": "Item added to cart successfully",
+            "data": {
+                "cart_count": cart.total_items,
+            }
+        }, status=200)
+        
     except Exception as e:
         print("ADD TO CART ERROR:", e)
         return JsonResponse({
@@ -216,39 +217,77 @@ def checkout(request):
         total_discount += variant.discount_value * item.quantity
         subtotal += variant.final_price * item.quantity
 
-    shipping_charge = 40 if subtotal > 0 else 0
+    delivery_charge = 40 if subtotal > 0 else 0
     tax = 0           
-    grand_total = subtotal + shipping_charge 
+    grand_total = subtotal + delivery_charge 
         
-    # addresses = UserAddress.objects.filter(user=request.user)
+    addresses = UserAddress.objects.filter(user=request.user)
 
-    # default_address = addresses.filter(is_default=True).first()
+    default_address = addresses.filter(is_default=True).first()
 
     
-    # if request.method == "POST":
-    #     address_id = request.POST.get("address_id")
-    #     payment_method = request.POST.get("payment_method","COD")
-    #     if not address_id:
-    #         messages.error(request, "Please select a delivery address.")
-    #         return redirect("checkout")
+    if request.method == "POST":
+        address_id = request.POST.get("address_id")
+        payment_method = request.POST.get("payment_method","cod")
+        
+        if not address_id:
+            messages.error(request, "Please select a delivery address.")
+            return redirect("checkout")
 
-    #     selected_address = get_object_or_404(
-    #         UserAddress,
-    #         id=address_id,
-    #         user=request.user
-    #     )
+        selected_address = get_object_or_404(
+            UserAddress,
+            id=address_id,
+            user=request.user
+        )
 
+        if payment_method == "cod":
+            order = Order.objects.create(
+                user=request.user,
+                address=selected_address,
+                payment_method="cod",
+                subtotal=subtotal,
+                discount=total_discount,
+                tax=tax,
+                total=grand_total,
+                status="placed",
+                delivery_charge=delivery_charge
+                )
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    variant=item.variant,
+                    quantity= item.quantity,
+                    price= item.variant.final_price
+                )
+                item.variant.stock -= item.quantity
+                item.variant.save(update_fields=["stock"])
 
+            cart.is_active=False
+            cart.save(update_fields=["is_active"])
+
+            messages.success(request, "Order placed successfully!")
+            return redirect("order_success",order_id= order.id)
+        
+        messages.info(request, "Online payment coming soon.")
+        return redirect("checkout")
+            
     context = {
         "cart": cart,
         "cart_items": cart_items,
         "subtotal": subtotal,
         "discount": total_discount,
-        "shipping": shipping_charge,
+        "delivery": delivery_charge,
         "tax": tax,
         "grand_total": grand_total,
-        # "addresses": addresses,
-        # "default_address": default_address,
+        "addresses": addresses,
+        "default_address": default_address,
     }
     return render(request, "cart/checkout.html",context)
+
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id= order_id, user= request.user)
+    return render(request, "cart/order_success.html", {"order": order})
+
+def order_failure(request):
+    return render(request,"cart/order_failure.html")
 

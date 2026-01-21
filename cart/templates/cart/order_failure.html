@@ -1,0 +1,48 @@
+{% extends "user_section/base.html" %}
+{% load static %}
+{% block title %}
+    Payment Failed | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/cart/order_failure.css' %}?v=1.0" />
+{% endblock extra_css %}
+{% block content %}
+    <div class="payment-failure-banner">
+        <div class="container">
+            <h1>Payment Failure</h1>
+        </div>
+    </div>
+    <div class="failure-content">
+        <div class="container">
+            <div class="failure-card">
+                <div class="failure-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h2 class="failure-title">Payment Failed</h2>
+                <p class="failure-message">We couldn't process your payment. Please check your card details and try again.</p>
+                <div class="error-details">
+                    <div class="error-header">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Error details</span>
+                    </div>
+                    <p class="error-text">
+                        Your card was declined. Please try another payment method or contact your bank for more information.
+                    </p>
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'checkout' %}" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Back to Checkout
+                    </a>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> Try Again
+                    </a>
+                </div>
+                <div class="support-link">
+                    <span>Need help with your payment?</span>
+                    <a href="{% url 'contact' %}">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

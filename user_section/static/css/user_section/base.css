@@ -21,6 +21,75 @@
 .toast-message.error {
   background-color: #dc3545;
 }
+/* ================= Django Messages ================= */
+
+.messages {
+  margin-bottom: 20px;
+}
+
+.alert {
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* SUCCESS */
+.alert.success {
+  background-color: #e6f7ee;
+  color: #0f5132;
+  border-left: 5px solid #198754;
+}
+
+/* ERROR */
+.alert.error {
+  background-color: #fdecea;
+  color: #842029;
+  border-left: 5px solid #dc3545;
+}
+
+/* WARNING */
+.alert.warning {
+  background-color: #fff3cd;
+  color: #664d03;
+  border-left: 5px solid #ffc107;
+}
+
+/* INFO */
+.alert.info {
+  background-color: #e7f1ff;
+  color: #084298;
+  border-left: 5px solid #0d6efd;
+}
+
+/* Close button (optional) */
+.alert .close-btn {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.alert .close-btn:hover {
+  opacity: 1;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* ========= GENERAL ========= */
 body {

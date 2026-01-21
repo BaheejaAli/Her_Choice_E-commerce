@@ -2,218 +2,174 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.2" />
+<link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.7" />
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <div class="checkout-wrapper">
-      <!-- Main Content -->
-      <div class="main-content">
-        <a href="{% url 'cart' %}" class="back-btn">← Back</a>
-        <h1 class="page-title">Your Order</h1>
+<div class="container">
+  <div class="checkout-wrapper">
+    <div class="main-content">
 
-        <form method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="address_id" id="selected_address_id" value="{% if default_address %}{{ default_address.id }}{% endif %}" />
+      <a href="{% url 'cart' %}" class="back-btn">← Back</a>
+      <h1 class="page-title">Your Order</h1>
 
-          <input type="hidden" name="payment_method" id="payment_method" value="Google Pay" />
+      <form method="POST">
+        {% csrf_token %}
 
-          <div class="checkout-grid">
-            <!-- Left Column -->
-            <div>
-              <!-- Delivery Address -->
-              <div class="section">
-                <h2 class="section-title">Delivery address</h2>
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
 
-                {% for address in addresses %}
-                  <div class="address-card {% if address.is_default %}selected{% endif %}" data-address-id="{{ address.id }}">
-                    <div class="address-header">
-                      <strong>{{ address.user.get_full_name }}</strong>
-                      {% comment %} {% if address.is_default %}
-                        <span class="default-badge">Default</span>
-                      {% endif %} {% endcomment %}
-                      <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}" class="edit-link">Change</a>
-                    </div>
+        <!-- Address ID controlled by JS -->
+        <input type="hidden" name="address_id" id="selected_address_id"
+               value="{% if default_address %}{{ default_address.id }}{% endif %}" />
 
-                    <div class="address-type">{{ address.address_type }}</div>
-                    <div class="address-text">
-                      {{ address.address_line_1 }}<br />
-                      {% if address.address_line_2 %}
-                        {{ address.address_line_2 }}<br />
-                      {% endif %}
-                      {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br />
-                      {{ address.country }}<br />
-                      {{ address.user.phone }}
-                    </div>
-                  </div>
-                {% endfor %}
-                {% comment %} <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}" class="add-address-btn">+ Add new address</a> {% endcomment %}
-                {% comment %} <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}">Edit</a> {% endcomment %}
-              </div>
+        <div class="checkout-grid">
 
-              <!-- Payment Method -->
-              <div class="section">
-                <h2 class="section-title">💳 Payment Method</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Choose your preferred payment method</p>
+          <!-- LEFT COLUMN -->
+          <div>
 
-                <div class="payment-options">
-                  <div class="payment-option">
-                    <div class="payment-option-content">
-                      <div class="radio"></div>
-                      <div>
-                        <div class="payment-label">Credit Card</div>
-                        <div class="payment-desc">Visa, Mastercard, Amex</div>
-                      </div>
-                    </div>
+            <!-- DELIVERY ADDRESS -->
+            <div class="section">
+              <h2 class="section-title">Delivery address</h2>
+
+              {% for address in addresses %}
+                <div class="address-card {% if address.is_default %}selected{% endif %}"
+                     data-address-id="{{ address.id }}">
+
+                  <div class="address-header">
+                    <strong>{{ address.user.get_full_name }}</strong>
+                    <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}"
+                       class="edit-link">Change</a>
                   </div>
 
-                  <div class="payment-option selected">
-                    <div class="payment-option-content">
-                      <div class="radio"></div>
-                      <div>
-                        <div class="payment-label">Google Pay</div>
-                        <div class="payment-desc">Quick and secure</div>
-                      </div>
-                    </div>
-                  </div>
+                  <div class="address-type">{{ address.address_type }}</div>
 
-                  <div class="payment-option">
-                    <div class="payment-option-content">
-                      <div class="radio"></div>
-                      <div>
-                        <div class="payment-label">Net Banking</div>
-                        <div class="payment-desc">Direct bank transfer</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="payment-option">
-                    <div class="payment-option-content">
-                      <div class="radio"></div>
-                      <div>
-                        <div class="payment-label">Cash on Delivery</div>
-                        <div class="payment-desc">Pay at doorstep</div>
-                      </div>
-                    </div>
+                  <div class="address-text">
+                    {{ address.address_line_1 }}<br>
+                    {% if address.address_line_2 %}{{ address.address_line_2 }}<br>{% endif %}
+                    {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br>
+                    {{ address.country }}<br>
+                    {{ address.user.phone }}
                   </div>
                 </div>
+              {% endfor %}
 
-                <div class="secure-payment">
-                  <span>🔒</span>
-                  <span><strong>Secure Payment</strong> - Your payment information is encrypted and secure. We never store your card details.</span>
-                </div>
-              </div>
+              <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}"
+                 class="add-address-btn">+ Add new address</a>
             </div>
 
-            <!-- Right Column - Order Summary -->
-            <div>
-              <div class="section">
-                <h2 class="section-title">Order Summary</h2>
-                {% for item in cart_items %}
-                  <div class="order-item">
-                    <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}" class="item-image" />
+            <!-- PAYMENT METHOD -->
+            <div class="section">
+              <h2 class="section-title">💳 Payment Method</h2>
 
-                    <div class="item-details">
-                      <div class="item-name">{{ item.variant.product.name }}</div>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="cod" checked>
+                Cash on Delivery
+              </label>
 
-                      <div class="item-color">
-                        {% if item.variant.size %}
-                          Size: {{ item.variant.size.name }} |
-                        {% endif %}Color: {{ item.variant.color.name }}
-                      </div>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="razorpay">
+                Razorpay
+              </label>
 
-                      <div class="item-color">Qty: {{ item.quantity }}</div>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="wallet">
+                Wallet
+              </label>
 
-                      <div class="item-price">₹ {{ item.sub_total }}</div>
-                    </div>
-                  </div>
-                {% endfor %}
-
-                <div class="summary-row total">
-                  {% comment %} <span>Total</span>
-                  <span>{{ grand_total }}</span> {% endcomment %}
-                </div>
-
-                <div class="price-breakup">
-                  <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span>₹{{ subtotal }}</span>
-                  </div>
-
-                  {% if discount > 0 %}
-                    <div class="summary-row discount">
-                      <span>Discount</span>
-                      <span class="negative">- ₹{{ discount }}</span>
-                    </div>
-                  {% endif %}
-
-                  <div class="summary-row">
-                    <span>Delivery Charges</span>
-                    <span>
-                      {% if shipping == 0 %}
-                        <span class="free-text">Free</span>
-                      {% else %}
-                        ₹{{ shipping }}
-                      {% endif %}
-                    </span>
-                  </div>
-
-                  {% if tax > 0 %}
-                    <div class="summary-row">
-                      <span>Tax</span>
-                      <span>₹{{ tax }}</span>
-                    </div>
-                  {% endif %}
-
-                  <hr class="divider" />
-
-                  <div class="summary-row total">
-                    <span>Total Payable</span>
-                    <span>₹{{ grand_total }}</span>
-                  </div>
-                </div>
-
-                {% comment %} <div class="promo-code">
-                  <span class="promo-text">Have a promo code?</span>
-                  <button class="apply-btn">Apply</button>
-                </div> {% endcomment %}
+              <div class="secure-payment">
+                🔒 <strong>Secure Payment</strong> – Your data is encrypted.
               </div>
             </div>
           </div>
 
-          <button type="submit" class="complete-payment-btn">Place your order</button>
-          <div class="terms">By completing this payment, you agree to our terms and conditions</div>
-        </form>
-      </div>
+          <!-- RIGHT COLUMN -->
+          <div>
+            <div class="section">
+              <h2 class="section-title">Order Summary</h2>
+
+              {% for item in cart_items %}
+                <div class="order-item">
+                  <img src="{{ item.variant.images.first.image.url }}"
+                       class="item-image"
+                       alt="{{ item.variant.product.name }}">
+                  <div class="item-details">
+                    <div class="item-name">{{ item.variant.product.name }}</div>
+                    <div class="item-color">
+                      {% if item.variant.size %}Size: {{ item.variant.size.name }} |{% endif %}
+                      Color: {{ item.variant.color.name }}
+                    </div>
+                    <div class="item-color">Qty: {{ item.quantity }}</div>
+                    <div class="item-price">₹ {{ item.sub_total }}</div>
+                  </div>
+                </div>
+              {% endfor %}
+
+              <div class="price-breakup">
+                <div class="summary-row">
+                  <span>Subtotal</span>
+                  <span>₹{{ subtotal }}</span>
+                </div>
+
+                {% if discount > 0 %}
+                <div class="summary-row discount">
+                  <span>Discount</span>
+                  <span>- ₹{{ discount }}</span>
+                </div>
+                {% endif %}
+
+                <div class="summary-row">
+                  <span>Delivery</span>
+                  <span>{% if delivery_charge == 0 %}Free{% else %}₹{{ delivery_charge }}{% endif %}</span>
+                </div>
+
+                {% if tax > 0 %}
+                <div class="summary-row">
+                  <span>Tax</span>
+                  <span>₹{{ tax }}</span>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="summary-row total">
+                  <span>Total Payable</span>
+                  <span>₹{{ grand_total }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="complete-payment-btn">
+          Place your order
+        </button>
+
+        <p class="terms">
+          By placing the order, you agree to our terms & conditions
+        </p>
+      </form>
     </div>
   </div>
+</div>
 {% endblock %}
+
 {% block extra_js %}
-  <script>
-    /* ================= PAYMENT SELECTION ================= */
-    document.querySelectorAll('.payment-option').forEach((option) => {
-      option.addEventListener('click', function () {
-        document.querySelectorAll('.payment-option').forEach((opt) => opt.classList.remove('selected'))
-        this.classList.add('selected')
-      })
+<script>
+  const cards = document.querySelectorAll('.address-card')
+  const hiddenInput = document.getElementById('selected_address_id')
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('selected'))
+      card.classList.add('selected')
+      hiddenInput.value = card.dataset.addressId
     })
-    
-    /* ================= ADDRESS SELECTION ================= */
-    const cards = document.querySelectorAll('.address-card')
-    const hiddenInput = document.getElementById('selected_address_id')
-    
-    cards.forEach((card) => {
-      card.addEventListener('click', () => {
-        // remove highlight from all cards
-        cards.forEach((c) => c.classList.remove('selected'))
-    
-        // highlight clicked card
-        card.classList.add('selected')
-    
-        // store selected address id
-        hiddenInput.value = card.dataset.addressId
-      })
-    })
-  </script>
+  })
+</script>
 {% endblock %}

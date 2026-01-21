@@ -1,10 +1,12 @@
-{% extends 'user_section/base.html' %}
+{% extends "user_section/base.html" %}
 {% load static %}
-
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.6" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <link rel="stylesheet"
+        href="{% static 'css/user_section/profile_base.css' %}?v=1.6" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <style>
     /* Crop Modal Styles */
     .crop-modal {
@@ -50,27 +52,49 @@
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 {% endblock extra_css %}
-
 {% block content %}
   <div class="main-container">
     <aside class="sidebar">
       <div class="profile-header">
         <div class="avatar-wrapper">
-          <div class="avatar-circle" id="avatarClick" style="width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; position: relative; background-color: #eee">
+          <div class="avatar-circle"
+               id="avatarClick"
+               style="width: 120px;
+                      height: 120px;
+                      margin: 0 auto 15px;
+                      border-radius: 50%;
+                      overflow: hidden;
+                      position: relative;
+                      background-color: #eee">
             <form id="profileImageForm">
               {% csrf_token %}
               {% if user.profile_pic %}
-                <img src="{{ user.profile_pic.url }}?v={{ user.updated_at|date:'U' }}" class="profile-pic" id="profile-display-img" style="width: 100%; height: 100%; object-fit: cover;" />
+                <img src="{{ user.profile_pic.url }}?v={{ user.updated_at|date:'U' }}"
+                     class="profile-pic"
+                     id="profile-display-img"
+                     style="width: 100%;
+                            height: 100%;
+                            object-fit: cover" />
               {% else %}
-                <div id="initials-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px; background: #ddd;">
-                    <i class="far fa-user avatar-icon"></i>
+                <div id="initials-placeholder"
+                     style="width: 100%;
+                            height: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 40px;
+                            background: #ddd">
+                  <i class="far fa-user avatar-icon"></i>
                 </div>
               {% endif %}
               <div class="avatar-edit">
                 <label for="profile-upload" class="edit-icon" style="cursor: pointer;">
                   <i class="fas fa-pencil-alt"></i>
                 </label>
-                <input type="file" id="profile-upload" accept="image/*" style="display: none" />
+                <input type="file"
+                       id="profile-upload"
+                       accept="image/*"
+                       style="display: none" />
               </div>
             </form>
           </div>
@@ -78,22 +102,35 @@
           <p>{{ user.email }}</p>
         </div>
       </div>
-
       <ul class="sidebar-menu">
-        <li><a href="{% url 'profile_info' %}" class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}"><span class="menu-icon"><i class="far fa-user"></i></span> Personal Information</a></li>
-        <li><a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-address-card"></i></span> My Addresses</a></li>
-        <li><a href="#" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}"><span class="menu-icon"><i class="far fa-clock"></i></span> My Orders</a></li>
-        <li><a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}"><span class="menu-icon"><i class="fas fa-wallet"></i></span> Wallet</a></li>
-        <li><a href="{% url 'profile_change_password' %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-key"></i></span> Change Password</a></li>
+        <li>
+          <a href="{% url 'profile_info' %}"
+             class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}"><span class="menu-icon"><i class="far fa-user"></i></span> Personal Information</a>
+        </li>
+        <li>
+          <a href="{% url 'profile_address' %}"
+             class="{% if request.resolver_match.url_name == 'profile_address' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-address-card"></i></span> My Addresses</a>
+        </li>
+        <li>
+          <a href="#"
+             class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}"><span class="menu-icon"><i class="far fa-clock"></i></span> My Orders</a>
+        </li>
+        <li>
+          <a href="#"
+             class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}"><span class="menu-icon"><i class="fas fa-wallet"></i></span> Wallet</a>
+        </li>
+        <li>
+          <a href="{% url 'profile_change_password' %}"
+             class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-key"></i></span> Change Password</a>
+        </li>
         {% comment %} <li><a href="{% url 'logout' %}"><span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span> Log Out</a></li> {% endcomment %}
       </ul>
     </aside>
-
     <main class="content-area">
-      {% block profile_content %}{% endblock %}
+      {% block profile_content %}
+      {% endblock profile_content %}
     </main>
   </div>
-  
   <div class="crop-modal" id="cropModal">
     <div class="crop-container">
       <div class="crop-header">
@@ -109,13 +146,11 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
+{% endblock content %}
 {% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script>
 document.addEventListener("DOMContentLoaded", function () {
     let cropper = null;
     const cropModal = document.getElementById("cropModal");
@@ -217,5 +252,5 @@ document.addEventListener("DOMContentLoaded", function () {
     cropCancelBtn.addEventListener("click", closeModal);
     cropCloseBtn.addEventListener("click", closeModal);
 });
-</script>
-{% endblock %}
+  </script>
+{% endblock extra_js %}

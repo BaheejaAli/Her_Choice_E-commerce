@@ -1,0 +1,223 @@
+/* ============================================
+   PAYMENT FAILURE BANNER
+   ============================================ */
+.payment-failure-banner {
+  background-color: #2c2c2c;
+  padding: 20px 0;
+  margin-bottom: 60px;
+}
+
+.payment-failure-banner h1 {
+  color: #999;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================
+   FAILURE CONTENT
+   ============================================ */
+.failure-content {
+  padding: 40px 0 100px;
+  min-height: 500px;
+}
+
+.failure-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 50px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.failure-icon {
+  margin-bottom: 25px;
+}
+
+.failure-icon i {
+  font-size: 80px;
+  color: #ef4444;
+  animation: shakeIn 0.6s ease-out;
+}
+
+@keyframes shakeIn {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(-10deg);
+  }
+  75% {
+    transform: scale(0.95) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.failure-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 15px;
+}
+
+.failure-message {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* ============================================
+   ERROR DETAILS
+   ============================================ */
+.error-details {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.error-header i {
+  color: #ef4444;
+  font-size: 18px;
+}
+
+.error-header span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.error-text {
+  font-size: 13px;
+  color: #7f1d1d;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-outline {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-primary {
+  background: #e91e63;
+  color: white;
+  border: 1px solid #e91e63;
+}
+
+.btn-primary:hover {
+  background: #c2185b;
+  border-color: #c2185b;
+}
+
+/* ============================================
+   SUPPORT LINK
+   ============================================ */
+.support-link {
+  font-size: 14px;
+  color: #6b7280;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.support-link span {
+  margin-right: 8px;
+}
+
+.support-link a {
+  color: #e91e63;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.support-link a:hover {
+  color: #c2185b;
+  text-decoration: underline;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .failure-card {
+    padding: 40px 25px;
+  }
+
+  .failure-icon i {
+    font-size: 70px;
+  }
+
+  .failure-title {
+    font-size: 24px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .support-link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

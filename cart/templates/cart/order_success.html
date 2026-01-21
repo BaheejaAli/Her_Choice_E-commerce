@@ -1,0 +1,49 @@
+{% extends "user_section/base.html" %}
+{% load static %}
+{% block title %}
+    Payment Success | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/cart/order_success.css' %}?v=1.0" />
+{% endblock extra_css %}
+{% block content %}
+    <div class="payment-success-banner">
+        <div class="container">
+            <h1>Payment Success</h1>
+        </div>
+    </div>
+    <div class="success-content">
+        <div class="container">
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="success-title">Order Placed!</h2>
+                <p class="success-message">Your order has been successfully placed. You will receive a confirmation email shortly.</p>
+                <div class="order-details">
+                    <div class="order-detail-row">
+                        <span class="detail-label">Order Number</span>
+                        <span class="detail-value">#ORD-0031234</span>
+                    </div>
+                    <div class="order-detail-row">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">11/13/2025</span>
+                    </div>
+                    <div class="order-detail-row">
+                        <span class="detail-label">Total Amount</span>
+                        <span class="detail-value">₹234.57</span>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url "user_homepage" %}" class="btn btn-outline">
+                        <i class="fas fa-home"></i> Return Home
+                    </a>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-box"></i> View Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content%}
