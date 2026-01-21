@@ -97,17 +97,25 @@ def profile_info(request):
 
 @login_required
 def upload_profile_pic(request):
-    if request.method == "POST":
-        form=ProfilePicForm(request.POST, request.FILES, instance=request.user )
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile picture was successfully updated!')
-            return redirect('profile_info')
-        else:
-            messages.error(request,"Please fix the error below.")
-    else:
-        form = ProfilePicForm(instance=request.user)
-    return render(request, 'user_section/profile_base.html', {'form': form})
+    if request.method != "POST":
+        return JsonResponse({
+            "status": "error",
+            "message": "Invalid request method"
+        }, status=405)
+   
+    form=ProfilePicForm(request.POST, request.FILES, instance=request.user )
+    if form.is_valid():
+        form.save()
+        return JsonResponse({
+            "status": "success",
+            "message": "Profile picture updated successfully!"
+        }, status=200)
+
+    return JsonResponse({
+        "status": "error",
+        "message": form.errors.get('profile_pic', ['Invalid image'])[0]
+    }, status=400)
+
     #     if "profile_image" in request.FILES:
     #         user = request.user
     #         user.profile_pic = request.FILES["profile_image"]

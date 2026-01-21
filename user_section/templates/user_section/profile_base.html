@@ -1,100 +1,27 @@
-{% extends "user_section/base.html" %}
+{% extends 'user_section/base.html' %}
 {% load static %}
+
 {% block extra_css %}
-  <link rel="stylesheet"
-        href="{% static 'css/user_section/profile_base.css' %}?v=1.6" />
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-  <style>
-    /* Crop Modal Styles */
-    .crop-modal {
-      display: none; 
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .crop-container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    .crop-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .crop-image-container {
-      width: 100%;
-      max-height: 400px;
-      background-color: #f8f9fa;
-      overflow: hidden;
-      border-radius: 4px;
-    }
-    #cropImage { max-width: 100%; display: block; }
-    .crop-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-    .btn-primary { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-  </style>
-{% endblock extra_css %}
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
+{% endblock %}
+
 {% block content %}
   <div class="main-container">
     <aside class="sidebar">
       <div class="profile-header">
         <div class="avatar-wrapper">
-          <div class="avatar-circle"
-               id="avatarClick"
-               style="width: 120px;
-                      height: 120px;
-                      margin: 0 auto 15px;
-                      border-radius: 50%;
-                      overflow: hidden;
-                      position: relative;
-                      background-color: #eee">
-            <form id="profileImageForm">
+          <div class="avatar-circle" id="avatarClick" style="width: 120px;height: 120px;margin: 0 auto 15px;border-radius: 50%;overflow: hidden;position: relative;background-color: #eee;">
+            <form id="profileImageForm" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {% if user.profile_pic %}
-                <img src="{{ user.profile_pic.url }}?v={{ user.updated_at|date:'U' }}"
-                     class="profile-pic"
-                     id="profile-display-img"
-                     style="width: 100%;
-                            height: 100%;
-                            object-fit: cover" />
+                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="profile-pic" id="profileImagePreview" />
               {% else %}
-                <div id="initials-placeholder"
-                     style="width: 100%;
-                            height: 100%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 40px;
-                            background: #ddd">
-                  <i class="far fa-user avatar-icon"></i>
-                </div>
+                <i class="far fa-user avatar-icon"></i>
               {% endif %}
               <div class="avatar-edit">
-                <label for="profile-upload" class="edit-icon" style="cursor: pointer;">
-                  <i class="fas fa-pencil-alt"></i>
-                </label>
-                <input type="file"
-                       id="profile-upload"
-                       accept="image/*"
-                       style="display: none" />
+                <label for="profile-upload" class="edit-icon"><i class="fas fa-pencil-alt"></i></label>
+                <input type="file" id="profile-upload" name="profile_image" accept="image/*" style="display: none;" />
               </div>
             </form>
           </div>
@@ -102,155 +29,169 @@
           <p>{{ user.email }}</p>
         </div>
       </div>
+
       <ul class="sidebar-menu">
         <li>
-          <a href="{% url 'profile_info' %}"
-             class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}"><span class="menu-icon"><i class="far fa-user"></i></span> Personal Information</a>
+          <a href="{% url 'profile_info' %}" class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+            <span class="menu-icon"><i class="far fa-user"></i></span>
+            Personal Information
+          </a>
         </li>
         <li>
-          <a href="{% url 'profile_address' %}"
-             class="{% if request.resolver_match.url_name == 'profile_address' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-address-card"></i></span> My Addresses</a>
+          <a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' or request.resolver_match.url_name == 'profile_add_address' or request.resolver_match.url_name == 'profile_edit_address' or request.resolver_match.url_name == 'profile_delete_address' %}active{% endif %}">
+            <span class="menu-icon"><i class="fa-solid fa-address-card"></i></span>
+            My Addresses
+          </a>
         </li>
         <li>
-          <a href="#"
-             class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}"><span class="menu-icon"><i class="far fa-clock"></i></span> My Orders</a>
+          <a href="#" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
+            <span class="menu-icon"><i class="far fa-clock"></i></span>
+            Order History
+          </a>
         </li>
         <li>
-          <a href="#"
-             class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}"><span class="menu-icon"><i class="fas fa-wallet"></i></span> Wallet</a>
+          <a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
+            <span class="menu-icon"><i class="fas fa-wallet"></i></span>
+            Wallet
+          </a>
         </li>
         <li>
-          <a href="{% url 'profile_change_password' %}"
-             class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-key"></i></span> Change Password</a>
+          <a href="{% url "profile_change_password" %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
+            <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
+            Change Password
+          </a>
         </li>
-        {% comment %} <li><a href="{% url 'logout' %}"><span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span> Log Out</a></li> {% endcomment %}
+        <li>
+          <a href="#">
+            <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+            Log Out
+          </a>
+        </li>
       </ul>
     </aside>
+
     <main class="content-area">
       {% block profile_content %}
-      {% endblock profile_content %}
+
+      {% endblock %}
     </main>
   </div>
+  <!-- Crop Modal -->
   <div class="crop-modal" id="cropModal">
-    <div class="crop-container">
-      <div class="crop-header">
-        <h4 style="margin: 0;">Crop Profile Picture</h4>
-        <span id="cropClose" style="cursor: pointer; font-size: 24px;">&times;</span>
-      </div>
-      <div class="crop-image-container">
-        <img id="cropImage" src="" />
-      </div>
+    <div class="crop-box">
+      <img id="cropImage" />
       <div class="crop-actions">
-        <button type="button" class="btn-secondary" id="cropCancel">Cancel</button>
-        <button type="button" class="btn-primary" id="cropSave">Update Photo</button>
+        <button id="cropCancel">Cancel</button>
+        <button id="cropSave">Save</button>
       </div>
     </div>
   </div>
-{% endblock content %}
+{% endblock %}
 {% block extra_js %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" />
+  <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+
   <script>
-document.addEventListener("DOMContentLoaded", function () {
-    let cropper = null;
-    const cropModal = document.getElementById("cropModal");
-    const cropImage = document.getElementById("cropImage");
-    const cropSaveBtn = document.getElementById("cropSave");
-    const cropCancelBtn = document.getElementById("cropCancel");
-    const cropCloseBtn = document.getElementById("cropClose");
-    const fileInput = document.getElementById("profile-upload");
-    const profileDisplayImg = document.getElementById("profile-display-img");
+    document.addEventListener('DOMContentLoaded', function () {
+      const fileInput    = document.getElementById('profile-upload');
+      const previewImg   = document.getElementById('profileImagePreview');
+      const cropModal    = document.getElementById('cropModal');
+      const cropImage    = document.getElementById('cropImage');
+      const cropCancel   = document.getElementById('cropCancel');
+      const cropSave     = document.getElementById('cropSave');
 
-    // Initialize Toastr
-    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right" };
+      let cropper = null;
 
-    function closeModal() {
-        cropModal.style.display = "none";
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-        fileInput.value = ""; 
-    }
+      if (!fileInput) return;
 
-    // 1. Detect Image Selection
-    fileInput.addEventListener("change", function (e) {
+      fileInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                toastr.error("Please select an image file.");
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                cropImage.src = event.target.result;
-                cropModal.style.display = "flex";
+        if (!file) return;
 
-                if (cropper) cropper.destroy();
-                cropper = new Cropper(cropImage, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    guides: true,
-                });
-            };
-            reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          cropImage.src = ev.target.result;
+          cropModal.style.display = 'flex';
+
+          cropImage.onload = function () {
+            if (cropper) cropper.destroy();
+
+            cropper = new Cropper(cropImage, {
+              aspectRatio: 1,
+              viewMode: 2,
+              dragMode: 'move',
+              autoCropArea: 0.85,
+              guides: true,
+              center: true,
+              highlight: false,
+              background: false,
+              modal: true,
+              movable: true,
+              rotatable: true,
+              scalable: true,
+              zoomable: true,
+              zoomOnTouch: true,
+              zoomOnWheel: true,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+            });
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+
+      cropCancel.addEventListener('click', closeModal);
+      cropModal.addEventListener('click', (e) => { if (e.target === cropModal) closeModal(); });
+
+      function closeModal() {
+        cropModal.style.display = 'none';
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
         }
-    });
+        fileInput.value = '';
+      }
 
-    // 2. Handle AJAX Upload
-    cropSaveBtn.addEventListener("click", function () {
+      cropSave.addEventListener('click', function () {
         if (!cropper) return;
 
-        // Start Loading State
-        const originalText = cropSaveBtn.innerText;
-        cropSaveBtn.innerText = "Saving...";
-        cropSaveBtn.disabled = true;
+        const originalText = cropSave.textContent;
+        cropSave.textContent = 'Saving...';
+        cropSave.disabled = true;
 
-        cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
-            const formData = new FormData();
-            formData.append("profile_pic", blob, "avatar.jpg");
-            
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        cropper.getCroppedCanvas({
+          width: 400,
+          height: 400,
+          fillColor: '#fff',
+        }).toBlob(function (blob) {
+          const formData = new FormData();
+          formData.append('profile_image', blob, 'profile.jpg');
 
-            // Native AJAX using Fetch
-            fetch("{% url 'upload_profile_pic' %}", {
-                method: "POST",
-                headers: { "X-CSRFToken": csrfToken },
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success' || data.success) {
-                    // Update image in UI
-                    if (profileDisplayImg) {
-                        profileDisplayImg.src = data.image_url + '?t=' + new Date().getTime();
-                    } else {
-                        // If there was no image element (placeholder was showing), reload
-                        location.reload();
-                    }
-                    toastr.success(data.message || "Profile picture updated!");
-                    closeModal();
-                } else {
-                    toastr.error(data.message || "Upload failed.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                toastr.error("Something went wrong with the server.");
-            })
-            .finally(() => {
-                // Reset Loading State
-                cropSaveBtn.innerText = originalText;
-                cropSaveBtn.disabled = false;
-            });
-        }, "image/jpeg", 0.9);
+          fetch("{% url 'upload_profile_pic' %}", {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              previewImg.src = URL.createObjectURL(blob);
+              alert(data.message || 'Profile picture updated successfully!');
+              closeModal();
+            } else {
+              alert(data.message || 'Upload failed.');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert('Something went wrong during upload.');
+          })
+          .finally(() => {
+            cropSave.textContent = originalText;
+            cropSave.disabled = false;
+          });
+        }, 'image/jpeg', 0.92);
+      });
     });
-
-    cropCancelBtn.addEventListener("click", closeModal);
-    cropCloseBtn.addEventListener("click", closeModal);
-});
   </script>
-{% endblock extra_js %}
+{% endblock %}

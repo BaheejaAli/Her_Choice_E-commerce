@@ -3,6 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from accounts.models import CustomUser
 from django.core.validators import FileExtensionValidator
+import re
 
 # ========= ADMIN AUTHENTICATION FORMS ==============
 
@@ -84,6 +85,34 @@ class UserRegistrationForm(forms.ModelForm):
             "email" : forms.EmailInput(attrs={"placeholder":"Email Address", "class":"form-control"}),
             "phone" : forms.TextInput(attrs={"placeholder":"Phone (Optional)", "class":"form-control"}) 
         }
+    
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        if not re.match(r'^[A-Za-z ]+$', first_name):
+            raise ValidationError("First name should contain only letters.")
+
+        if len(first_name) < 2:
+            raise ValidationError("First name must be at least 2 characters long.")
+
+        return first_name.strip()
+    
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get("last_name")
+        if not re.match(r'^[A-Za-z ]+$', last_name):
+            raise ValidationError("Last name should contain only letters.")
+
+        return last_name.strip()
+    
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if not phone:
+            return phone 
+        if not phone.isdigit():
+            raise ValidationError("Phone number must contain only digits.")
+        if len(phone) != 10:
+            raise ValidationError("Phone number must be exactly 10 digits.")
+
+        return phone
     
     def clean(self):
         cleaned_data = super().clean()

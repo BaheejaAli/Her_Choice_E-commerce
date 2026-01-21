@@ -1,297 +1,251 @@
 /* LAYOUT */
 .main-container {
-  display: flex;
-  max-width: 1400px;
-  margin: 40px auto;
-  padding: 0 20px;
-  gap: 30px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    gap: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* SIDEBAR */
 .sidebar {
-  width: 280px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 30px 0;
-  min-height: 600px;
+    width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    padding: 30px 0;
+    min-height: 600px;
 }
 
+/* .profile-header {
+    text-align: center;
+    padding: 0 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+    
+} */
 .profile-header {
-  text-align: center;
-  padding: 20px 20px 25px;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    text-align: center;
+    padding: 20px 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+
+
 
 /* AVATAR CONTAINER */
+/* Avatar wrapper */
 .avatar-wrapper {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  margin-bottom: 100px;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 100px;   /* 🔥 THIS FIXES OVERLAP */
 }
+
 
 /* Main avatar circle */
 .avatar-circle {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: #eee;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #eee;
+   
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Avatar image */
 .avatar-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 /* Camera icon badge */
 .avatar-edit {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 32px;
-  height: 32px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 /* Camera icon */
 .avatar-edit i {
-  font-size: 14px;
-  color: #666;
+    font-size: 14px;
+    color: #666;
 }
+
 
 /* MENU */
 .sidebar-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .sidebar-menu a {
-  display: flex;
-  align-items: center;
-  padding: 15px 25px;
-  color: #666;
-  text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #666;
+    text-decoration: none;
 }
 
 .sidebar-menu a.active {
-  background: #fef5f9;
-  color: #ff1493;
-  border-left: 3px solid #ff1493;
-  font-weight: 500;
+    background: #fef5f9;
+    color: #ff1493;
+    border-left: 3px solid #ff1493;
+    font-weight: 500;
 }
 
 .menu-icon {
-  width: 20px;
-  margin-right: 12px;
+    width: 20px;
+    margin-right: 12px;
 }
 
 /* CONTENT */
 .content-area {
-  flex: 1;
-  background: #fff;
-  border-radius: 12px;
-  padding: 40px;
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
 }
 
-/* ===============================
-   DJANGO MESSAGES (GLOBAL)
-================================ */
-.messages-container {
-  margin-bottom: 25px;
-}
-
-.alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.alert.success {
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-}
-
-.alert.error {
-  background: #fdecea;
-  color: #b91c1c;
-  border: 1px solid #f5c2c7;
-}
-
-.alert.info {
-  background: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
-}
-
-.alert.warning {
-  background: #fff7ed;
-  color: #9a3412;
-  border: 1px solid #fed7aa;
-}
-
-/* ===== FORM ERROR STYLING ===== */
-.form-error-box {
-  background-color: #fdecea;
-  color: #b02a37;
-  border: 1px solid #f5c2c7;
-  border-radius: 6px;
-  padding: 12px 14px;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.form-error-box ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.field-error {
-  color: #dc3545;
-  font-size: 13px;
-  margin-top: 5px;
-}
-
-input:has(+ .field-error),
-select:has(+ .field-error),
-textarea:has(+ .field-error) {
-  border-color: #dc3545;
-  background-color: #fff5f5;
-}
-
-/* ============================================
-   CROP MODAL - EXACT COPY FROM PRODUCT VARIANT
-   ============================================ */
+/* Make sure modal centers nicely and crop area is visible */
 .crop-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  display: none;               /* important – hidden by default */
   align-items: center;
-  z-index: 99999;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.crop-container {
+.crop-box {
   background: white;
-  width: 600px;
-  max-width: 95%;
-  border-radius: 12px;
   padding: 20px;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  text-align: center;
 }
 
-.crop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.crop-header h4 {
-  margin: 0;
-  font-size: 18px;
-  color: #2c3e50;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  color: #666;
-  line-height: 1;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #000;
-}
-
-.crop-image-container {
-  width: 100%;
-  height: 420px;
-  overflow: hidden;
-}
-
-/* Cropper overrides */
-.cropper-container {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.cropper-crop-box,
-.cropper-view-box {
-  outline: 2px solid #e91e63;
+.crop-box img {
+  max-width: 100%;
+  max-height: 70vh;
 }
 
 .crop-actions {
+  margin-top: 20px;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 15px;
+  justify-content: center;
 }
 
-.btn {
-  padding: 10px 20px;
-  border-radius: 6px;
+.crop-actions button {
+  padding: 10px 24px;
+  font-size: 15px;
   border: none;
-  font-size: 14px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.btn-primary {
-  background: #e91e63;
+#cropCancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+#cropSave {
+  background: #ff4d6d;
   color: white;
 }
+/* ===============================
+   DJANGO MESSAGES (GLOBAL)
+================================ */
 
-.btn-primary:hover {
-  background: #c2185b;
+.messages-container {
+    margin-bottom: 25px;
 }
 
-.btn-secondary {
-  background: #6c757d;
-  color: white;
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
 }
 
-.btn-secondary:hover {
-  background: #5a6268;
+.alert.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .crop-container {
-    width: 90%;
-    padding: 15px;
-  }
+.alert.error {
+    background: #fdecea;
+    color: #b91c1c;
+    border: 1px solid #f5c2c7;
+}
 
-  .crop-image-container {
-    height: 300px;
-  }
+.alert.info {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.alert.warning {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+/* ===== FORM ERROR STYLING ===== */
+
+/* Top error box (non-field errors) */
+.form-error-box {
+    background-color: #fdecea;
+    color: #b02a37;
+    border: 1px solid #f5c2c7;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* Remove default Django ul style */
+.form-error-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+/* Field-specific error text */
+.field-error {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Highlight input with error */
+input:has(+ .field-error),
+select:has(+ .field-error),
+textarea:has(+ .field-error) {
+    border-color: #dc3545;
+    background-color: #fff5f5;
 }
