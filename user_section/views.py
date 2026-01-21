@@ -116,12 +116,6 @@ def upload_profile_pic(request):
         "message": form.errors.get('profile_pic', ['Invalid image'])[0]
     }, status=400)
 
-    #     if "profile_image" in request.FILES:
-    #         user = request.user
-    #         user.profile_pic = request.FILES["profile_image"]
-    #         user.save()
-    #         return JsonResponse({"status": "success", "image_url": user.profile_pic.url})
-    # return JsonResponse({"status": "error"})
 
 
 @login_required
@@ -132,6 +126,7 @@ def edit_profile(request):
         form = UserProfileUpdateForm(request.POST, instance=request.user)
 
         if form.is_valid():
+            print("the form is valid")
             new_email = form.cleaned_data['email']
 
             # EMAIL CHANGED
@@ -186,8 +181,8 @@ def edit_profile(request):
     else:
 
         form = UserProfileUpdateForm(instance=request.user)
-    if not form.is_valid():
-        print("FORM ERRORS:", form.errors)
+    # if not form.is_valid():
+    #     print("FORM ERRORS:", form.errors)
 
     # print("FORM VALID:", form.is_valid())
     # print("FORM ERRORS:", form.errors)

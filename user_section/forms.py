@@ -15,26 +15,26 @@ class UserProfileUpdateForm(forms.ModelForm):
             'phone':forms.TextInput(attrs={'class':'form-control'}),
             'gender':forms.Select(attrs={'class':'form-control'})
         }
-        def clean_first_name(self):
-            name = self.cleaned_data.get("first_name")
-            if not name.isalpha():
-                raise ValidationError("First name must contain only letters.")
-            return name
+    def clean_first_name(self):
+        name = self.cleaned_data.get("first_name")
+        if not name.isalpha():
+            raise ValidationError("First name must contain only letters.")
+        return name
 
-        def clean_last_name(self):
-            name = self.cleaned_data.get("last_name")
-            if not name.isalpha():
-                raise ValidationError("Last name must contain only letters.")
-            return name
+    def clean_last_name(self):
+        name = self.cleaned_data.get("last_name")
+        if not name.isalpha():
+            raise ValidationError("Last name must contain only letters.")
+        return name
 
-        def clean_phone(self):
-            phone = self.cleaned_data.get("phone")
-            if phone:
-                if not phone.isdigit():
-                    raise ValidationError("Phone number must contain only digits.")
-                if len(phone) != 10:
-                    raise ValidationError("Phone number must be 10 digits.")
-            return phone
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if phone:
+            if not phone.isdigit():
+                raise ValidationError("Phone number must contain only digits.")
+            if len(phone) != 10:
+                raise ValidationError("Phone number must be 10 digits.")
+        return phone
 
 class UserAddressForm(forms.ModelForm):
     class Meta:

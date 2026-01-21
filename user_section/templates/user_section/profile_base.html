@@ -15,13 +15,13 @@
             <form id="profileImageForm" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {% if user.profile_pic %}
-                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="profile-pic" id="profileImagePreview" />
+                <img src="{{ user.profile_pic.url }}" id="profileImagePreview">
               {% else %}
-                <i class="far fa-user avatar-icon"></i>
+                <img src="{% static 'images/default-avatar.png' %}" alt="no images" id="profileImagePreview">
               {% endif %}
               <div class="avatar-edit">
                 <label for="profile-upload" class="edit-icon"><i class="fas fa-pencil-alt"></i></label>
-                <input type="file" id="profile-upload" name="profile_image" accept="image/*" style="display: none;" />
+                <input type="file" id="profile-upload" name="profile_pic" accept="image/*" style="display: none;" />
               </div>
             </form>
           </div>
@@ -165,7 +165,7 @@
           fillColor: '#fff',
         }).toBlob(function (blob) {
           const formData = new FormData();
-          formData.append('profile_image', blob, 'profile.jpg');
+          formData.append('profile_pic', blob, 'profile.jpg');
 
           fetch("{% url 'upload_profile_pic' %}", {
             method: 'POST',
