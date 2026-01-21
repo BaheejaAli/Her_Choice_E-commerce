@@ -15,6 +15,7 @@ from brandsandcategories.models import Brand, Category
 from brandsandcategories.forms import BrandForm, CategoryForm
 from products.models import Product, ProductVariant, ProductVariantImage
 from products.forms import ProductForm, ProductVariantForm, ProductVariantImageFormSet
+from django.urls import reverse
 
 
 # ######### ADMIN CHECK #############
@@ -478,6 +479,151 @@ def toggle_product_status(request, product_id):
 
 # =============== Add product variant ===================
 
+# @never_cache
+# @login_required
+# @user_passes_test(is_admin)
+# def product_variant_add(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+
+#     if request.method == "POST":
+#         form = ProductVariantForm(request.POST,request.FILES)
+
+#         image_formset = ProductVariantImageFormSet(
+#                 request.POST,
+#                 request.FILES,
+#                 prefix="images"
+#             )
+
+#         if form.is_valid() and image_formset.is_valid():
+#             uploaded_count = 0
+#             for f in image_formset:
+#                 if f.cleaned_data.get("image") and not f.cleaned_data.get("DELETE"):
+#                     uploaded_count += 1
+
+#             if uploaded_count < 3:
+#                 messages.error(
+#                     request,
+#                     f"You must upload at least 3 images. You uploaded {uploaded_count}."
+#                 )
+#                 return render(
+#                     request,
+#                     "admin_panel/product_variant_form.html",
+#                     {
+#                         "form": form,
+#                         "image_formset": image_formset,
+#                         "product": product,
+#                         "is_edit": False,
+#                     }
+#                 )
+
+#             variant = form.save(commit=False)
+#             variant.product = product
+
+#             duplicate_exists = ProductVariant.objects.filter(
+#             product=product,
+#             color=variant.color,
+#             size=variant.size
+#             ).exists()
+
+#             if duplicate_exists:
+#                 messages.error(request,"This variant with the same color and size already exists.")
+#                 return render(request,"admin_panel/product_variant_form.html",
+#                     {
+#                         "form": form,
+#                         "image_formset": image_formset,
+#                         "product": product,
+#                         "is_edit": False,
+#                     }
+#                 )
+
+#             if not variant.sku:
+#                 variantSize = variant.size.id if variant.size else "FREESIZE"
+#                 variantColor = variant.color.name.replace(" ", "").upper()
+#                 variant.sku = f"{product.id}-{variantSize}-{variantColor}"
+                
+#             variant.save()
+#             product.save(update_fields=["updated_at"])
+#             image_formset.instance = variant        
+#             image_formset.save()
+#             messages.success(request, "Product variant added successfully.")
+#             return redirect("product_list")
+
+#     else:
+#         form = ProductVariantForm()
+#         image_formset = ProductVariantImageFormSet(prefix="images")
+        
+
+#     return render(
+#         request,
+#         "admin_panel/product_variant_form.html",
+#         {
+#             "form": form,
+#             "image_formset": image_formset,
+#             "product": product,
+#             "is_edit": False,
+#         }
+#     )
+
+
+# =============== Product variant update ===================
+# @never_cache
+# @login_required
+# @user_passes_test(is_admin)
+# def product_variant_update(request, variant_id):
+#     variant = get_object_or_404(ProductVariant, id=variant_id)
+   
+
+#     if request.method == "POST":
+#         form = ProductVariantForm(request.POST, instance=variant)
+#         image_formset = ProductVariantImageFormSet(
+#             request.POST,
+#             request.FILES,
+#             instance=variant,
+#             prefix="images"
+#         )
+
+#         if form.is_valid() and image_formset.is_valid():
+#             deleted_forms = [
+#                 f for f in image_formset
+#                 if f.cleaned_data.get("DELETE")
+#             ]
+
+#             final_image_count = (
+#                 variant.images.count()
+#                 - len(deleted_forms)
+#                 + len(request.FILES)
+#             )
+
+#             if final_image_count < 3:
+#                 messages.error(
+#                     request,
+#                     "Variant must have at least 3 images."
+#                 )
+#             else:
+#                 with transaction.atomic():
+#                     form.save()
+#                     image_formset.save()
+#                     variant.product.save(update_fields=["updated_at"])
+
+#                 messages.success(request, "Product variant updated successfully.")
+#                 return redirect("product_list")
+              
+        
+#     else:
+#         form = ProductVariantForm(instance=variant)
+#         image_formset = ProductVariantImageFormSet(instance=variant,prefix="images")
+
+#     return render(
+#         request,
+#         "admin_panel/product_variant_form.html",
+#         {
+#             "form": form,
+#             "image_formset": image_formset,
+#             "product": variant.product,
+#             "variant": variant,
+#             "is_edit": True,
+#         }
+#     )
 @never_cache
 @login_required
 @user_passes_test(is_admin)
@@ -485,24 +631,21 @@ def product_variant_add(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.method == "POST":
-        form = ProductVariantForm(request.POST,request.FILES)
-
+        form = ProductVariantForm(request.POST)
         image_formset = ProductVariantImageFormSet(
-                request.POST,
-                request.FILES,
-                prefix="images"
-            )
+            request.POST, request.FILES, prefix="images"
+        )
 
         if form.is_valid() and image_formset.is_valid():
-            uploaded_count = 0
+            uploaded_images = 0
             for f in image_formset:
                 if f.cleaned_data.get("image") and not f.cleaned_data.get("DELETE"):
-                    uploaded_count += 1
+                    uploaded_images += 1
 
-            if uploaded_count < 3:
+            if uploaded_images < 3:
                 messages.error(
                     request,
-                    f"You must upload at least 3 images. You uploaded {uploaded_count}."
+                    f"Please upload at least 3 images. You uploaded {uploaded_images}."
                 )
                 return render(
                     request,
@@ -514,64 +657,60 @@ def product_variant_add(request, product_id):
                         "is_edit": False,
                     }
                 )
+            color = form.cleaned_data.get('color')
+            size = form.cleaned_data.get('size')
+            if ProductVariant.objects.filter(product=product, color=color, size=size).exists():
+                messages.error(request, "A variant with this color and size already exists.")
+            else:
+                try:
+                    with transaction.atomic():
+                        variant = form.save(commit=False)
+                        variant.product = product
+                        
+                        size_name = variant.size.name if variant.size else "FS"
+                        variant.sku = f"{product.id}-{size_name}-{variant.color.name[:3].upper()}"
+                        variant.save()
 
-            variant = form.save(commit=False)
-            variant.product = product
+                        image_formset.instance = variant
+                        image_formset.save()
 
-            duplicate_exists = ProductVariant.objects.filter(
-            product=product,
-            color=variant.color,
-            size=variant.size
-            ).exists()
+                        product.save(update_fields=['updated_at'])
 
-            if duplicate_exists:
-                messages.error(request,"This variant with the same color and size already exists.")
-                return render(request,"admin_panel/product_variant_form.html",
-                    {
-                        "form": form,
-                        "image_formset": image_formset,
-                        "product": product,
-                        "is_edit": False,
-                    }
-                )
-
-            if not variant.sku:
-                variantSize = variant.size.id if variant.size else "FREESIZE"
-                variantColor = variant.color.name.replace(" ", "").upper()
-                variant.sku = f"{product.id}-{variantSize}-{variantColor}"
-                
-            variant.save()
-            product.save(update_fields=["updated_at"])
-            image_formset.instance = variant        
-            image_formset.save()
-            messages.success(request, "Product variant added successfully.")
-            return redirect("product_list")
+                    messages.success(request, "Variant and images added successfully.")
+                    return redirect("product_list") 
+                except Exception as e:
+                    messages.error(request, f"Error occurred: {str(e)}")
+        else:
+            messages.error(request, "Please correct the errors below. (At least 3 images required)")
 
     else:
         form = ProductVariantForm()
         image_formset = ProductVariantImageFormSet(prefix="images")
-        
 
-    return render(
-        request,
-        "admin_panel/product_variant_form.html",
-        {
-            "form": form,
-            "image_formset": image_formset,
-            "product": product,
-            "is_edit": False,
-        }
-    )
+    return render(request, "admin_panel/product_variant_form.html", {
+        "form": form,
+        "image_formset": image_formset,
+        "product": product,
+        "is_edit": False,
+    })
 
-
-# =============== Product variant update ===================
+# ===============================
+# EDIT VARIANT
+# ===============================
 @never_cache
 @login_required
 @user_passes_test(is_admin)
 def product_variant_update(request, variant_id):
-    variant = get_object_or_404(ProductVariant, id=variant_id)
-    # product = variant.product
-
+    variant = get_object_or_404(
+        ProductVariant.objects.select_related("product"),
+        id=variant_id
+    )
+    product = variant.product
+    form = ProductVariantForm(instance=variant)
+    image_formset = ProductVariantImageFormSet(
+        instance=variant,
+        prefix="images"
+    )
     if request.method == "POST":
         form = ProductVariantForm(request.POST, instance=variant)
         image_formset = ProductVariantImageFormSet(
@@ -580,49 +719,103 @@ def product_variant_update(request, variant_id):
             instance=variant,
             prefix="images"
         )
+        print("\n========== DEBUG START ==========")
+        print("FORM VALID:", form.is_valid())
+        print("FORM ERRORS:", form.errors)
+        print("FORM NON FIELD ERRORS:", form.non_field_errors())
 
-        if form.is_valid() and image_formset.is_valid():
-            deleted_forms = [
-                f for f in image_formset
-                if f.cleaned_data.get("DELETE")
-            ]
+        print("FORMSET VALID:", image_formset.is_valid())
+        print("FORMSET ERRORS:", image_formset.errors)
+        print("FORMSET NON FORM ERRORS:", image_formset.non_form_errors())
 
-            final_image_count = (
-                variant.images.count()
-                - len(deleted_forms)
-                + len(request.FILES)
+        print("TOTAL FORMS:", image_formset.total_form_count())
+        print("INITIAL FORMS:", image_formset.initial_form_count())
+        print("MIN NUM:", image_formset.min_num)
+
+        for i, f in enumerate(image_formset):
+            print(f"FORM {i} cleaned_data:", f.cleaned_data)
+
+        print("=========== DEBUG END ===========\n")
+
+
+        # -------------------------------
+        # VALIDATION
+        # -------------------------------
+        if not form.is_valid() or not image_formset.is_valid():
+            messages.error(request, "Please fix the errors below.")
+            return render(
+                request,
+                "admin_panel/product_variant_form.html",
+                {
+                    "form": form,
+                    "image_formset": image_formset,
+                    "product": product,
+                    "variant": variant,
+                    "is_edit": True,
+                }
             )
 
-            if final_image_count < 3:
-                messages.error(
-                    request,
-                    "Variant must have at least 3 images."
-                )
-            else:
-                with transaction.atomic():
-                    form.save()
-                    image_formset.save()
-                    variant.product.save(update_fields=["updated_at"])
+        # -------------------------------
+        # IMAGE COUNT CHECK (FORMSET-BASED)
+        # -------------------------------
+        print("▶ CALCULATING FINAL IMAGE COUNT")
 
-                messages.success(request, "Product variant updated successfully.")
-                return redirect("product_list")
-                # return redirect("product_variant_add", product_id=product.id)
-        
-    else:
-        form = ProductVariantForm(instance=variant)
-        image_formset = ProductVariantImageFormSet(instance=variant,prefix="images")
+        final_image_count = 0
+        for f in image_formset:
+            print(
+        "instance.pk:", f.instance.pk,
+        "| image:", f.cleaned_data.get("image"),
+        "| DELETE:", f.cleaned_data.get("DELETE")
+    )
+            if f.cleaned_data.get("DELETE"):
+                continue
+            if f.instance.pk or f.cleaned_data.get("image"):
+                final_image_count += 1
+        print("FINAL IMAGE COUNT:", final_image_count)
 
+
+        if final_image_count < 3:
+            messages.error(request, "Variant must have at least 3 images.")
+            return render(
+                request,
+                "admin_panel/product_variant_form.html",
+                {
+                    "form": form,
+                    "image_formset": image_formset,
+                    "product": product,
+                    "variant": variant,
+                    "is_edit": True,
+                }
+            )
+
+        # -------------------------------
+        # SAVE (SUCCESS PATH)
+        # -------------------------------
+        print("💾 ABOUT TO SAVE VARIANT")
+
+        with transaction.atomic():
+            form.save()
+            image_formset.save()
+            product.save(update_fields=["updated_at"])
+
+        messages.success(request, "Variant updated successfully.")
+        print("➡️ REDIRECTING TO PRODUCT LIST")
+
+        return redirect("product_list")
+
+    # GET request
     return render(
         request,
         "admin_panel/product_variant_form.html",
         {
             "form": form,
             "image_formset": image_formset,
-            "product": variant.product,
+            "product": product,
             "variant": variant,
             "is_edit": True,
         }
     )
+
 # =============== Toggle product variant  ===================
 @require_POST
 @login_required

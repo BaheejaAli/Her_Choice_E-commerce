@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from accounts.models import CustomUser
+from django.core.validators import FileExtensionValidator
 
 # ========= ADMIN AUTHENTICATION FORMS ==============
 
@@ -148,3 +149,22 @@ class UserResetPasswordForm(forms.Form):
                 self.add_error("new_password", e)
 
         return cleaned_data
+    
+class ProfilePicForm(forms.ModelForm):
+    profile_pic = forms.ImageField(required=False,validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])])
+    class Meta:
+        model = CustomUser
+        fields = ['profile_pic']
+
+    def clean_profile_pic(self):
+        profile_pic = self.cleaned_data.get("profile_pic")
+
+        if not profile_pic:
+            return profile_pic
+     
+        if profile_pic.size > 2 * 1024 * 1024:
+            raise ValidationError("Image must be under 2MB.")
+        
+        return profile_pic
+       
+       

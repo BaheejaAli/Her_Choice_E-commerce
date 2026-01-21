@@ -27,12 +27,10 @@ class UserAddress(models.Model):
     # Ensure only one default address per user
     def save(self, *args, **kwargs):
         if self.is_default:
-            # Use atomic transaction to ensure data integrity
             with transaction.atomic():
                 UserAddress.objects.filter(user=self.user, is_default=True).update(is_default=False)
                 super().save(*args, **kwargs)
         else:
-            # If this is the user's ONLY address, make it default anyway
             if not UserAddress.objects.filter(user=self.user).exists():
                 self.is_default = True
             super().save(*args, **kwargs)

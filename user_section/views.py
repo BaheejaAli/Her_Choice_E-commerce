@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from products.models import Product, ProductVariant
+from accounts.forms import ProfilePicForm
 from brandsandcategories.models import Category
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
@@ -19,22 +20,22 @@ from .models import Wishlist, WishlistItem
 from django.db import transaction
 
 #  only one image
-def attach_display_image(products):
-    for product in products:
-        product.display_image = None
+# def attach_display_image(products):
+#     for product in products:
+#         product.display_image = None
 
-        variant = product.variants.filter(is_active=True).first()
-        if not variant:
-            continue
+#         variant = product.variants.filter(is_active=True).first()
+#         if not variant:
+#             continue
 
-        image = variant.images.filter(is_primary=True).first()
-        if image:
-            product.display_image = image.image
+#         image = variant.images.filter(is_primary=True).first()
+#         if image:
+#             product.display_image = image.image
 
 # ONLY ONE active variant
-def attach_display_variant(products):
-    for product in products:
-        product.display_variant = product.variants.filter(is_active=True).first()
+# def attach_display_variant(products):
+#     for product in products:
+#         product.display_variant = product.variants.filter(is_active=True).first()
 
 
 def homepage(request):
@@ -59,16 +60,14 @@ def homepage(request):
         .order_by("?")[:8]
     )
 
-    attach_display_image(new_arrivals)
-    attach_display_image(featured_products)
-    attach_display_image(trending_products)
+#     attach_display_image(new_arrivals)
+#     attach_display_image(featured_products)
+#     attach_display_image(trending_products)
 
-    attach_display_variant(new_arrivals)
-    attach_display_variant(featured_products)
-    attach_display_variant(trending_products)
+#     attach_display_variant(new_arrivals)
+#     attach_display_variant(featured_products)
+#     attach_display_variant(trending_products)
 
-
-    categories = Category.objects.filter(is_active=True).order_by("?")[:4]
 
     return render(
         request,
@@ -77,7 +76,6 @@ def homepage(request):
             "new_arrivals": new_arrivals,
             "featured_products": featured_products,
             "trending_products": trending_products,
-            "categories": categories,
         }
     )
 
@@ -100,12 +98,22 @@ def profile_info(request):
 @login_required
 def upload_profile_pic(request):
     if request.method == "POST":
-        if "profile_image" in request.FILES:
-            user = request.user
-            user.profile_pic = request.FILES["profile_image"]
-            user.save()
-            return JsonResponse({"status": "success", "image_url": user.profile_pic.url})
-    return JsonResponse({"status": "error"})
+        form=ProfilePicForm(request.POST, request.FILES, instance=request.user )
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile picture was successfully updated!')
+            return redirect('profile_info')
+        else:
+            messages.error(request,"Please fix the error below.")
+    else:
+        form = ProfilePicForm(instance=request.user)
+    return render(request, 'user_section/profile_base.html', {'form': form})
+    #     if "profile_image" in request.FILES:
+    #         user = request.user
+    #         user.profile_pic = request.FILES["profile_image"]
+    #         user.save()
+    #         return JsonResponse({"status": "success", "image_url": user.profile_pic.url})
+    # return JsonResponse({"status": "error"})
 
 
 @login_required

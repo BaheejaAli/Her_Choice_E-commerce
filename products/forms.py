@@ -6,6 +6,8 @@ from django.forms.widgets import ClearableFileInput
 # =========================
 # PRODUCT FORM
 # =========================
+
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -74,7 +76,6 @@ class ProductForm(forms.ModelForm):
                 "A product with this name already exists.")
 
         return name
-    
 
     # def clean_image(self):
     #     image = self.cleaned_data.get("image")
@@ -84,8 +85,6 @@ class ProductForm(forms.ModelForm):
     #         raise forms.ValidationError("Image file too large. Max size is 2MB.")
 
     #     return image
-
-
 
 
 # =========================
@@ -115,21 +114,63 @@ class ProductVariantForm(forms.ModelForm):
             ),
         }
 
+    # -------------------------------
+    # FIELD LEVEL VALIDATIONS
+    # -------------------------------
     def clean_base_price(self):
         base_price = self.cleaned_data.get("base_price")
         if base_price is None or base_price <= 0:
-            raise forms.ValidationError("Base price must be greater than zero")
+            raise forms.ValidationError(
+                "Base price must be greater than zero."
+            )
         return base_price
 
     def clean_offer_price(self):
         offer_price = self.cleaned_data.get("offer_price")
         base_price = self.cleaned_data.get("base_price")
+
         if offer_price is not None and base_price is not None:
             if offer_price >= base_price:
                 raise forms.ValidationError(
-                    "Offer price must be less than base price.")
+                    "Offer price must be less than base price."
+                )
         return offer_price
-    
+
+    def clean_stock(self):
+        stock = self.cleaned_data.get("stock")
+        if stock is None or stock < 0:
+            raise forms.ValidationError(
+                "Stock cannot be negative."
+            )
+        return stock
+
+    # -------------------------------
+    # FORM LEVEL VALIDATION
+    # -------------------------------
+    def clean(self):
+        cleaned_data = super().clean()
+        size = cleaned_data.get("size")
+        color = cleaned_data.get("color")
+
+        # Product exists only during UPDATE
+        product = self.instance.product if self.instance.pk else None
+
+        if product and size and color:
+            duplicate_qs = ProductVariant.objects.filter(
+                product=product,
+                size=size,
+                color=color
+            ).exclude(pk=self.instance.pk)
+
+            if duplicate_qs.exists():
+                self.add_error(
+                    "color",
+                    "Variant with this size and color already exists."
+                )
+
+        return cleaned_data
+
+
 # =========================
 # PRODUCT VARIANT IMAGE FORM
 # =========================
@@ -142,18 +183,17 @@ class ProductVariantImageForm(forms.ModelForm):
         image = self.cleaned_data.get("image")
         return image
 
+
 # =========================
 # PRODUCT IMAGE FORMSET
 # =========================
 ProductVariantImageFormSet = inlineformset_factory(
     ProductVariant,
     ProductVariantImage,
-    form=ProductVariantImageForm,  
+    form=ProductVariantImageForm,
     fields=("image",),
-    extra=2,
-    min_num=3, 
-    validate_min=True,
-    can_delete=True, 
+    # min_num=3,           
+    # validate_min=True,
+    extra=5,
+    can_delete=True,
 )
-
- 

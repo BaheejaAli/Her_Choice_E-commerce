@@ -96,3 +96,84 @@ border-radius: 50%;
 .page-content {
 margin-top: 20px;
 }
+/* ===============================
+   DJANGO MESSAGES
+   =============================== */
+
+.messages-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+}
+
+/* Base alert style */
+.alert {
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  animation: slideIn 0.35s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Success */
+.alert-success {
+  background: #e6f9f0;
+  color: #0f5132;
+  border-left: 5px solid #198754;
+}
+
+/* Error */
+.alert-error,
+.alert-danger {
+  background: #fdecea;
+  color: #842029;
+  border-left: 5px solid #dc3545;
+}
+
+/* Warning */
+.alert-warning {
+  background: #fff4e5;
+  color: #664d03;
+  border-left: 5px solid #ffc107;
+}
+
+/* Info */
+.alert-info {
+  background: #e7f3ff;
+  color: #084298;
+  border-left: 5px solid #0d6efd;
+}
+
+/* Slide animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Auto fade out (optional) */
+.alert {
+  animation: slideIn 0.35s ease-out, fadeOut 0.4s ease-in forwards;
+  animation-delay: 0s, 4.5s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}

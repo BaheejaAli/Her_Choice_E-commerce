@@ -2,26 +2,75 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
-  <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
-{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.6" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <style>
+    /* Crop Modal Styles */
+    .crop-modal {
+      display: none; 
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .crop-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .crop-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .crop-image-container {
+      width: 100%;
+      max-height: 400px;
+      background-color: #f8f9fa;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    #cropImage { max-width: 100%; display: block; }
+    .crop-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    .btn-primary { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+{% endblock extra_css %}
 
 {% block content %}
   <div class="main-container">
     <aside class="sidebar">
       <div class="profile-header">
         <div class="avatar-wrapper">
-          <div class="avatar-circle" id="avatarClick" style="width: 120px;height: 120px;margin: 0 auto 15px;border-radius: 50%;overflow: hidden;position: relative;background-color: #eee;">
-            <form id="profileImageForm" method="POST" enctype="multipart/form-data">
+          <div class="avatar-circle" id="avatarClick" style="width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; position: relative; background-color: #eee">
+            <form id="profileImageForm">
               {% csrf_token %}
               {% if user.profile_pic %}
-                <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="profile-pic" id="profileImagePreview" />
+                <img src="{{ user.profile_pic.url }}?v={{ user.updated_at|date:'U' }}" class="profile-pic" id="profile-display-img" style="width: 100%; height: 100%; object-fit: cover;" />
               {% else %}
-                <i class="far fa-user avatar-icon"></i>
+                <div id="initials-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px; background: #ddd;">
+                    <i class="far fa-user avatar-icon"></i>
+                </div>
               {% endif %}
               <div class="avatar-edit">
-                <label for="profile-upload" class="edit-icon"><i class="fas fa-pencil-alt"></i></label>
-                <input type="file" id="profile-upload" name="profile_image" accept="image/*" style="display: none;" />
+                <label for="profile-upload" class="edit-icon" style="cursor: pointer;">
+                  <i class="fas fa-pencil-alt"></i>
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" style="display: none" />
               </div>
             </form>
           </div>
@@ -31,108 +80,142 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li>
-          <a href="{% url 'profile_info' %}" class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
-            <span class="menu-icon"><i class="far fa-user"></i></span>
-            Personal Information
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' or request.resolver_match.url_name == 'profile_add_address' or request.resolver_match.url_name == 'profile_edit_address' or request.resolver_match.url_name == 'profile_delete_address' %}active{% endif %}">
-            <span class="menu-icon"><i class="fa-solid fa-address-card"></i></span>
-            My Addresses
-          </a>
-        </li>
-        <li>
-          <a href="#" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
-            <span class="menu-icon"><i class="far fa-clock"></i></span>
-            My Orders 
-          </a>
-        </li>
-        <li>
-          <a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
-            <span class="menu-icon"><i class="fas fa-wallet"></i></span>
-            Wallet
-          </a>
-        </li>
-        <li>
-          <a href="{% url "profile_change_password" %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
-            <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
-            Change Password
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
-            Log Out
-          </a>
-        </li>
+        <li><a href="{% url 'profile_info' %}" class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}"><span class="menu-icon"><i class="far fa-user"></i></span> Personal Information</a></li>
+        <li><a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-address-card"></i></span> My Addresses</a></li>
+        <li><a href="#" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}"><span class="menu-icon"><i class="far fa-clock"></i></span> My Orders</a></li>
+        <li><a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}"><span class="menu-icon"><i class="fas fa-wallet"></i></span> Wallet</a></li>
+        <li><a href="{% url 'profile_change_password' %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}"><span class="menu-icon"><i class="fa-solid fa-key"></i></span> Change Password</a></li>
+        {% comment %} <li><a href="{% url 'logout' %}"><span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span> Log Out</a></li> {% endcomment %}
       </ul>
     </aside>
 
     <main class="content-area">
-      {% block profile_content %}
-
-      {% endblock %}
+      {% block profile_content %}{% endblock %}
     </main>
   </div>
-  <!-- Crop Modal -->
+  
   <div class="crop-modal" id="cropModal">
-    <div class="crop-box">
-      <img id="cropImage" />
+    <div class="crop-container">
+      <div class="crop-header">
+        <h4 style="margin: 0;">Crop Profile Picture</h4>
+        <span id="cropClose" style="cursor: pointer; font-size: 24px;">&times;</span>
+      </div>
+      <div class="crop-image-container">
+        <img id="cropImage" src="" />
+      </div>
       <div class="crop-actions">
-        <button id="cropCancel">Cancel</button>
-        <button id="cropSave">Save</button>
+        <button type="button" class="btn-secondary" id="cropCancel">Cancel</button>
+        <button type="button" class="btn-primary" id="cropSave">Update Photo</button>
       </div>
     </div>
   </div>
 {% endblock %}
 
 {% block extra_js %}
-  <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const fileInput = document.getElementById('profile-upload')
-      const previewImg = document.getElementById('profileImagePreview')
-    
-      if (!fileInput) return
-    
-      fileInput.addEventListener('change', function () {
-        const file = this.files[0]
-        if (!file) return
-    
-        // 1️⃣ Instant preview
-        const reader = new FileReader()
-        reader.onload = function (e) {
-          previewImg.src = e.target.result
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let cropper = null;
+    const cropModal = document.getElementById("cropModal");
+    const cropImage = document.getElementById("cropImage");
+    const cropSaveBtn = document.getElementById("cropSave");
+    const cropCancelBtn = document.getElementById("cropCancel");
+    const cropCloseBtn = document.getElementById("cropClose");
+    const fileInput = document.getElementById("profile-upload");
+    const profileDisplayImg = document.getElementById("profile-display-img");
+
+    // Initialize Toastr
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right" };
+
+    function closeModal() {
+        cropModal.style.display = "none";
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
         }
-        reader.readAsDataURL(file)
-    
-        // 2️⃣ Upload
-        const formData = new FormData()
-        formData.append('profile_image', file)
-    
-        fetch("{% url 'upload_profile_pic' %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-          },
-          body: formData
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.status !== 'success') {
-              alert('Upload failed')
+        fileInput.value = ""; 
+    }
+
+    // 1. Detect Image Selection
+    fileInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                toastr.error("Please select an image file.");
+                return;
             }
-    
-            // 🔥 THIS LINE IS THE FIX
-            fileInput.value = ''
-          })
-          .catch(() => {
-            alert('Something went wrong')
-            fileInput.value = ''
-          })
-      })
-    })
-  </script>
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                cropImage.src = event.target.result;
+                cropModal.style.display = "flex";
+
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    guides: true,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 2. Handle AJAX Upload
+    cropSaveBtn.addEventListener("click", function () {
+        if (!cropper) return;
+
+        // Start Loading State
+        const originalText = cropSaveBtn.innerText;
+        cropSaveBtn.innerText = "Saving...";
+        cropSaveBtn.disabled = true;
+
+        cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
+            const formData = new FormData();
+            formData.append("profile_pic", blob, "avatar.jpg");
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Native AJAX using Fetch
+            fetch("{% url 'upload_profile_pic' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success' || data.success) {
+                    // Update image in UI
+                    if (profileDisplayImg) {
+                        profileDisplayImg.src = data.image_url + '?t=' + new Date().getTime();
+                    } else {
+                        // If there was no image element (placeholder was showing), reload
+                        location.reload();
+                    }
+                    toastr.success(data.message || "Profile picture updated!");
+                    closeModal();
+                } else {
+                    toastr.error(data.message || "Upload failed.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                toastr.error("Something went wrong with the server.");
+            })
+            .finally(() => {
+                // Reset Loading State
+                cropSaveBtn.innerText = originalText;
+                cropSaveBtn.disabled = false;
+            });
+        }, "image/jpeg", 0.9);
+    });
+
+    cropCancelBtn.addEventListener("click", closeModal);
+    cropCloseBtn.addEventListener("click", closeModal);
+});
+</script>
 {% endblock %}
