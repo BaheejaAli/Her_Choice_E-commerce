@@ -44,6 +44,9 @@
   justify-content:space-between;
   font-size:14px;
 }
+a{
+  text-decoration: none;
+}
 .address-text { font-size:13px; color:#666; }
 .add-address-btn {
   display:block;

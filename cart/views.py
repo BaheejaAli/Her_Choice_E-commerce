@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from products.models import Product, ProductVariant
 from .models import Cart, CartItem
 from django.views.decorators.http import require_POST
@@ -276,7 +276,7 @@ def checkout(request):
         "cart_items": cart_items,
         "subtotal": subtotal,
         "discount": total_discount,
-        "delivery": delivery_charge,
+        "delivery_charge": delivery_charge,
         "tax": tax,
         "grand_total": grand_total,
         "addresses": addresses,
@@ -291,3 +291,9 @@ def order_success(request, order_id):
 def order_failure(request):
     return render(request,"cart/order_failure.html")
 
+def order_detail(request,order_id):
+    order_id = request.POST.get("order_id")
+    order = Order.objects.filter(order_id=order_id,user=request.user)
+    if request.method == "POST":
+        return HttpResponse("track the order")
+    return render(request,"cart/order_detail.html")
