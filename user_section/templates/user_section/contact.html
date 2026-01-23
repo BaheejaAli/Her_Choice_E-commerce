@@ -1,0 +1,143 @@
+{% extends "user_section/base.html" %}
+{% load static %}
+{% block title %}
+    Contact Us | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/user_section/contact.css' %}?v=1.0" />
+{% endblock extra_css %}
+{% block content %}
+    <div class="contact-wrapper">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{% url 'user_homepage' %}">Home</a>
+                <span class="separator">/</span>
+                <span class="current">Contact Us</span>
+            </div>
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Contact Our Style Support</h1>
+                <p>
+                    We're here to help with any questions you may have about our dresses, your order, or anything else. Reach out and let us know how we can assist you.
+                </p>
+            </div>
+            <!-- Main Content -->
+            <div class="contact-content">
+                <!-- Left Column: Contact Form -->
+                <div class="form-section">
+                    <h2>Send Us a Message</h2>
+                    <form method="post" action="{% url 'contact' %}" class="contact-form">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text"
+                                       id="name"
+                                       name="name"
+                                       placeholder="Enter your name"
+                                       required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email"
+                                       id="email"
+                                       name="email"
+                                       placeholder="Enter your email"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inquiry_type">Type of Inquiry</label>
+                            <select id="inquiry_type" name="inquiry_type" required>
+                                <option value="">Select...</option>
+                                <option value="order">Order Inquiry</option>
+                                <option value="product">Product Question</option>
+                                <option value="shipping">Shipping & Returns</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message"
+                                      name="message"
+                                      rows="6"
+                                      placeholder="Tell us how we can help..."
+                                      required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+                <!-- Right Column: Contact Info -->
+                <div class="info-section">
+                    <h2>Other Ways to Reach Us</h2>
+                    <div class="contact-methods">
+                        <!-- Email -->
+                        <div class="contact-method">
+                            <div class="method-icon email-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="method-details">
+                                <h4>Email Us</h4>
+                                <p>support@elegancedresses.com</p>
+                            </div>
+                        </div>
+                        <!-- Call -->
+                        <div class="contact-method">
+                            <div class="method-icon call-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="method-details">
+                                <h4>Call Us</h4>
+                                <p>+1 (555) 890-5678</p>
+                            </div>
+                        </div>
+                        <!-- Hours -->
+                        <div class="contact-method">
+                            <div class="method-icon hours-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="method-details">
+                                <h4>Business Hours</h4>
+                                <p>
+                                    Mon - Fri: 9 AM - 6 PM
+                                    <br>
+                                    Sat - Sun: 10 AM - 4 PM (EST)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FAQ Link -->
+                    <div class="faq-section">
+                        <p class="faq-text">Looking for quick answers?</p>
+                        <a href="#" class="faq-link">
+                            Visit our FAQ page <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <!-- Social Media -->
+                    <div class="social-section">
+                        <h4>Follow Us</h4>
+                        <div class="social-links">
+                            <a href="#" class="social-link facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link pinterest">
+                                <i class="fab fa-pinterest-p"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

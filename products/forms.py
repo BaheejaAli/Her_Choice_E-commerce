@@ -77,15 +77,6 @@ class ProductForm(forms.ModelForm):
 
         return name
 
-    # def clean_image(self):
-    #     image = self.cleaned_data.get("image")
-    #     if not image and not self.instance.pk:
-    #         raise forms.ValidationError("Product image is required.")
-    #     if image and image.size > 2 * 1024 * 1024:
-    #         raise forms.ValidationError("Image file too large. Max size is 2MB.")
-
-    #     return image
-
 
 # =========================
 # PRODUCT VARIANT FORM
@@ -117,6 +108,13 @@ class ProductVariantForm(forms.ModelForm):
     # -------------------------------
     # FIELD LEVEL VALIDATIONS
     # -------------------------------
+    def clean_color(self):
+        color = self.cleaned_data.get("color")
+        if not color:
+            raise forms.ValidationError("Color is required.")
+        return color
+
+
     def clean_base_price(self):
         base_price = self.cleaned_data.get("base_price")
         if base_price is None or base_price <= 0:

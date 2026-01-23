@@ -1,10 +1,10 @@
-{% extends 'user_section/profile_base.html' %}
+{% extends "user_section/profile_base.html" %}
 {% load static %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/user_section/profilie_add_edit_address.css' %}?v=1.1" />
   <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
-{% endblock %}
+{% endblock extra_css%}
 
 {% block title %}
   Her Choice | My Address |{% if edit_mode %}
@@ -12,7 +12,7 @@
   {% else %}
     Add
   {% endif %}
-{% endblock %}
+{% endblock title%}
 
 {% block profile_content %}
   <main class="content-area">
@@ -44,7 +44,7 @@
         {% endif %}
       </p>
 
-      <form method="POST" class="form-section">
+      <form method="post" class="form-section">
         {% csrf_token %}
 
         {% if next %}

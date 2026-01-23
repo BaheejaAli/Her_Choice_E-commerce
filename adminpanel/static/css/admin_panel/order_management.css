@@ -1,0 +1,269 @@
+/* ============================================
+   ORDERS WRAPPER
+============================================ */
+.orders-wrapper {
+  padding: 30px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+/* ============================================
+   SEARCH SECTION (60% + CLEAR BUTTON)
+============================================ */
+.search-section {
+  margin-bottom: 25px;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box {
+  position: relative;
+  width: 60%;
+}
+
+.search-box i {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 18px 14px 48px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #e91e63;
+  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.15);
+}
+
+/* Clear (X) button — SAME AS USER MANAGEMENT */
+.clear-search-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #e91e63;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-search-btn:hover {
+  background: #fce7f3;
+  border-color: #e91e63;
+  color: #c2185b;
+}
+
+/* ============================================
+   FILTER TABS
+============================================ */
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.filter-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-tab {
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.filter-tab:hover {
+  border-color: #e91e63;
+  color: #e91e63;
+}
+
+.filter-tab.active {
+  background: #fce7f3;
+  border-color: #e91e63;
+  color: #e91e63;
+}
+
+/* ============================================
+   TABLE
+============================================ */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table thead {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orders-table th {
+  padding: 16px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.orders-table td {
+  padding: 18px 20px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.orders-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.order-id {
+  font-weight: 600;
+  color: #e91e63;
+}
+
+.customer-name {
+  font-weight: 500;
+}
+
+.order-date {
+  color: #6b7280;
+}
+
+.order-amount {
+  font-weight: 600;
+}
+
+/* ============================================
+   PAYMENT BADGES
+============================================ */
+.badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-payment-cod {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-payment-razorpay {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-payment-wallet {
+  background: #ecfeff;
+  color: #155e75;
+}
+
+/* ============================================
+   STATUS DROPDOWN (COLOR CHANGES)
+============================================ */
+.order-status-select {
+  appearance: none;
+  padding: 6px 28px 6px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-transform: capitalize;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23000000' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.order-status-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.3);
+}
+
+/* Status colors */
+.order-status-select.placed { background: #fef3c7; color: #92400e; }
+.order-status-select.shipped { background: #dbeafe; color: #1e40af; }
+.order-status-select.out_for_delivery { background: #ede9fe; color: #5b21b6; }
+.order-status-select.delivered { background: #d1fae5; color: #065f46; }
+.order-status-select.cancelled { background: #fee2e2; color: #991b1b; }
+.order-status-select.return_requested { background: #fff7ed; color: #9a3412; }
+.order-status-select.returned { background: #fed7aa; color: #9a3412; }
+
+/* ============================================
+   ACTION BUTTON
+============================================ */
+.btn-action {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #e91e63;
+  color: #e91e63;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-action:hover {
+  background: #e91e63;
+  color: white;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 768px) {
+  .orders-wrapper {
+    padding: 20px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .orders-table {
+    min-width: 900px;
+  }
+}

@@ -244,6 +244,7 @@ def checkout(request):
             order = Order.objects.create(
                 user=request.user,
                 address=selected_address,
+                billing_address=selected_address,
                 payment_method="cod",
                 subtotal=subtotal,
                 discount=total_discount,
@@ -290,10 +291,3 @@ def order_success(request, order_id):
 
 def order_failure(request):
     return render(request,"cart/order_failure.html")
-
-def order_detail(request,order_id):
-    order_id = request.POST.get("order_id")
-    order = Order.objects.filter(order_id=order_id,user=request.user)
-    if request.method == "POST":
-        return HttpResponse("track the order")
-    return render(request,"cart/order_detail.html")

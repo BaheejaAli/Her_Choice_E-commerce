@@ -58,7 +58,7 @@
                     <li><i class="fa-solid fa-shirt"></i> Products</li>
                 </a>
                 
-                <a href="#" style="text-decoration: none"
+                <a href="{% url "order_management" %}" style="text-decoration: none"
                    class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">
                     <li><i class="fa-solid fa-box"></i> Orders</li>
                 </a>

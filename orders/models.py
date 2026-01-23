@@ -24,6 +24,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
     address = models.ForeignKey(UserAddress, on_delete=models.CASCADE)
+    billing_address = models.ForeignKey(UserAddress, on_delete=models.CASCADE, related_name="billing_orders", null=True, blank=True)
     orderid = models.CharField(max_length=20, unique=True, blank=True, null=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -33,6 +34,9 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="placed")
     delivery_charge = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     # autogenerate the order id
     def save(self,*args, **kwargs):
@@ -49,6 +53,10 @@ class OrderItem(models.Model):
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT)
     price = models.DecimalField( max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
+
+    @property
+    def total_price(self):
+        return self.price * self.quantity   
 
     def __str__(self):
         return f"{self.order.id}-{self.variant}"

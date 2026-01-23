@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path("", views.homepage, name="user_homepage"),
     path("about/", views.AboutPageView.as_view(), name="about"),
+    path("contact/", views.ContactPageView.as_view(), name="contact"),
     path("product/", include('products.urls')),
     # path('product/<slug:slug>/', product_detail_view, name='product_detail'),
     
@@ -21,7 +22,9 @@ urlpatterns = [
     path("cart/", include("cart.urls")),
     path("wishlist/",views.wishlist_view, name="wishlist_view"),
     path("wishlist/add/",views.add_to_wishlist, name="add_to_wishlist"),
-    path("wishlist/remove/",views.remove_from_wishlist, name="remove_from_wishlist")
+    path("wishlist/remove/",views.remove_from_wishlist, name="remove_from_wishlist"),
+
+    path("orders/",include("orders.urls")),
 
 
     

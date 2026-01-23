@@ -1,0 +1,200 @@
+{% extends "user_section/base.html" %}
+{% load static %}
+{% block title %}
+    Invoice #{{ order.order_number }} | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/orders/order_invoice.css' %}?v=1.1" />
+{% endblock extra_css %}
+{% block content %}
+    <div class="invoice-wrapper">
+        <div class="container">
+            <!-- Action Buttons -->
+            <div class="invoice-actions">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> Print Invoice
+                </button>
+                <button onclick="downloadPDF()" class="btn btn-outline">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <a href="{% url 'order_details' order.id %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Order
+                </a>
+            </div>
+            <!-- Invoice Container -->
+            <div class="invoice-container" id="invoice">
+                <!-- Invoice Header -->
+                <div class="invoice-header">
+                    <div class="company-info">
+                        <h1 class="company-name">Her Choice</h1>
+                        <p class="company-tagline">Elegance in Every Stitch</p>
+                        <div class="company-details">
+                            <p>123 Fashion Avenue, Style District</p>
+                            <p>New York, NY 10001, United States</p>
+                            <p>Phone: +1 (555) 890-5678</p>
+                            <p>Email: support@herchoice.com</p>
+                        </div>
+                    </div>
+                    <div class="invoice-meta">
+                        <h2 class="invoice-title">INVOICE</h2>
+                        <div class="invoice-details">
+                            <div class="detail-row">
+                                <span class="label">Invoice Number:</span>
+                                <span class="value">INV-{{ order.orderid }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Invoice Date:</span>
+                                <span class="value">{{ order.created_at|date:"F d, Y" }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Order Number:</span>
+                                <span class="value">#{{ order.orderid }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Payment Status:</span>
+                                <span class="value status-{{ order.payment_status|lower }}">{{ order.get_payment_status_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Divider -->
+                <div class="divider"></div>
+                <!-- Bill To & Ship To -->
+                <div class="address-section">
+                    <div class="address-block">
+                        <h4>Bill To:</h4>
+                        <p class="customer-name">{{ order.user.get_full_name }}</p>
+                        <p>{{ order.address.address_line1 }}</p>
+                        {% if order.billing_address.address_line2 %}<p>{{ order.billing_address.address_line2 }}</p>{% endif %}
+                        <p>{{ order.billing_address.city }}, {{ order.billing_address.state }} {{ order.billing_address.pincode }}</p>
+                        <p>{{ order.billing_address.country }}</p>
+                        <p>Phone: {{ order.billing_address.phone }}</p>
+                        <p>Email: {{ order.user.email }}</p>
+                    </div>
+                    <div class="address-block">
+                        <h4>Ship To:</h4>
+                        <p class="customer-name">{{ order.shipping_address.full_name }}</p>
+                        <p>{{ order.shipping_address.address_line1 }}</p>
+                        {% if order.shipping_address.address_line2 %}<p>{{ order.shipping_address.address_line2 }}</p>{% endif %}
+                        <p>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.pincode }}</p>
+                        <p>{{ order.shipping_address.country }}</p>
+                        <p>Phone: {{ order.shipping_address.phone }}</p>
+                    </div>
+                </div>
+                <!-- Items Table -->
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Item Description</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td class="item-description">
+                                        <div class="item-name">{{ item.variant.product.name }}</div>
+                                        <div class="item-meta">
+                                            Color: {{ item.variant.color }}
+                                            {% if item.variant.size %}| Size: {{ item.variant.size }}{% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-right">₹{{ item.price }}</td>
+                                    <td class="text-right">₹{{ item.get_total }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Summary Section -->
+                <div class="summary-section">
+                    <div class="summary-table">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">₹{{ order.subtotal }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Shipping Fee:</span>
+                            <span class="summary-value">
+                                {% if order.shipping_cost == 0 %}
+                                    Free
+                                {% else %}
+                                    ₹{{ order.shipping_cost }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if order.discount > 0 %}
+                            <div class="summary-row discount">
+                                <span class="summary-label">Discount:</span>
+                                <span class="summary-value">-₹{{ order.discount }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="summary-row">
+                            <span class="summary-label">Tax (GST):</span>
+                            <span class="summary-value">₹{{ order.tax }}</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Total Amount:</span>
+                            <span class="summary-value">₹{{ order.total }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Payment Info -->
+                <div class="payment-section">
+                    <h3>Payment Information</h3>
+                    <div class="payment-details">
+                        <div class="payment-row">
+                            <span class="label">Payment Method:</span>
+                            <span class="value">{{ order.payment_method }}</span>
+                        </div>
+                        <div class="payment-row">
+                            <span class="label">Transaction ID:</span>
+                            <span class="value">{{ order.transaction_id|default:"N/A" }}</span>
+                        </div>
+                        <div class="payment-row">
+                            <span class="label">Payment Date:</span>
+                            <span class="value">{{ order.created_at|date:"F d, Y h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Notes & Terms -->
+                <div class="notes-section">
+                    <h3>Notes</h3>
+                    <p>
+                        Thank you for shopping with Her Choice! We appreciate your business. If you have any questions about this invoice, please contact our customer service team.
+                    </p>
+                </div>
+                <div class="terms-section">
+                    <h3>Terms & Conditions</h3>
+                    <ul>
+                        <li>All sales are final unless the product is defective or damaged.</li>
+                        <li>Returns must be initiated within 7 days of delivery.</li>
+                        <li>Refunds will be processed within 5-7 business days after receiving the returned item.</li>
+                        <li>Shipping costs are non-refundable unless the return is due to our error.</li>
+                    </ul>
+                </div>
+                <!-- Footer -->
+                <div class="invoice-footer">
+                    <div class="footer-divider"></div>
+                    <p class="footer-text">This is a computer-generated invoice and does not require a signature.</p>
+                    <p class="footer-company">Her Choice - Elegance in Every Stitch</p>
+                    <p class="footer-contact">For inquiries: support@herchoice.com | +1 (555) 890-5678</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script>
+// Download as PDF functionality
+function downloadPDF() {
+  window.print();
+  // Note: For actual PDF download, you'll need a backend solution or library like jsPDF
+  // This currently triggers the print dialog which allows "Save as PDF"
+}
+    </script>
+{% endblock extra_js %}

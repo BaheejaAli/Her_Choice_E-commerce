@@ -1,27 +1,42 @@
-{% extends 'user_section/base.html' %}
+{% extends "user_section/base.html" %}
 {% load static %}
-
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
+  <link rel="stylesheet"
+        href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
   <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
-{% endblock %}
-
+{% endblock extra_css %}
 {% block content %}
   <div class="main-container">
     <aside class="sidebar">
       <div class="profile-header">
         <div class="avatar-wrapper">
-          <div class="avatar-circle" id="avatarClick" style="width: 120px;height: 120px;margin: 0 auto 15px;border-radius: 50%;overflow: hidden;position: relative;background-color: #eee;">
+          <div class="avatar-circle"
+               id="avatarClick"
+               style="width: 120px;
+                      height: 120px;
+                      margin: 0 auto 15px;
+                      border-radius: 50%;
+                      overflow: hidden;
+                      position: relative;
+                      background-color: #eee">
             <form id="profileImageForm" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {% if user.profile_pic %}
                 <img src="{{ user.profile_pic.url }}" id="profileImagePreview">
               {% else %}
-                <img src="{% static 'images/default-avatar.png' %}" alt="no images" id="profileImagePreview">
+                <img src="{% static 'images/default-avatar.png' %}"
+                     alt="no images"
+                     id="profileImagePreview">
               {% endif %}
               <div class="avatar-edit">
-                <label for="profile-upload" class="edit-icon"><i class="fas fa-pencil-alt"></i></label>
-                <input type="file" id="profile-upload" name="profile_pic" accept="image/*" style="display: none;" />
+                <label for="profile-upload" class="edit-icon">
+                  <i class="fas fa-pencil-alt"></i>
+                </label>
+                <input type="file"
+                       id="profile-upload"
+                       name="profile_pic"
+                       accept="image/*"
+                       style="display: none" />
               </div>
             </form>
           </div>
@@ -29,34 +44,38 @@
           <p>{{ user.email }}</p>
         </div>
       </div>
-
       <ul class="sidebar-menu">
         <li>
-          <a href="{% url 'profile_info' %}" class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+          <a href="{% url 'profile_info' %}"
+             class="{% if request.resolver_match.url_name == 'profile_info' or request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
             <span class="menu-icon"><i class="far fa-user"></i></span>
             Personal Information
           </a>
         </li>
         <li>
-          <a href="{% url 'profile_address' %}" class="{% if request.resolver_match.url_name == 'profile_address' or request.resolver_match.url_name == 'profile_add_address' or request.resolver_match.url_name == 'profile_edit_address' or request.resolver_match.url_name == 'profile_delete_address' %}active{% endif %}">
+          <a href="{% url 'profile_address' %}"
+             class="{% if request.resolver_match.url_name == 'profile_address' or request.resolver_match.url_name == 'profile_add_address' or request.resolver_match.url_name == 'profile_edit_address' or request.resolver_match.url_name == 'profile_delete_address' %}active{% endif %}">
             <span class="menu-icon"><i class="fa-solid fa-address-card"></i></span>
             My Addresses
           </a>
         </li>
         <li>
-          <a href="#" class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
+          <a href="{% url "order_history" %}"
+             class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
             <span class="menu-icon"><i class="far fa-clock"></i></span>
-            Order History
+            My Orders
           </a>
         </li>
         <li>
-          <a href="#" class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
+          <a href="#"
+             class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
             <span class="menu-icon"><i class="fas fa-wallet"></i></span>
             Wallet
           </a>
         </li>
         <li>
-          <a href="{% url "profile_change_password" %}" class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
+          <a href="{% url "profile_change_password" %}"
+             class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
             <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
             Change Password
           </a>
@@ -69,11 +88,9 @@
         </li>
       </ul>
     </aside>
-
     <main class="content-area">
       {% block profile_content %}
-
-      {% endblock %}
+      {% endblock profile_content %}
     </main>
   </div>
   <!-- Crop Modal -->
@@ -86,11 +103,11 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% endblock content %}
 {% block extra_js %}
-  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" />
+  <link rel="stylesheet"
+        href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" />
   <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const fileInput    = document.getElementById('profile-upload');
@@ -194,4 +211,4 @@
       });
     });
   </script>
-{% endblock %}
+{% endblock extra_js %}

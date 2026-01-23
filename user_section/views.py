@@ -83,6 +83,9 @@ def homepage(request):
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"
 
+class ContactPageView(TemplateView):
+    template_name = "user_section/contact.html"
+
 
 @login_required
 def profile_info(request):
