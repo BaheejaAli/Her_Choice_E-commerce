@@ -35,13 +35,13 @@
 }
 
 .page-main-title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
     color: #111827;
 }
 
 .page-subtitle {
-    font-size: 13px;
+    font-size: 14px;
     color: #6b7280;
 }
 
@@ -80,10 +80,10 @@
 .search-input {
     width: 100%;
     max-width: 420px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .search-input:focus {
@@ -139,24 +139,47 @@
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .admin-table thead th {
     text-align: left;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     color: #000000;
     padding: 12px;
     border-bottom: 1px solid #e5e7eb;
 }
 
 /* Column widths for better proportions */
-.admin-table thead th:nth-child(1) { width: 8%; }  /* ID */
-.admin-table thead th:nth-child(2) { width: 35%; } /* Category - reduced from default */
-.admin-table thead th:nth-child(3) { width: 15%; text-align: center; } /* Products */
-.admin-table thead th:nth-child(4) { width: 15%; text-align: center; } /* Status */
-.admin-table thead th:nth-child(5) { width: 27%; text-align: center; } /* Action */
+.admin-table thead th:nth-child(1) {
+    width: 8%;
+}
+
+/* ID */
+.admin-table thead th:nth-child(2) {
+    width: 35%;
+}
+
+/* Category - reduced from default */
+.admin-table thead th:nth-child(3) {
+    width: 15%;
+    text-align: center;
+}
+
+/* Products */
+.admin-table thead th:nth-child(4) {
+    width: 15%;
+    text-align: center;
+}
+
+/* Status */
+.admin-table thead th:nth-child(5) {
+    width: 27%;
+    text-align: center;
+}
+
+/* Action */
 
 .admin-table tbody td {
     padding: 14px 12px;
@@ -165,15 +188,32 @@
 }
 
 /* Apply same widths to table cells */
-.admin-table tbody td:nth-child(1) { width: 8%; }
-.admin-table tbody td:nth-child(2) { width: 35%; }
-.admin-table tbody td:nth-child(3) { width: 15%; text-align: center; }
-.admin-table tbody td:nth-child(4) { width: 15%; text-align: center; }
-.admin-table tbody td:nth-child(5) { width: 27%; text-align: center; }
+.admin-table tbody td:nth-child(1) {
+    width: 8%;
+}
+
+.admin-table tbody td:nth-child(2) {
+    width: 35%;
+}
+
+.admin-table tbody td:nth-child(3) {
+    width: 15%;
+    text-align: center;
+}
+
+.admin-table tbody td:nth-child(4) {
+    width: 15%;
+    text-align: center;
+}
+
+.admin-table tbody td:nth-child(5) {
+    width: 27%;
+    text-align: center;
+}
 
 /* ================== TEXT ================== */
 .sub-text {
-    font-size: 12px;
+    font-size: 13px;
     color: #9ca3af;
     margin-top: 4px;
 }

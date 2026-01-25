@@ -3,8 +3,8 @@
     background: #f8fafc;
     padding: 20px;
     display: flex;
-    justify-content: center;   
-    align-items: flex-start;   
+    justify-content: center;
+    align-items: flex-start;
 }
 
 /* ================== BREADCRUMB ================== */
@@ -43,7 +43,7 @@
 /* ================== FORM CARD ================== */
 .form-card {
     width: 100%;
-    max-width: 760px; 
+    max-width: 760px;
     background: #ffffff;
     border-radius: 14px;
     padding: 32px;
@@ -52,9 +52,9 @@
 
 /* ================== FORM TITLE ================== */
 .form-title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     color: #111827;
 }
 
@@ -65,9 +65,9 @@
 
 .form-group label {
     display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
     color: #374151;
 }
 
@@ -78,10 +78,10 @@
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 14px;
     border-radius: 10px;
     border: 1px solid #e5e7eb;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .form-group textarea {
@@ -113,10 +113,11 @@
 .btn-primary {
     background: #ff1680;
     color: #ffffff;
-    padding: 10px 18px;
+    padding: 12px 20px;
     border-radius: 10px;
     border: none;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -127,9 +128,10 @@
 .btn-secondary {
     background: #f3f4f6;
     color: #374151;
-    padding: 10px 18px;
+    padding: 12px 20px;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
     text-decoration: none;
     display: inline-flex;
     align-items: center;

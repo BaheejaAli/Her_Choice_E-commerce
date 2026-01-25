@@ -22,6 +22,7 @@
    SECTION STYLES
    =============================== */
 .section-title {
+    font-size: 1.4rem;
     font-weight: 700;
     color: #2d3436;
     margin-bottom: 1.5rem;
@@ -48,17 +49,18 @@
     font-weight: 600;
     margin-bottom: 8px;
     color: #636e72;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .input-field-group input,
 .input-field-group select,
 .input-field-group textarea {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 15px;
     border: 1px solid #dfe6e9;
     border-radius: 8px;
     transition: all 0.3s ease;
+    font-size: 1rem;
 }
 
 .input-field-group textarea {
@@ -87,7 +89,7 @@
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 1rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .alert-success {
@@ -117,6 +119,7 @@
     border-radius: 10px;
     border: 1px solid #dfe6e9;
 }
+
 /* ===============================
    PRODUCT IMAGE – MODERN CARD
    =============================== */
@@ -196,7 +199,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #2d3436;
 }
@@ -211,7 +214,8 @@
 .product-form-wrapper .form-actions {
     margin-top: 2.5rem;
     display: flex;
-    justify-content: center;   /* CENTER BUTTONS */
+    justify-content: center;
+    /* CENTER BUTTONS */
     align-items: center;
     gap: 20px;
 }
@@ -219,13 +223,14 @@
 .btn-save {
     background: #ff007f;
     color: #ffffff;
-    padding: 12px 36px;
+    padding: 14px 36px;
     border: none;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s ease;
     min-width: 220px;
+    font-size: 1rem;
 }
 
 .btn-save:hover {
@@ -235,13 +240,14 @@
 .btn-cancel {
     background: #f1f2f6;
     color: #2d3436;
-    padding: 12px 36px;
+    padding: 14px 36px;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
     transition: 0.3s ease;
     min-width: 220px;
     text-align: center;
+    font-size: 1rem;
 }
 
 .btn-cancel:hover {

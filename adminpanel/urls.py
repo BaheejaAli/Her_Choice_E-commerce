@@ -37,7 +37,7 @@ urlpatterns = [
     path("variants/toggle-status/<int:variant_id>/", toggle_variant_status,name="toggle_variant_status"),
 
     path("orders/",order_management, name="order_management"),
-    path("orders/update-status/", update_order_status, name="update_order_status"),
+    path("orders/update-status/<int:order_id>/", update_order_status, name="update_order_status"),
     path("orders/view-details/<int:order_id>/", order_view_details, name="order_view_details")
 
     

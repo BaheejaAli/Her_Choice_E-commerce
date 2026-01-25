@@ -9,6 +9,7 @@ from django.db.models import Q
 def order_history(request):
     orders = Order.objects.filter(user= request.user)
     status = request.GET.get("status")
+    
     if status:
         orders = orders.filter(status=status)
     query = request.GET.get("q")

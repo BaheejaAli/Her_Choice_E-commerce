@@ -1,221 +1,152 @@
-{% extends "user_section/base.html" %}
+{% extends "user_section/profile_base.html" %}
 {% load static %}
 {% block title %}
-    Order History | Her Choice
+Order History | Her Choice
 {% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/orders/order_history.css' %}?v=1.0" />
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/orders/order_history.css' %}?v=1.3" />
 {% endblock extra_css %}
-{% block content %}
-    <div class="order-history-wrapper">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1>My Orders</h1>
-                <p class="subtitle">Track, return, or buy things again</p>
-            </div>
-            <!-- Filter Tabs -->
-            <div class="filter-tabs">
-                <button class="tab-btn active" data-status="all">
-                    All Orders
-                    <span class="count">{{ orders.count }}</span>
-                </button>
-                <button class="tab-btn" data-status="placed">Placed</button>
-                <button class="tab-btn" data-status="shipped">Shipped</button>
-                <button class="tab-btn" data-status="out_for_delivery">Out for Delivery</button>
-                <button class="tab-btn" data-status="delivered">Delivered</button>
-                <button class="tab-btn" data-status="cancelled">Cancelled</button>
-            </div>
-            <!-- Search & Sort -->
-            <form method="get" class="controls-bar">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text"
-                           name="q"
-                           id="searchOrders"
-                           value="{{ query|default:'' }}"
-                           placeholder="Search orders by product name or order number...">
+{% block profile_content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1>My Orders</h1>
+    <p class="subtitle">Track, return, or buy things again</p>
+</div>
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <a href="{% url "order_history" %}" class="filter-tab {% if not status %}active{% endif %}">All Orders</a>
+    <a href="?status=pending" class="filter-tab {% if status == 'pending' %}active{% endif %}">Pending</a>
+    <a href="?status=processing" class="filter-tab {% if status == 'processing' %}active{% endif %}">Processing</a>
+    <a href="?status=shipped" class="filter-tab {% if status == 'shipped' %}active{% endif %}">Shipped</a>
+    <a href="?status=delivered" class="filter-tab {% if status == 'delivered' %}active{% endif %}">Delivered</a>
+    <a href="?status=cancelled" class="filter-tab {% if status == 'cancelled' %}active{% endif %}">Cancelled</a>
+</div>
+<!-- Search & Sort -->
+<form method="get" class="controls-bar">
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" name="q" id="searchOrders" value="{{ query|default:'' }}"
+            placeholder="Search orders by product name or order number...">
+    </div>
+    <select name="sort" class="sort-select" onchange="this.form.submit()">
+        <option value="recent" {% if sort == "recent" %}selected{% endif %}>Most Recent</option>
+        <option value="oldest" {% if sort == "oldest" %}selected{% endif %}>Oldest First</option>
+        <option value="price-high" {% if sort == "price-high" %}selected{% endif %}>Price: High to Low</option>
+        <option value="price-low" {% if sort == "price-low" %}selected{% endif %}>Price: Low to High</option>
+    </select>
+</form>
+<!-- Orders List -->
+<div class="orders-container">
+    {% if orders %}
+    {% for order in orders %}
+    <div class="order-card" data-status="{{ order.status|lower }}">
+        <div class="order-header">
+            <div class="order-header-left">
+                <div class="order-info">
+                    <span class="order-number">Order #{{ order.orderid }}</span>
+                    <span class="order-date">{{ order.created_at|date:"F d, Y" }}</span>
                 </div>
-                <select name="sort" class="sort-select" onchange="this.form.submit()">
-                    <option value="recent" {% if sort == "recent" %}selected{% endif %}>Most Recent</option>
-                    <option value="oldest" {% if sort == "oldest" %}selected{% endif %}>Oldest First</option>
-                    <option value="price-high" {% if sort == "price-high" %}selected{% endif %}>Price: High to Low</option>
-                    <option value="price-low" {% if sort == "price-low" %}selected{% endif %}>Price: Low to High</option>
-                </select>
-            </form>
-            <!-- Orders List -->
-            <div class="orders-container">
-                {% if orders %}
-                    {% for order in orders %}
-                        <div class="order-card" data-status="{{ order.status|lower }}">
-                            <div class="order-header">
-                                <div class="order-header-left">
-                                    <div class="order-info">
-                                        <span class="order-number">Order #{{ order.orderid }}</span>
-                                        <span class="order-date">{{ order.created_at|date:"F d, Y" }}</span>
-                                    </div>
-                                    <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
-                                </div>
-                                <div class="order-header-right">
-                                    <span class="order-total">₹{{ order.total }}</span>
-                                </div>
-                            </div>
-                            <div class="order-body">
-                                <div class="order-items">
-                                    {% for item in order.items.all|slice:":5" %}
-                                        <div class="order-item">
-                                            <div class="item-image">
-                                                {% if item.variant.images.first %}
-                                                    <img src="{{ item.variant.images.first.image.url }}"
-                                                         alt="{{ item.variant.product.name }}">
-                                                {% else %}
-                                                    <div class="no-image">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                            <div class="item-details">
-                                                <h4 class="item-name">{{ item.variant.product.name }}</h4>
-                                                <p class="item-meta">
-                                                    {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{ item.quantity }}
-                                                </p>
-                                                <p class="item-price">₹{{ item.price }}</p>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                    {% comment %} {% if order.items.count > 3 %}
-                                        <div class="more-items">
-                                            <span>+{{ order.items.count|add:"-3" }} more item
-                                                {% if order.items.count|add:"-3" > 1 %}s{% endif %}
-                                            </span>
-                                        </div>
-                                    {% endif %} {% endcomment %}
-                                </div>
-                            </div>
-                            <div class="order-footer">
-                                <div class="delivery-info">
-                                    {% if order.status == 'delivered' %}
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Delivered on {{ order.delivered_at|date:"F d, Y" }}</span>
-                                    {% elif order.status == 'shipped' %}
-                                        <i class="fas fa-shipping-fast"></i>
-                                        <span>Expected delivery by {{ order.expected_delivery|date:"F d, Y" }}</span>
-                                    {% elif order.status == 'cancelled' %}
-                                        <i class="fas fa-times-circle"></i>
-                                        <span>Cancelled on {{ order.updated_at|date:"F d, Y" }}</span>
-                                    {% else %}
-                                        <i class="fas fa-clock"></i>
-                                        <span>Processing order</span>
-                                    {% endif %}
-                                </div>
-                                <div class="order-actions">
-                                    <a href="{% url "order_details" order.id %}" class="btn btn-primary">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </a>
-                                    {% if order.status == 'delivered' %}
-                                        <button class="btn btn-outline">
-                                            <i class="fas fa-redo"></i> Buy Again
-                                        </button>
-                                    {% endif %}
-                                    {% if order.status == 'pending' or order.status == 'confirmed' %}
-                                        <button class="btn btn-danger">
-                                            <i class="fas fa-times"></i> Cancel Order
-                                        </button>
-                                    {% endif %}
-                                </div>
-                            </div>
+                <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+            </div>
+            <div class="order-header-right">
+                <span class="order-total">₹{{ order.total }}</span>
+            </div>
+        </div>
+        <div class="order-body">
+            <div class="order-items">
+                {% for item in order.items.all|slice:":5" %}
+                <div class="order-item">
+                    <div class="item-image">
+                        {% if item.variant.images.first %}
+                        <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}">
+                        {% else %}
+                        <div class="no-image">
+                            <i class="fas fa-image"></i>
                         </div>
-                    {% endfor %}
-                    <!-- Pagination -->
-                    {% if is_paginated %}
-                        <div class="pagination">
-                            {% if page_obj.has_previous %}
-                                <a href="?page=1" class="page-link">First</a>
-                                <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            {% endif %}
-                            {% for num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == num %}
-                                    <span class="page-link active">{{ num }}</span>
-                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
-                                {% endif %}
-                            {% endfor %}
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="page-link">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                                <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last</a>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <!-- Empty State -->
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-box-open"></i>
-                        </div>
-                        <h3>No Orders Yet</h3>
-                        <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
-                        <a href="{% url 'shop' %}" class="btn btn-primary">
-                            <i class="fas fa-shopping-bag"></i> Start Shopping
-                        </a>
+                        {% endif %}
                     </div>
+                    <div class="item-details">
+                        <h4 class="item-name">{{ item.variant.product.name }}</h4>
+                        <p class="item-meta">
+                            {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{ item.quantity }}
+                        </p>
+                        <p class="item-price">₹{{ item.price }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="order-footer">
+            <div class="delivery-info">
+                {% if order.status == 'delivered' %}
+                <i class="fas fa-check-circle"></i>
+                <span>Delivered on {{ order.delivered_at|date:"F d, Y" }}</span>
+                {% elif order.status == 'shipped' %}
+                <i class="fas fa-shipping-fast"></i>
+                <span>Expected delivery by {{ order.expected_delivery|date:"F d, Y" }}</span>
+                {% elif order.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i>
+                <span>Cancelled on {{ order.updated_at|date:"F d, Y" }}</span>
+                {% else %}
+                <i class="fas fa-clock"></i>
+                <span>Processing order</span>
+                {% endif %}
+            </div>
+            <div class="order-actions">
+                <a href="{% url "order_details" order.id %}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+                {% if order.status == 'delivered' %}
+                <button class="btn btn-outline">
+                    <i class="fas fa-redo"></i> Buy Again
+                </button>
+                {% endif %}
+                {% if order.status == 'pending' or order.status == 'confirmed' %}
+                <button class="btn btn-danger">
+                    <i class="fas fa-times"></i> Cancel Order
+                </button>
                 {% endif %}
             </div>
         </div>
     </div>
-{% endblock content %}
-{% block extra_js %}
-    <script>
-// Filter by status
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.tab-btn');
-  const orderCards = document.querySelectorAll('.order-card');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      const status = this.dataset.status;
-      
-      // Update active tab
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-
-      // Filter orders
-      orderCards.forEach(card => {
-        if (status === 'all') {
-          card.style.display = 'block';
-        } else {
-          if (card.dataset.status === status) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        }
-      });
-    });
-  });
-
-  // Search functionality
-  const searchInput = document.getElementById('searchOrders');
-  searchInput.addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    
-    orderCards.forEach(card => {
-      const orderNumber = card.querySelector('.order-number').textContent.toLowerCase();
-      const itemNames = Array.from(card.querySelectorAll('.item-name'))
-        .map(el => el.textContent.toLowerCase())
-        .join(' ');
-      
-      if (orderNumber.includes(searchTerm) || itemNames.includes(searchTerm)) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-});
-    </script>
-{% endblock extra_js %}
+    {% endfor %}
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="page-link">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-link active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
+            class="page-link">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last</a>
+            {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-box-open"></i>
+        </div>
+        <h3>No Orders Yet</h3>
+        <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock profile_content %}

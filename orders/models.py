@@ -7,19 +7,26 @@ import uuid
 
 class Order(models.Model):
     STATUS_CHOICES = (
-        ("placed", "Placed"),
+        ("pending", "Pending"),
+        ("processing", "Processing"),
         ("shipped", "Shipped"),
-        ("out_for_delivery", "Out for delivery"),
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
-        ("return_requested", "Return Requested"),
         ("returned", "Returned"),
+        ("failed", "Failed"),
     )
 
     PAYMENT_METHODS = (
-    ('cod', 'Cash on Delivery'),
-    ('razorpay', 'Razorpay'),
-    ('wallet', 'Wallet'),
+        ('cod', 'Cash on Delivery'),
+        ('razorpay', 'Razorpay'),
+        ('wallet', 'Wallet'),
+    )
+
+    PAYMENT_STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
@@ -31,12 +38,11 @@ class Order(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="placed")
-    delivery_charge = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    delivery_charge = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    delivered_at = models.DateTimeField(null=True, blank=True)
-    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     # autogenerate the order id
     def save(self,*args, **kwargs):
@@ -49,11 +55,32 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ("shipped", "Shipped"),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+        ('returned', 'Returned'),
+    ]
+    RETURN_STATUS = [
+        ('none', 'Not Requested'),
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
     order = models.ForeignKey(Order, on_delete=models.CASCADE,related_name="items")
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT)
     price = models.DecimalField( max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
-
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending') 
+    return_status = models.CharField(max_length=20, choices=RETURN_STATUS, default='none') 
+    cancelled = models.BooleanField(default=False)
+    returned = models.BooleanField(default=False)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    returned_at = models.DateTimeField(null=True, blank=True)
+    
     @property
     def total_price(self):
         return self.price * self.quantity   

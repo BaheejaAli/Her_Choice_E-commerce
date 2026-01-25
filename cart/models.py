@@ -25,6 +25,10 @@ class Cart(models.Model):
         return sum(item.sub_total for item in self.items.all())
     
     @property
+    def get_total_base_price(self):
+        return sum(item.base_sub_total for item in self.items.all())
+    
+    @property
     def total_items(self):
         return sum(item.quantity for item in self.items.all())
     
@@ -44,6 +48,10 @@ class CartItem(models.Model):
     @property
     def sub_total(self):
         return self.quantity * self.variant.final_price
+    
+    @property
+    def base_sub_total(self):
+        return self.quantity * self.variant.base_price
     
 
 

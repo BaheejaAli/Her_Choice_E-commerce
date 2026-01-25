@@ -2,16 +2,11 @@
    ORDER HISTORY WRAPPER
    ============================================ */
 .order-history-wrapper {
-  background-color: #f9fafb;
-  min-height: 100vh;
-  padding: 40px 0 60px;
+  background: none;
+  min-height: auto;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
+/* .container removed as it's provided by profile_base */
 
 /* ============================================
    PAGE HEADER
@@ -53,7 +48,7 @@
   border-radius: 4px;
 }
 
-.tab-btn {
+.filter-tab {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -67,20 +62,21 @@
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+  text-decoration: none;
 }
 
-.tab-btn:hover {
+.filter-tab:hover {
   border-color: #e91e63;
   color: #e91e63;
 }
 
-.tab-btn.active {
+.filter-tab.active {
   background: #e91e63;
   color: white;
   border-color: #e91e63;
 }
 
-.tab-btn .count {
+.filter-tab .count {
   background: #f3f4f6;
   color: #6b7280;
   padding: 2px 8px;
@@ -89,7 +85,7 @@
   font-weight: 600;
 }
 
-.tab-btn.active .count {
+.filter-tab.active .count {
   background: rgba(255, 255, 255, 0.2);
   color: white;
 }
@@ -238,6 +234,16 @@
   color: #991b1b;
 }
 
+.status-processing {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.status-out_for_delivery {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
 .order-total {
   font-size: 20px;
   font-weight: 700;
@@ -267,12 +273,13 @@
   overflow: hidden;
   background: #f3f4f6;
   flex-shrink: 0;
+  border: 1px solid #e5e7eb;
 }
 
 .item-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .no-image {
@@ -533,7 +540,7 @@
     gap: 8px;
   }
 
-  .tab-btn {
+  .filter-tab {
     padding: 10px 16px;
     font-size: 13px;
   }

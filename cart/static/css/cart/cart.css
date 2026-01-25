@@ -49,7 +49,8 @@
     width: 80px;
     height: 80px;
     border-radius: 6px;
-    object-fit: cover;
+    object-fit: contain;
+    background-color: #f9f9f9;
 }
 
 /* Product Details */
@@ -71,9 +72,23 @@
 }
 
 .cart-page .item-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cart-page .offer-price,
+.cart-page .regular-price {
     font-size: 16px;
     font-weight: 700;
     color: #e91e63;
+}
+
+.cart-page .old-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
 }
 
 /* Quantity */
@@ -191,26 +206,26 @@
 }
 
 .stock-status {
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 600;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .in-stock {
-  color: #2e7d32;
+    color: #2e7d32;
 }
 
 .out-of-stock {
-  color: #d32f2f; 
+    color: #d32f2f;
 }
 
 .unavailable {
-  color: #6b7280; 
+    color: #6b7280;
 }
 
 .quantity-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 

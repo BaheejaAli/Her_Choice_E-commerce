@@ -139,7 +139,9 @@ def update_cart_quantity(request):
         "data": {
             "quantity": cart_item.quantity,
             "item_subtotal": cart_item.sub_total,
-            "cart_total": cart_item.cart.get_total_price
+            "item_base_subtotal": cart_item.base_sub_total,
+            "cart_total": cart_item.cart.get_total_price,
+            "cart_base_total":cart_item.cart.get_total_base_price
         }
     })
 
@@ -228,7 +230,7 @@ def checkout(request):
     
     if request.method == "POST":
         address_id = request.POST.get("address_id")
-        payment_method = request.POST.get("payment_method","cod")
+        payment_method = request.POST.get("payment_method","COD")
         
         if not address_id:
             messages.error(request, "Please select a delivery address.")
@@ -240,7 +242,7 @@ def checkout(request):
             user=request.user
         )
 
-        if payment_method == "cod":
+        if payment_method == "COD":
             order = Order.objects.create(
                 user=request.user,
                 address=selected_address,
@@ -250,7 +252,7 @@ def checkout(request):
                 discount=total_discount,
                 tax=tax,
                 total=grand_total,
-                status="placed",
+                status="pending",
                 delivery_charge=delivery_charge
                 )
             for item in cart_items:
@@ -266,7 +268,7 @@ def checkout(request):
             cart.is_active=False
             cart.save(update_fields=["is_active"])
 
-            messages.success(request, "Order placed successfully!")
+            # messages.success(request, "Order placed successfully!")
             return redirect("order_success",order_id= order.id)
         
         messages.info(request, "Online payment coming soon.")

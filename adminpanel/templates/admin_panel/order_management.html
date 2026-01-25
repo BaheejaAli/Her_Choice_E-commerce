@@ -1,148 +1,93 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-    Orders | Her Choice Admin
+Orders | Her Choice Admin
 {% endblock title %}
 {% block page_title %}
-    Orders
+Orders
 {% endblock page_title %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_management.css' %}?v=1.3" />
+<link rel="stylesheet" href="{% static 'css/admin_panel/order_management.css' %}" />
 {% endblock extra_css %}
 {% block content %}
-    <div class="orders-wrapper">
-        <!-- Search Bar -->
-        <form method="get" class="search-section">
-            <div class="search-row">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text"
-                        name="q"
-                        value="{{ query|default:'' }}"
-                        placeholder="Search orders..."
-                        onkeyup="this.form.submit()">
-                    {% if status %}
-                        <input type="hidden" name="status" value="{{ status }}">
-                    {% endif %}
-                </div>
-
-                {% if query or status %}
-                    <a href="{% url 'order_management' %}" class="clear-search-btn">
-                        <i class="fas fa-times"></i>
-                    </a>
+<div class="orders-wrapper">
+    <!-- Search Bar -->
+    <form method="get" class="search-section">
+        <div class="search-row">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search orders...">
+                {% if status %}
+                <input type="hidden" name="status" value="{{ status }}">
                 {% endif %}
             </div>
-        </form>
 
-        <!-- Filter Tabs -->
-        <div class="filter-section">
-            <span class="filter-label">Filter by status:</span>
-            <div class="filter-tabs">
-                <a href="{% url 'order_management' %}"
-                   class="filter-tab {% if not status %}active{% endif %}">All</a>
-                <a href="?status=placed"
-                   class="filter-tab {% if status == 'placed' %}active{% endif %}">Placed</a>
-                <a href="?status=shipped"
-                   class="filter-tab {% if status == 'shipped' %}active{% endif %}">Shipped</a>
-                <a href="?status=delivered"
-                   class="filter-tab {% if status == 'delivered' %}active{% endif %}">Delivered</a>
-                <a href="?status=cancelled"
-                   class="filter-tab {% if status == 'cancelled' %}active{% endif %}">Cancelled</a>
-            </div>
+            <button type="submit" class="btn-action"
+                style="background: #e91e63; color: white; border: none; height: 44px; padding: 0 20px;">Search</button>
+
+            {% if query or status %}
+            <a href="{% url 'order_management' %}" class="clear-search-btn">
+                <i class="fas fa-times"></i>
+            </a>
+            {% endif %}
         </div>
-        <!-- Orders Table -->
-        <div class="table-container">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>User</th>
-                        <th>Date</th>
-                        <th>Payment Method</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                        <tr data-status="{{ order.status|lower }}">
-                            <td class="order-id">{{ order.orderid }}</td>
-                            <td class="customer-name">{{ order.user.get_full_name }}</td>
-                            <td class="order-date">{{ order.created_at|date:"Y-m-d" }}</td>
-                            <td>
-                                <span class="badge badge-payment badge-payment-{{ order.payment_method|lower }}">
-                                    {{ order.get_payment_method_display|upper }}
-                                </span>
-                            </td>
-                            <td class="order-amount">₹ {{ order.total }}</td>
-                            <td>
-                                <select class="order-status-select {{ order.status }}"
-                                        data-order-id="{{ order.id }}">
-                                    {% for key, label in order.STATUS_CHOICES %}
-                                        <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <a href="{% url "order_view_details" order.id %}" class="btn-action">View Details</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    </form>
+
+    <!-- Filter Tabs -->
+    <div class="filter-section">
+        <span class="filter-label">Filter by status:</span>
+        <div class="filter-tabs">
+            <a href="{% url 'order_management' %}" class="filter-tab {% if not status %}active{% endif %}">All</a>
+            <a href="?status=pending" class="filter-tab {% if status == 'pending' %}active{% endif %}">Pending</a>
+            <a href="?status=processing" class="filter-tab {% if status == 'processing' %}active{% endif %}">Processing</a>
+            <a href="?status=shipped" class="filter-tab {% if status == 'shipped' %}active{% endif %}">Shipped</a>
+            <a href="?status=delivered" class="filter-tab {% if status == 'delivered' %}active{% endif %}">Delivered</a>
+            <a href="?status=cancelled" class="filter-tab {% if status == 'cancelled' %}active{% endif %}">Cancelled</a>
+            <a href="?status=returned" class="filter-tab {% if status == 'returned' %}active{% endif %}">Returned</a>
+            <a href="?status=failed" class="filter-tab {% if status == 'failed' %}active{% endif %}">Failed</a>
         </div>
-        <!-- Pagination -->
-        {% comment %} <div class="pagination-section">
-            <p class="showing-text">Showing 5 of 5 orders</p>
-            <div class="pagination">
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-            </div>
-        </div> {% endcomment %}
     </div>
+    <!-- Orders Table -->
+    <div class="table-container">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Payment Method</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr data-status="{{ order.status }}">
+                    <td class="order-id">{{ order.orderid }}</td>
+                    <td class="customer-name">{{ order.user.get_full_name }}</td>
+                    <td class="order-date">{{ order.created_at|date:"Y-m-d" }}</td>
+                    <td>
+                        <span class="badge badge-payment badge-payment-{{ order.payment_method|lower }}">
+                            {{ order.get_payment_method_display }}
+                        </span>
+                    </td>
+                    <td class="order-amount">₹ {{ order.total }}</td>
+                    <td>
+                        <span class="badge-status {{ order.status|lower }}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url "order_view_details" order.id %}" class="btn-action">View Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- PAGINATION -->
+    {% include "pagination.html" %}
+</div>
 {% endblock content %}
-
-{% block extra_js %}
-<script>
-document.querySelectorAll(".order-status-select").forEach(select => {
-  select.addEventListener("change", function () {
-
-    /* ===== Change color instantly ===== */
-    this.classList.remove(
-      "placed",
-      "shipped",
-      "out_for_delivery",
-      "delivered",
-      "cancelled",
-      "return_requested",
-      "returned"
-    );
-    this.classList.add(this.value);
-
-    /* ===== AJAX call ===== */
-    fetch("{% url 'update_order_status' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        order_id: this.dataset.orderId,
-        status: this.value
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.success) {
-        alert(data.error);
-      }
-    });
-
-  });
-});
-</script>
-{% endblock extra_js %}
 

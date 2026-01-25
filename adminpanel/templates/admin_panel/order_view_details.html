@@ -5,10 +5,18 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_view_details.css' %}?v=2.0" />
+          href="{% static 'css/admin_panel/order_view_details.css' %}" />
 {% endblock extra_css %}
 {% block content %}
     <div class="order-detail-wrapper">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs">
+            <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+            <i class="fas fa-chevron-right separator"></i>
+            <a href="{% url 'order_management' %}">Orders</a>
+            <i class="fas fa-chevron-right separator"></i>
+            <span class="current">{{ order.orderid }}</span>
+        </nav>
         <!-- Page Header -->
         <div class="page-header">
             <div class="header-left">
@@ -16,120 +24,18 @@
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <div class="header-info">
-                    <h1>Order Details</h1>
-                    <span class="order-id">{{ order.orderid }}</span>
+                    <h1>Order #{{ order.orderid }}</h1>
+                    <span class="order-id">Placed on {{ order.created_at|date:"F d, Y at h:i A" }}</span>
                 </div>
             </div>
-            {% comment %} <button class="btn-download">
-      <i class="fas fa-download"></i> Download Invoice
-            </button> {% endcomment %}
         </div>
         <!-- Main Content Grid -->
         <div class="content-grid">
             <!-- Left Column -->
             <div class="left-column">
-                <!-- Delivery Status Timeline -->
-                <div class="card">
-                    <h2 class="card-title">Delivery Status Timeline</h2>
-                    <div class="timeline">
-                        <!-- Order Placed -->
-                        <div class="timeline-item completed">
-                            <div class="timeline-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h4>Order Placed</h4>
-                                <p class="timeline-date">
-                                {{ order.created_at|date:"M d, Y h:i A" }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Shipped -->
-                        <div class="timeline-item
-                            {% if order.status == 'placed' %}pending
-                            {% elif order.status == 'shipped' %}active
-                            {% else %}completed{% endif %}">
-                            
-                            <div class="timeline-icon">
-                                <i class="fas
-                                {% if order.status == 'placed' %}fa-clock
-                                {% elif order.status == 'shipped' %}fa-clock
-                                {% else %}fa-check{% endif %}">
-                                </i>
-                            </div>
-
-                            <div class="timeline-content">
-                                <h4>Shipped</h4>
-                                <p class="timeline-date">
-                                {% if order.status == 'placed' %}
-                                    Pending
-                                {% elif order.status == 'shipped' %}
-                                    In progress
-                                {% else %}
-                                    Completed
-                                {% endif %}
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Out for Delivery -->
-                        <div class="timeline-item
-                            {% if order.status in 'placed shipped' %}pending
-                            {% elif order.status == 'out_for_delivery' %}active
-                            {% else %}completed{% endif %}">
-
-                            <div class="timeline-icon">
-                                <i class="fas
-                                {% if order.status in 'placed shipped' %}fa-clock
-                                {% elif order.status == 'out_for_delivery' %}fa-clock
-                                {% else %}fa-check{% endif %}">
-                                </i>
-                            </div>
-
-                            <div class="timeline-content">
-                                <h4>Out for Delivery</h4>
-                                <p class="timeline-date">
-                                {% if order.status in 'placed shipped' %}
-                                    Pending
-                                {% elif order.status == 'out_for_delivery' %}
-                                    In progress
-                                {% else %}
-                                    Completed
-                                {% endif %}
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Delivered -->
-                        <div class="timeline-item
-                            {% if order.status == 'delivered' %}completed
-                            {% else %}pending{% endif %}">
-
-                            <div class="timeline-icon">
-                                <i class="fas
-                                {% if order.status == 'delivered' %}fa-check
-                                {% else %}fa-clock{% endif %}">
-                                </i>
-                            </div>
-
-                            <div class="timeline-content">
-                                <h4>Delivered</h4>
-                                <p class="timeline-date">
-                                {% if order.status == 'delivered' and order.delivered_at %}
-                                    {{ order.delivered_at|date:"M d, Y h:i A" }}
-                                {% else %}
-                                    Pending
-                                {% endif %}
-                                </p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
                 <!-- Products -->
                 <div class="card">
-                    <h2 class="card-title">Products</h2>
+                    <h2 class="card-title">Ordered Items</h2>
                     <table class="products-table">
                         <thead>
                             <tr>
@@ -142,70 +48,88 @@
                         </thead>
                         <tbody>
                             {% for item in order.items.all %}
-                            <tr>
-                                <td>
-                                    <div class="product-info">
-                                        <div class="product-image">
-                                            {% if item.variant.images.first %}
-                                                <img src="{{ item.variant.images.first.image.url }}"
-                                                     alt="{{ item.variant.product.name }}">
-                                            {% else %}
-                                                <div class="no-image">
-                                                    <i class="fas fa-image"></i>
-                                                </div>
-                                            {% endif %}
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <div class="product-image">
+                                                {% if item.variant.images.first %}
+                                                    <img src="{{ item.variant.images.first.image.url }}"
+                                                         alt="{{ item.variant.product.name }}">
+                                                {% else %}
+                                                    <div class="avatar-placeholder">{{ user.first_name|first }}{{ user.last_name|first }}</div>
+                                                {% endif %}
+                                            </div>
+                                            <span class="product-name">{{ item.variant.product.name }}</span>
                                         </div>
-                                        <span class="product-name">{{ item.variant.product.name }}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="variant-info">
-                                        {% if item.variant.size %}
-                                        <span>Size: {{ item.variant.size }}</span>{% endif %}
-                                        {% if item.variant.color %}
-                                        <span>Color: {{ item.variant.color }}</span>{% endif %}
-                                    </div>
-                                </td>
-                                <td>{{ item.quantity }}</td>
-                                <td>$ {{ item.price }}</td>
-                                <td>$ {{ item.total_price }}</td>
-                            </tr>
+                                    </td>
+                                    <td>
+                                        <div class="variant-info">
+                                            {% if item.variant.size %}<span>Size: {{ item.variant.size }}</span>{% endif %}
+                                            {% if item.variant.color %}<span>Color: {{ item.variant.color }}</span>{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹ {{ item.price }}</td>
+                                    <td>₹ {{ item.total_price }}</td>
+                                </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="5" style="text-align:center;">
-                                    No items found
-                                    </td>
+                                    <td colspan="5" style="text-align:center;">No items found</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <!-- Customer Details -->
-                <div class="card">
-                    <h2 class="card-title">Customer Details</h2>
-                    <div class="customer-grid">
-                        <div class="customer-field">
-                            <label>Customer Name</label>
-                            <p>{{ order.user.get_full_name }}</p>
+                <!-- Details Row (Customer + Shipping) -->
+                <div class="details-row-grid">
+                    <!-- Customer Details -->
+                    <div class="card">
+                        <h2 class="card-title">Customer Details</h2>
+                        <div class="customer-profile-header">
+                            <div class="user-avatar">
+                                {% if order.user.profile_pic %}
+                                    <img src="{{ order.user.profile_pic.url }}"
+                                         alt="{{ order.user.first_name }}"
+                                         class="avatar-img">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ order.user.first_name|first }}{{
+                                        order.user.last_name|first
+                                        }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="customer-name-group">
+                                <label>Customer Name</label>
+                                <p>{{ order.user.get_full_name }}</p>
+                            </div>
                         </div>
-                        <div class="customer-field">
-                            <label>Email</label>
-                            <p>{{ order.user.email }}</p>
+                        <div class="customer-grid">
+                            <div class="customer-field">
+                                <label>Email</label>
+                                <p>{{ order.user.email }}</p>
+                            </div>
+                            <div class="customer-field">
+                                <label>Phone</label>
+                                <p>{{ order.user.phone }}</p>
+                            </div>
                         </div>
+                    </div>
+                    <!-- Shipping Address -->
+                    <div class="card">
+                        <h2 class="card-title">Shipping Address</h2>
                         <div class="customer-field">
-                            <label>Phone</label>
-                            <p>{{ order.user.phone }}</p>
-                        </div>
-                        <div class="customer-field">
-                            <label>Shipping Address</label>
-                            <p>     
-                                {{ order.address.address_line_1 }}<br>
+                            <p>
+                                {{ order.address.address_line_1 }}
+                                <br>
                                 {% if order.address.address_line_2 %}
-                                    {{ order.address.address_line_2 }}<br>
+                                    {{ order.address.address_line_2 }}
+                                    <br>
                                 {% endif %}
                                 {{ order.address.city }},
-                                {{ order.address.state }} - {{ order.address.pincode }}<br>
-                                {{ order.address.country }} 
+                                {{ order.address.state }} - {{ order.address.pincode }}
+                                <br>
+                                {{ order.address.country }}
                             </p>
                         </div>
                     </div>
@@ -219,9 +143,7 @@
                     <div class="summary-content">
                         <div class="summary-row">
                             <span class="label">Payment Method</span>
-                            <span class="value">
-                                {{ order.get_payment_method_display }}
-                            </span>
+                            <span class="value">{{ order.get_payment_method_display }}</span>
                         </div>
                         <div class="summary-row">
                             <span class="label">Order Date</span>
@@ -234,39 +156,55 @@
                         <div class="divider"></div>
                         <div class="summary-row">
                             <span class="label">Subtotal</span>
-                            <span class="value">$ {{ order.subtotal }}</span>
+                            <span class="value">₹ {{ order.subtotal }}</span>
                         </div>
                         <div class="summary-row">
                             <span class="label">Tax</span>
-                            <span class="value">$ {{ order.tax }}</span>
+                            <span class="value">₹ {{ order.tax }}</span>
                         </div>
                         <div class="summary-row">
                             <span class="label">Shipping</span>
-                            <span class="value">$ {{ order.delivery_charge }}</span>
+                            <span class="value">₹ {{ order.delivery_charge }}</span>
                         </div>
                         <div class="summary-row total-row">
                             <span class="label">Total</span>
-                            <span class="value">$ {{ order.total }}</span>
+                            <span class="value">₹ {{ order.total }}</span>
                         </div>
                     </div>
                 </div>
-                <!-- Admin Actions -->
+                <!-- Manage Order -->
                 <div class="card">
-                    <h2 class="card-title">Admin Actions</h2>
-                    <div class="actions-grid">
-                        <button class="action-btn btn-blue">
-                            <i class="fas fa-truck"></i> Update Delivery Status
+                    <h2 class="card-title">Manage Order</h2>
+                    <form action="{% url "update_order_status" order.id %}"
+                          method="POST"
+                          class="manage-order-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <div class="manage-field">
+                            <label>Order Status</label>
+                            <select name="status" class="form-select">
+                                {% for value, label in order_statuses %}
+                                    {% if value in allowed_statuses %}
+                                    <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="manage-field">
+                            <label>Payment Status</label>
+                            <select name="payment_status" class="form-select">
+                                {% for value, label in payment_statuses %}
+                                    <option value="{{ value }}"
+                                            {% if order.payment_status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="action-btn btn-pink mt-3">
+                            <i class="fas fa-save"></i> Update Order
                         </button>
-                        <button class="action-btn btn-green">
-                            <i class="fas fa-check"></i> Update Payment Status
-                        </button>
-                        <button class="action-btn btn-purple">
-                            <i class="fas fa-barcode"></i> Add Tracking Info
-                        </button>
-                        <button class="action-btn btn-red">
-                            <i class="fas fa-times-circle"></i> Cancel Order
-                        </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

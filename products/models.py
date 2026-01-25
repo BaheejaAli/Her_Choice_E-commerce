@@ -172,17 +172,6 @@ class ProductVariantImage(models.Model):
             ).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
 
-@receiver(post_delete, sender=ProductVariantImage)
-def delete_image_from_cloudinary(sender, instance, **kwargs):
-    """
-    Automatically deletes the image file from Cloudinary 
-    when the ProductVariantImage record is deleted.
-    """
-    if instance.image:
-        try:
-            cloudinary.uploader.destroy(instance.image.public_id)
-        except Exception as e:
-            print(f"Cloudinary deletion failed: {e}")
 
  
 

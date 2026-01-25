@@ -38,7 +38,7 @@
   padding: 14px 18px 14px 48px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .search-box input:focus {
@@ -81,7 +81,7 @@
 }
 
 .filter-label {
-  font-size: 14px;
+  font-size: 15px;
   color: #6b7280;
   font-weight: 500;
 }
@@ -96,7 +96,7 @@
   border-radius: 6px;
   border: 1px solid #e5e7eb;
   background: white;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   color: #6b7280;
@@ -136,15 +136,16 @@
 
 .orders-table th {
   padding: 16px 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .orders-table td {
   padding: 18px 20px;
-  font-size: 14px;
+  font-size: 15px;
   color: #1f2937;
 }
 
@@ -197,36 +198,56 @@
 }
 
 /* ============================================
-   STATUS DROPDOWN (COLOR CHANGES)
+   STATUS BADGES
 ============================================ */
-.order-status-select {
-  appearance: none;
-  padding: 6px 28px 6px 14px;
-  border-radius: 14px;
-  font-size: 12px;
+.badge-status {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
   font-weight: 700;
-  border: none;
-  cursor: pointer;
   text-transform: capitalize;
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23000000' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+  text-align: center;
+  min-width: 100px;
 }
 
-.order-status-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.3);
-}
+/* Focus logic removed as it's no longer a select */
 
 /* Status colors */
-.order-status-select.placed { background: #fef3c7; color: #92400e; }
-.order-status-select.shipped { background: #dbeafe; color: #1e40af; }
-.order-status-select.out_for_delivery { background: #ede9fe; color: #5b21b6; }
-.order-status-select.delivered { background: #d1fae5; color: #065f46; }
-.order-status-select.cancelled { background: #fee2e2; color: #991b1b; }
-.order-status-select.return_requested { background: #fff7ed; color: #9a3412; }
-.order-status-select.returned { background: #fed7aa; color: #9a3412; }
+.badge-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-status.processing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-status.shipped {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-status.delivered {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-status.returned {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.badge-status.failed {
+  background: #ffedd5;
+  color: #c2410c;
+}
 
 /* ============================================
    ACTION BUTTON
