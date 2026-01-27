@@ -80,7 +80,7 @@
         <!-- Product listing -->
         <div class="listing-product-grid">
             {% for product in products %}
-                {% include 'products/product_card.html' %} 
+                {% include "products/product_card.html" %} 
             {% empty %}
                 <div class="no-results">
                     <p>No results found for "<strong>{{ search_query }}</strong>".</p>

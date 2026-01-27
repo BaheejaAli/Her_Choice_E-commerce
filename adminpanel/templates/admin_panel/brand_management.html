@@ -1,139 +1,111 @@
 {% extends "admin_panel/admin_base.html" %}
-{% load static %} 
-
-{% block title %}Brand Management | Her Choice{% endblock %} 
-{% block page_title %}Brand Management{%endblock %} 
-
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_panel/brand_management.css' %}"/>
-{% endblock %} 
-
+{% load static %}
+{% block title %}
+  Brand Management | Her Choice
+{% endblock title %}
+{% block page_title %}
+  Brand Management
+{% endblock page_title %}
+{% block extra_css %}
+  <link rel="stylesheet"
+        href="{% static 'css/admin_panel/brand_management.css' %}" />
+{% endblock extra_css %}
 {% block content %}
-<div class="brand-management-wrapper">
-
-  {% if messages %}
-  <div class="messages-container">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
+  <div class="brand-management-wrapper">
+    {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
       </div>
-    {% endfor %}
-  </div>
-{% endif %}
-
-
-  <!-- CSRF TOKEN FOR AJAX -->
-  <form id="csrf-form">
-    {% csrf_token %}
-  </form>
-
-  <!-- HEADER -->
-  <div class="page-header-section">
-    <div class="header-content">
-   </div>
-    <a href="{% url 'brand_add' %}" class="btn-add-new-brand">
-  <i class="fas fa-plus"></i>
-  <span>Add New Brand</span>
-</a>
-
-  </div>
-
-  <!-- SEARCH & FILTER (BACKEND DRIVEN) -->
-  <form method="get" class="search-filter-form" id="filterForm">
-  <div class="filter-left">
-    <input
-      type="text"
-      name="q"
-      class="search-input"
-      placeholder="Search brands..."
-      value="{{ search_query }}"
-    />
-
-    <button type="submit">
-      <i class="fa fa-search"></i> Search
-    </button>
-
-    {% if search_query or current_status_filter %}
-      <a href="?" class="clear-btn">Clear</a>
     {% endif %}
+    <!-- CSRF TOKEN FOR AJAX -->
+    <form id="csrf-form">
+      {% csrf_token %}
+    </form>
+    <!-- HEADER -->
+    <div class="page-header-section">
+      <div class="header-content"></div>
+      <a href="{% url 'brand_add' %}" class="btn-add-new-brand">
+        <i class="fas fa-plus"></i>
+        <span>Add New Brand</span>
+      </a>
+    </div>
+    <!-- SEARCH & FILTER (BACKEND DRIVEN) -->
+    <form method="get" class="search-filter-form" id="filterForm">
+      <div class="filter-left">
+        <input type="text"
+               name="q"
+               class="search-input"
+               placeholder="Search brands..."
+               value="{{ search_query }}" />
+        <button type="submit">
+          <i class="fa fa-search"></i> Search
+        </button>
+        {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+      </div>
+      <div class="filter-right">
+        <select name="status" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="active"
+                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive"
+                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+    </form>
+    <!-- TABLE -->
+    <div class="table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Brand</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for brand in brands %}
+            <tr>
+              <td>{{ brand.id }}</td>
+              <td>
+                <div class="brand-cell">
+                  <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
+                  <span class="brand-name">{{ brand.name }}</span>
+                </div>
+              </td>
+              <td>
+                {{ brand.product_count }}
+                <p>Items</p>
+              </td>
+              <td>
+                <!-- STATUS BUTTON -->
+                <button type="button"
+                        class="btn status-btn {% if brand.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                        data-url="{% url 'toggle_brand_status' brand.id %}"
+                        onclick="toggleBrandStatus(this)">{{ brand.is_active|yesno:"Active,Inactive" }}</button>
+              </td>
+              <td>
+                <!-- EDIT BUTTON -->
+                <a href="{% url 'brand_edit' brand.id %}" class="action-btn edit">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="empty-text">No brands found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <!-- PAGINATION -->
+      {% include "pagination.html" %}
+    </div>
   </div>
-
-  <div class="filter-right">
-    <select name="status" onchange="this.form.submit()">
-      <option value="">All</option>
-      <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>
-        Active
-      </option>
-      <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>
-        Inactive
-      </option>
-    </select>
-  </div>
-</form>
-
- 
-  <!-- TABLE -->
-  <div class="table-card">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Brand</th>
-          <th>Products</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for brand in brands %}
-        <tr>
-          <td>{{ brand.id }}</td>
-          <td>
-            <div class="brand-cell">
-              <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
-              <span class="brand-name">{{ brand.name }}</span>
-            </div>
-          </td>
-
-
-          <td>{{ brand.product_count }}
-            <p>Items</p>
-          </td>
-
-          <td>
-            <!-- STATUS BUTTON -->
-            <button
-              type="button"
-              class="btn status-btn {% if brand.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-              data-url="{% url 'toggle_brand_status' brand.id %}"
-              onclick="toggleBrandStatus(this)">
-              {{ brand.is_active|yesno:"Active,Inactive" }}
-            </button>
-          </td>
-
-          <td>
-            <!-- EDIT BUTTON -->
-            <a href="{% url 'brand_edit' brand.id %}" class="action-btn edit">
-            <i class="fa-solid fa-pen-to-square"></i> Edit
-          </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" class="empty-text">No brands found</td>
-        </tr>
-        {% endfor %}        
-      </tbody>     
-    </table>
-
-    <!-- PAGINATION -->
-    {% include "pagination.html" %}
-  </div>
-</div>
 {% endblock content %}
-
 {% block extra_js %}
-<script>
+  <script>
   {% comment %} STATUS TOGGLE {% endcomment %}
     function toggleBrandStatus(btn) {
   const url = btn.dataset.url;
@@ -162,5 +134,5 @@
     btn.disabled = false;
   });
 }
-</script>
-{% endblock %}
+  </script>
+{% endblock extra_js %}

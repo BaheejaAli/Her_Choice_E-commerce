@@ -120,7 +120,7 @@ def product_detail_view(request, slug):
 
     if not variants.exists():
         messages.warning(request, "Product unavailable")
-        return redirect("product_listing")
+        return redirect("user_homepage")
     
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         color_id = request.GET.get("color")
@@ -190,12 +190,21 @@ def product_detail_view(request, slug):
 
     sizes = Size.objects.filter(id__in=size_ids)
 
+    related_products = (Product.objects
+    .filter(category=product.category,is_active=True)
+    .exclude(id=product.id)
+    .prefetch_related("variants__images")
+    .order_by("-created_at")[:4]
+    )
+
+
     context = {
         "product": product,
         "variants": variants,
         "selected_variant": selected_variant,  
         "color_variants": color_variants,      
-        "sizes": sizes,                       
+        "sizes": sizes,    
+        "related_products": related_products,                     
     }
 
     return render(request, "products/product_detail.html", context)

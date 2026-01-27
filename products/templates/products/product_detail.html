@@ -1,10 +1,10 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
-
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/products/product_detail.css' %}" />
-{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" />
 
+{% endblock %}
 {% block content %}
   <div class="product-detail-wrapper">
     <nav class="breadcrumb-nav">
@@ -13,40 +13,45 @@
       <span class="current">{{ product.category.name }}</span> <i class="fas fa-chevron-right"></i>
       <span class="current">{{ product.name }}</span>
     </nav>
-
     <div class="product-main-row">
       <div class="product-image-section">
         <div class="main-img-container" id="zoom-container">
           {% with first_image=selected_variant.images.all|first %}
             {% if first_image %}
-              <img src="{{ first_image.image.url }}" id="product-img" alt="{{ product.name }}" />
+              <img src="{{ first_image.image.url }}"
+                   id="product-img"
+                   alt="{{ product.name }}" />
             {% else %}
-              <img src="{% static 'images/placeholder.png' %}" id="product-img" alt="No image" />
+              <img src="{% static 'images/placeholder.png' %}"
+                   id="product-img"
+                   alt="No image" />
             {% endif %}
           {% endwith %}
         </div>
-
         <div class="thumbnail-grid">
           {% for image in selected_variant.images.all %}
-            <div class="thumb-wrapper {% if forloop.first %}active{% endif %}" onclick="changeImage(this, '{{ image.image.url }}')">
+            <div class="thumb-wrapper {% if forloop.first %}active{% endif %}"
+                 onclick="changeImage(this, '{{ image.image.url }}')">
               <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail" />
             </div>
           {% endfor %}
         </div>
       </div>
-
       <div class="product-info-section">
         <div class="product-header">
           <p class="brand-name">Brand: {{ product.brand.name }}</p>
           <h1 class="product-title">{{ product.name }}</h1>
-
           <div class="variant-preview-section">
             <h4>Other Variants</h4>
             <div class="variant-preview-list">
               {% for v in color_variants %}
                 {% with img=v.images.all|first %}
                   {% if img %}
-                    <a href="?variant={{ v.id }}" class="variant-preview {% if selected_variant.id == v.id %}active{% endif %}" title="{{ v.color.name }}"><img src="{{ img.image.url }}" alt="{{ v.color.name }}" /></a>
+                    <a href="?variant={{ v.id }}"
+                       class="variant-preview {% if selected_variant.id == v.id %}active{% endif %}"
+                       title="{{ v.color.name }}">
+                      <img src="{{ img.image.url }}" alt="{{ v.color.name }}" />
+                    </a>
                   {% endif %}
                 {% endwith %}
               {% endfor %}
@@ -55,26 +60,23 @@
           {% if sizes %}
             <div class="size-section">
               <h4>Size</h4>
-
               <div class="size-options">
                 {% for v in variants %}
                   {% if v.color_id == selected_variant.color_id %}
-                    <button class="size-btn {% if selected_variant.id == v.id %}selected{% endif %}" onclick="changeVariant({{ v.id }}, this)">{{ v.size.name }}</button>
+                    <button class="size-btn {% if selected_variant.id == v.id %}selected{% endif %}"
+                            onclick="changeVariant({{ v.id }}, this)">{{ v.size.name }}</button>
                   {% endif %}
                 {% endfor %}
               </div>
             </div>
           {% endif %}
         </div>
-
         <div class="rating-container">
           <span class="rating-value">4.2 <i class="fas fa-star"></i></span>
           <span class="rating-separator">|</span>
           <span class="review-count">124 Reviews</span>
         </div>
-
         <hr class="divider" />
-
         <div class="price-container">
           <span class="current-price">₹{{ selected_variant.offer_price|default:selected_variant.base_price }}</span>
           {% if selected_variant.offer_price %}
@@ -83,57 +85,40 @@
           {% endif %}
         </div>
         <p class="tax-info">Inclusive of all taxes</p>
-
         <div class="stock-status">
           {% if selected_variant.stock <= 0 %}
-            <span class="out-of-stock-msg">SOLD OUT</span>
-            <p class="error-text">This product is currently unavailable.</p>
+            <span class="out-of-stock-msg">Out of Stock</span>
+            {% comment %} <p class="error-text">This product is currently unavailable.</p> {% endcomment %}
           {% elif selected_variant.stock < 10 %}
             <span class="low-stock-msg">Only {{ selected_variant.stock }} left!</span>
           {% else %}
             <span class="in-stock-msg">In Stock</span>
           {% endif %}
         </div>
-       
         <div class="action-btns">
           {% if selected_variant.is_active and selected_variant.stock > 0 %}
             <form class="add-to-cart-form">
               {% csrf_token %}
               <input type="hidden" name="variant_id" value="{{ selected_variant.id }}" />
-              <button type="button" class="btn-add-cart" onclick="addToCart(this)"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
+              <button type="button" class="btn-add-cart" onclick="addToCart(this)">
+                <i class="fas fa-shopping-bag"></i> Add to Cart
+              </button>
             </form>
-
-            <button type="button" class="btn-wishlist" onclick="addToWishlist({{ selected_variant.id }})"><i class="far fa-heart"></i></button>
+            <button type="button"
+                    class="btn-wishlist"
+                    onclick="addToWishlist({{ selected_variant.id }})">
+              <i class="far fa-heart"></i>
+            </button>
           {% else %}
             <button class="btn-disabled" disabled>OUT OF STOCK</button>
           {% endif %}
-
-          {% comment %} <form method="POST" action="#" class="wishlist-form">
-            {% csrf_token %}
-            <input type="hidden" name="product_id" value="{{ product.id }}" />
-
-            <button type="submit" class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
-          </form>
-          {% else %}
-          <button class="btn-disabled" disabled>
-            {% if not product.is_active %}
-              CURRENTLY UNAVAILABLE
-            {% else %}
-              OUT OF STOCK
-            {% endif %}
-          </button>
-          <button class="btn-wishlist"><i class="far fa-heart"></i> WISHLIST</button>
-          {% endif %} {% endcomment %}
         </div>
-
         <hr class="divider" />
-
         <div class="product-details-container">
           <div class="product-description">
             <h4>PRODUCT DETAILS</h4>
             <p>{{ product.description }}</p>
           </div>
-
           <div class="section mt-4">
             <h4 class="section-title">Specifications</h4>
             <div class="specs-grid">
@@ -161,39 +146,19 @@
       </div>
     </div>
   </div>
-
   {% if related_products %}
     <section class="related-products-section">
       <h3 class="related-title">Featured items you may like</h3>
-
       <div class="related-grid">
-        {% for rel in related_products %}
-          <a href="{% url 'product_detail' rel.slug %}" class="related-card">
-            <div class="related-img-wrapper">
-              {% with v=rel.variants.all|first %}
-                {% if v and v.primary_image %}
-                  <img src="{{ v.primary_image.image.url }}" alt="{{ rel.name }}" />
-                {% else %}
-                  <img src="{% static 'images/placeholder.png' %}" />
-                {% endif %}
-              {% endwith %}
-            </div>
-
-            <div class="related-info">
-              <p class="rel-name">{{ rel.name }}</p>
-              <div class="rel-pricing">
-                <span class="rel-offer">₹{{ rel.display_price }}</span>
-              </div>
-            </div>
-          </a>
+        {% for product in related_products %}
+          {% include "products/product_card.html" %} 
         {% endfor %}
       </div>
     </section>
   {% endif %}
 {% endblock %}
-
 {% block extra_js %}
-<script>
+  <script>
   function getCSRFToken() {
   return document.querySelector('[name=csrfmiddlewaretoken]').value;
 }
@@ -305,9 +270,9 @@
 
     {% comment %} if (data.status === "success") {
      document.querySelector(".btn-wishlist i").classList.replace("far","fas")
-    } {% endcomment %}
+} {% endcomment %}
   })
   .catch(() => alert("Wishlist error"))
 }
-</script>
+  </script>
 {% endblock %}

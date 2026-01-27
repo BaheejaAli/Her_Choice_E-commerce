@@ -234,14 +234,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = "accounts.adapter.CustomSocialAccountAdapter"
 
-# cloudinary django integration
-# CLOUDINARY_STORAGE = {
-#     "CLOUD_NAME": env("CLOUD_NAME"),
-#     "API_KEY": env("API_KEY"),
-#     "API_SECRET": env("API_SECRET"),
-# }
 CLOUDINARY_URL= env("CLOUDINARY_URL")
 
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FROM_EMAIL = 'noreply@yourapp.com'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

@@ -90,7 +90,9 @@
                                 {% if order.user.profile_pic %}
                                     <img src="{{ order.user.profile_pic.url }}"
                                          alt="{{ order.user.first_name }}"
-                                         class="avatar-img">
+                                         class="avatar-img"
+                                         width=""
+                                         height="">
                                 {% else %}
                                     <div class="avatar-placeholder">
                                         {{ order.user.first_name|first }}{{
@@ -185,7 +187,7 @@
                             <select name="status" class="form-select">
                                 {% for value, label in order_statuses %}
                                     {% if value in allowed_statuses %}
-                                    <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
+                                        <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
                                     {% endif %}
                                 {% endfor %}
                             </select>

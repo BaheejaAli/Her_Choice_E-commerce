@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from orders.models import Order,OrderItem
 from django.db.models import Q
+from django.contrib import messages
+from django.utils import timezone
 
 # Create your views here.
 @login_required
@@ -38,7 +40,37 @@ def order_details(request,order_id):
     }
     return render(request, "orders/order_details.html",context)
 
+@login_required
 def order_invoice(request,order_id):
     order = get_object_or_404(Order.objects.prefetch_related("items__variant"), id= order_id, user=request.user)
 
     return render(request, "orders/order_invoice.html",{"order":order})
+
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id = order_id, user = request.user)
+    if order.status not in ["pending","processing"]:
+        messages.error(request,"This message cannot be cancelled.")
+        return redirect("order_details", order_id=order.id)
+    
+    if request.method == "POST":
+        cancel_reason = request.POST.get("cancel_reason", "").strip()
+        
+    for item in order.items.all():
+        if item.status != "cancelled":
+            variant = item.variant
+            variant.stock += item.quantity
+            variant.save(update_fields=["stock"])
+
+            item.status = "cancelled"
+            item.cancelled = True
+            item.cancelled_at = timezone.now()
+            item.save()
+    
+    order.status ="cancelled"
+    order.cancel_reason = cancel_reason
+    order.save(update_fields=["status","updated_at"])
+
+    messages.success(request, "Your order has been cancelled successfully.")
+    return redirect("order_details", order_id=order.id)
+
+

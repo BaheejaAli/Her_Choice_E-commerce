@@ -1,136 +1,109 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
-
-{% block title %}Category Management | Her Choice{% endblock %}
-{% block page_title %}Category Management{% endblock %}
-
+{% block title %}
+  Category Management | Her Choice
+{% endblock title %}
+{% block page_title %}
+  Category Management
+{% endblock page_title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/category_management.css' %}?v=1.4">
-{% endblock %}
-
+  <link rel="stylesheet"
+        href="{% static 'css/admin_panel/category_management.css' %}?v=1.4">
+{% endblock extra_css %}
 {% block content %}
-<div class="category-management-wrapper">
-
-  {% if messages %}
-    <div class="messages-container">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-          {{ message }}
-        </div>
-      {% endfor %}
+  <div class="category-management-wrapper">
+    {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+    <!-- CSRF TOKEN FOR AJAX -->
+    <form id="csrf-form">
+      {% csrf_token %}
+    </form>
+    <!-- HEADER -->
+    <div class="page-header-section">
+      <div class="header-content"></div>
+      <a href="{% url 'category_add' %}" class="btn-add-new-category">
+        <i class="fas fa-plus"></i>
+        <span>Add New Category</span>
+      </a>
     </div>
-  {% endif %}
-
-  <!-- CSRF TOKEN FOR AJAX -->
-  <form id="csrf-form">
-    {% csrf_token %}
-  </form>
-
-  <!-- HEADER -->
-  <div class="page-header-section">
-    <div class="header-content">
-    </div>
-
-    <a href="{% url 'category_add' %}" class="btn-add-new-category">
-      <i class="fas fa-plus"></i>
-      <span>Add New Category</span>
-    </a>
-  </div>
-
-  <!-- SEARCH & FILTER (MATCHES USER MANAGEMENT EXACTLY) -->
-  <form method="GET" class="search-filter-form" id="filterForm">
-    <div class="filter-left">
-      <input
-        type="text"
-        name="q"
-        class="search-input"
-        placeholder="Search categories..."
-        value="{{ search_query }}"
-      >
-
-      <button type="submit">
-        <i class="fa fa-search"></i> Search
-      </button>
-
-      {% if search_query or current_status_filter %}
-        <a href="{% url 'category_list' %}" class="clear-btn">Clear</a>
-      {% endif %}
-    </div>
-
-    <div class="filter-right">
-      <select name="status" id="statusFilter">
-        <option value="">All</option>
-        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>
-          Active
-        </option>
-        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>
-          Inactive
-        </option>
-      </select>
-    </div>
-  </form>
-
-  <!-- TABLE -->
-  <div class="table-card">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Category</th>
-          <th>Products</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for category in categories %}
+    <!-- SEARCH & FILTER (MATCHES USER MANAGEMENT EXACTLY) -->
+    <form method="get" class="search-filter-form" id="filterForm">
+      <div class="filter-left">
+        <input type="text"
+               name="q"
+               class="search-input"
+               placeholder="Search categories..."
+               value="{{ search_query }}">
+        <button type="submit">
+          <i class="fa fa-search"></i> Search
+        </button>
+        {% if search_query or current_status_filter %}
+          <a href="{% url 'category_list' %}" class="clear-btn">Clear</a>
+        {% endif %}
+      </div>
+      <div class="filter-right">
+        <select name="status" id="statusFilter">
+          <option value="">All</option>
+          <option value="active"
+                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive"
+                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+    </form>
+    <!-- TABLE -->
+    <div class="table-card">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td>{{ category.id }}</td>
-
-            <td>
-              {% comment %} <img src="{{category.image.url}}" alt=""> {% endcomment %}
-              <h6>{{ category.name }}</h6>
-              {% if category.description %}
-                <div class="sub-text">{{ category.description }}</div>
-              {% endif %}
-            </td>
-            <td>{{ category.product_count }}
-            <p>Items</p>
-          </td>
-            <td>
-              <button
-                type="button"
-                class="btn status-btn {% if category.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                data-url="{% url 'toggle_category_status' category.id %}"
-                onclick="toggleCategoryStatus(this)">
-                {{ category.is_active|yesno:"Active,Inactive" }}
-              </button>
-            </td>
-
-            <td>
-              <a href="{% url 'category_edit' category.id %}" class="action-btn edit">
-                <i class="fa-solid fa-pen-to-square"></i> Edit
-              </a>
-            </td>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
-        {% empty %}
-          <tr>
-            <td colspan="4" class="empty-text">No categories found</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <!-- PAGINATION -->
-    {% include "pagination.html" %}
+        </thead>
+        <tbody>
+          {% for category in categories %}
+            <tr>
+              <td>{{ category.id }}</td>
+              <td>
+                <h6>{{ category.name }}</h6>
+                {% if category.description %}<div class="sub-text">{{ category.description }}</div>{% endif %}
+              </td>
+              <td>
+                {{ category.product_count }}
+                <p>Items</p>
+              </td>
+              <td>
+                <button type="button"
+                        class="btn status-btn {% if category.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                        data-url="{% url 'toggle_category_status' category.id %}"
+                        onclick="toggleCategoryStatus(this)">{{ category.is_active|yesno:"Active,Inactive" }}</button>
+              </td>
+              <td>
+                <a href="{% url 'category_edit' category.id %}" class="action-btn edit">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="empty-text">No categories found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <!-- PAGINATION -->
+      {% include "pagination.html" %}
+    </div>
   </div>
-
-</div>
-{% endblock %}
-
+{% endblock content %}
 {% block extra_js %}
-<script>
+  <script>
 /* Auto-submit status filter (same as User Management) */
 document.getElementById('statusFilter')?.addEventListener('change', function () {
   document.getElementById('filterForm').submit();
@@ -163,5 +136,5 @@ function toggleCategoryStatus(btn) {
     btn.disabled = false;
   });
 }
-</script>
-{% endblock %}
+  </script>
+{% endblock extra_js %}

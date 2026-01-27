@@ -1,204 +1,166 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
-
-{% block title %}Product Management | Her Choice{% endblock %}
-{% block page_title %}Product Management{% endblock %}
-
+{% block title %}
+  Product Management | Her Choice
+{% endblock title %}
+{% block page_title %}
+  Product Management
+{% endblock page_title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
-{% endblock %}
-
+  <link rel="stylesheet"
+        href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
+{% endblock extra_css %}
 {% block content %}
-<div class="product-management-wrapper">
-
-  {% if messages %}
-  <div class="messages-container">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
+  <div class="product-management-wrapper">
+    {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
       </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <!-- CSRF TOKEN FOR AJAX -->
-  <form id="csrf-form">
-    {% csrf_token %}
-  </form>
-
-  <!-- HEADER -->
-  <div class="page-header-section">
-    <div class="header-content"></div>
-
- <a href="{% url 'product_add' %}" class="btn-add-new-product">
-  <i class="fas fa-plus"></i>
-  <span>Add New Product</span>
-</a>
-
-
-  </div>
-
-  <!-- SEARCH & FILTER -->
-  <form method="get" class="search-filter-form" id="filterForm">
-    <div class="filter-left">
-      <input
-        type="text"
-        name="q"
-        class="search-input"
-        placeholder="Search products, brands, categories..."
-        value="{{ search_query }}"
-      />
-
-      <button type="submit">
-        <i class="fa fa-search"></i> Search
-      </button>
-
-      {% if search_query or current_status_filter %}
-        <a href="?" class="clear-btn">Clear</a>
-      {% endif %}
+    {% endif %}
+    <!-- CSRF TOKEN FOR AJAX -->
+    <form id="csrf-form">
+      {% csrf_token %}
+    </form>
+    <!-- HEADER -->
+    <div class="page-header-section">
+      <div class="header-content"></div>
+      <a href="{% url 'product_add' %}" class="btn-add-new-product">
+        <i class="fas fa-plus"></i>
+        <span>Add New Product</span>
+      </a>
     </div>
-
-    <div class="filter-right">
-      <select name="status" onchange="this.form.submit()">
-        <option value="">All</option>
-        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>
-          Active
-        </option>
-        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>
-          Inactive
-        </option>
-      </select>
-    </div>
-  </form>
-
-  <!-- TABLE -->
-  <div class="table-card">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Product</th>
-          <th>Brand</th>
-          <th>Category</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for product in products %}
-<tr>
-  <td>{{ product.id }}</td>
-
-  <td>
-    <div class="product-cell">
-      <div class="product-info">
-        <h6 class="product-name">{{ product.name }}</h6>
-        <span class="variant-count">
-          {{ product.variants.count }} variants
-        </span>
+    <!-- SEARCH & FILTER -->
+    <form method="get" class="search-filter-form" id="filterForm">
+      <div class="filter-left">
+        <input type="text"
+               name="q"
+               class="search-input"
+               placeholder="Search products, brands, categories..."
+               value="{{ search_query }}" />
+        <button type="submit">
+          <i class="fa fa-search"></i> Search
+        </button>
+        {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
       </div>
-    </div>
-  </td>
-
-  <td>{{ product.brand.name }}</td>
-  <td>{{ product.category.name }}</td>
-
-  <td>
-    <button
-      class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-      data-url="{% url 'toggle_product_status' product.id %}"
-      onclick="toggleProductStatus(this)">
-      {{ product.is_active|yesno:"Active,Inactive" }}
-    </button>
-  </td>
-
-  <td class="action-buttons">
-    <a href="{% url 'product_edit' product.id %}" class="action-btn">
-      <i class="fa-solid fa-pen"></i>
-    </a>
-
-    <a href="javascript:void(0)"
-       class="action-btn"
-       onclick="toggleVariants({{ product.id }})">
-      <i class="fa-solid fa-chevron-down"></i>
-    </a>
-  </td>
-</tr>
-
-<!-- VARIANT DROPDOWN ROW -->
-<tr id="variants-{{ product.id }}" class="variant-row" style="display:none;">
-  <td colspan="6">
-    <div class="variant-dropdown">
-
-      <div class="variant-header">
-        <strong>Variants</strong>
-        <a href="{% url 'product_variant_add' product.id %}" class="btn-add-variant">
-          + Add Variant
-        </a>
+      <div class="filter-right">
+        <select name="status" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="active"
+                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive"
+                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
       </div>
-
-      {% if product.variants.exists %}
-      <table class="variant-table">
+    </form>
+    <!-- TABLE -->
+    <div class="table-card">
+      <table class="admin-table">
         <thead>
           <tr>
-            <th>Size</th>
-            <th>Color</th>
-            <th>Price</th>
-            <th>Stock</th>
+            <th>ID</th>
+            <th>Product</th>
+            <th>Brand</th>
+            <th>Category</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for variant in product.variants.all %}
-          <tr>
-            <td>{{ variant.size.name }}</td>
-            <td>{{ variant.color.name }}</td>
-            <td>₹ {{ variant.final_price }}</td>
-            <td>{{ variant.stock }}</td>
-            <td>
-              <button
-                class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                data-url="{% url 'toggle_variant_status' variant.id %}"
-                onclick="toggleVariantStatus(this)">
-                {{ variant.is_active|yesno:"Active,Inactive" }}
-              </button>
-            </td>
-            <td>
-              <a href="{% url 'product_variant_edit' variant.id %}">
-                <i class="fa-solid fa-pen"></i>
-              </a>
-            </td>
-          </tr>
+          {% for product in products %}
+            <tr>
+              <td>{{ product.id }}</td>
+              <td>
+                <div class="product-cell">
+                  <div class="product-info">
+                    <h6 class="product-name">{{ product.name }}</h6>
+                    <span class="variant-count">{{ product.variants.count }} variants</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ product.brand.name }}</td>
+              <td>{{ product.category.name }}</td>
+              <td>
+                <button class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                        data-url="{% url 'toggle_product_status' product.id %}"
+                        onclick="toggleProductStatus(this)">{{ product.is_active|yesno:"Active,Inactive" }}</button>
+              </td>
+              <td class="action-buttons">
+                <a href="{% url 'product_edit' product.id %}" class="action-btn">
+                  <i class="fa-solid fa-pen"></i>
+                </a>
+                <a href="javascript:void(0)"
+                   class="action-btn"
+                   onclick="toggleVariants({{ product.id }})">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </a>
+              </td>
+            </tr>
+            <!-- VARIANT DROPDOWN ROW -->
+            <tr id="variants-{{ product.id }}"
+                class="variant-row"
+                style="display:none">
+              <td colspan="6">
+                <div class="variant-dropdown">
+                  <div class="variant-header">
+                    <strong>Variants</strong>
+                    <a href="{% url 'product_variant_add' product.id %}"
+                       class="btn-add-variant">+ Add Variant</a>
+                  </div>
+                  {% if product.variants.exists %}
+                    <table class="variant-table">
+                      <thead>
+                        <tr>
+                          <th>Size</th>
+                          <th>Color</th>
+                          <th>Price</th>
+                          <th>Stock</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for variant in product.variants.all %}
+                          <tr>
+                            <td>{{ variant.size.name }}</td>
+                            <td>{{ variant.color.name }}</td>
+                            <td>₹ {{ variant.final_price }}</td>
+                            <td>{{ variant.stock }}</td>
+                            <td>
+                              <button class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                                      data-url="{% url 'toggle_variant_status' variant.id %}"
+                                      onclick="toggleVariantStatus(this)">
+                                {{ variant.is_active|yesno:"Active,Inactive" }}
+                              </button>
+                            </td>
+                            <td>
+                              <a href="{% url 'product_variant_edit' variant.id %}">
+                                <i class="fa-solid fa-pen"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  {% else %}
+                    <p class="empty-text">No variants added yet</p>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="empty-text">No products found</td>
+            </tr>
           {% endfor %}
         </tbody>
       </table>
-      {% else %}
-        <p class="empty-text">No variants added yet</p>
-      {% endif %}
-
+      <!-- PAGINATION -->
+      {% include "pagination.html" %}
     </div>
-  </td>
-</tr>
-
-{% empty %}
-<tr>
-  <td colspan="6" class="empty-text">No products found</td>
-</tr>
-{% endfor %}    
-      </tbody>
-    </table>
-
-    <!-- PAGINATION -->
-    {% include "pagination.html" %}
   </div>
-</div>
-
 {% endblock content %}
-
 {% block extra_js %}
-<script>
+  <script>
   function toggleProductStatus(btn) {
     const url = btn.dataset.url;
     const csrftoken =
@@ -275,5 +237,5 @@ function toggleVariants(productId) {
     currentRow.style.display = 'table-row';
   } 
 }
-</script>
-{% endblock %}
+  </script>
+{% endblock extra_js %}

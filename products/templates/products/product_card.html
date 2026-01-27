@@ -27,13 +27,6 @@
       </a>
     </p>
 
-    {% comment %} {% if v %}
-      <div class="variant-info">
-        {% if v.size %}Size: {{ v.size.name }}{% endif %}
-        {% if v.color %} | Color: {{ v.color.name }}{% endif %}
-      </div>
-    {% endif %} {% endcomment %}
-
     <div class="price">
       {% if v and v.offer_price %}
         <span class="offer-price">₹{{ v.offer_price }}</span>
@@ -44,16 +37,111 @@
     </div>
 
     {% if v and v.is_active and product.is_active %}
-      <div class="button-group">
-        <button class="btn-add" onclick="addToCart({{ v.id }})">
-          Add to Cart
-        </button>
-        <a href="#" class="btn-buy">Buy Now</a>
-      </div>
+      {% if v.stock > 0 %}
+        <div class="button-group">
+          <button type="button" class="btn-add" onclick="quickAddToCart(this, {{ v.id }})">
+            Add to Cart
+          </button>
+          <button type="button"
+                    class="btn-wishlist"
+                    onclick="addToWishlist({{ v.id }})">
+              <i class="far fa-heart"></i>
+            </button>
+
+          {% comment %} <a href="{% url 'checkout' %}?variant_id={{ v.id }}&qty=1" class="btn-buy">
+            Buy Now
+          </a> {% endcomment %}
+        </div>
+      {% else %}
+        <div class="status-tag out-of-stock">
+          <i class="fas fa-exclamation-triangle"></i> Out of Stock
+        </div>
+      {% endif %}
     {% else %}
-      <span class="out-of-stock">Unavailable</span>
+        <div class="status-tag unavailable">
+            <i class="fas fa-ban"></i> Currently Unavailable
+        </div>
     {% endif %}
 
   </div>
 </div>
 {% endwith %}
+{% block extra_js %}
+<script>
+// Utility to get CSRF
+function getCSRFToken() {
+    let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    if (!token) {
+        token = getCookie('csrftoken');
+    }
+    return token;
+}
+
+// Add to Wishlist
+function addToWishlist(variantId) {
+    fetch("{% url 'add_to_wishlist' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `variant_id=${variantId}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(() => alert("Wishlist error: Make sure you are logged in."));
+}
+
+// Quick Add to Cart
+function quickAddToCart(button, variantId) {
+    const formData = new FormData();
+    formData.append('variant_id', variantId);
+
+    fetch("{% url 'add_to_cart' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(async response => {
+        const data = await response.json();
+        if (response.ok) {
+            const originalText = button.innerText;
+            button.innerText = "Added! ✓";
+            setTimeout(() => { button.innerText = originalText; }, 2000);
+            
+            if(data.data?.cart_count) {
+                const badge = document.querySelector('.cart-count-badge');
+                if(badge) badge.innerText = data.data.cart_count;
+            }
+        } else {
+            alert(data.message || "Error adding to cart");
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        alert("Network error. Please refresh.");
+    });
+}
+
+// Helper to get Cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock extra_js %}

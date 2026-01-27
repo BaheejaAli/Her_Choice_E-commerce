@@ -39,7 +39,7 @@
       <div class="input-group">
         {{ form.password }}
 
-        <span class="input-group-text eye-btn" onclick="togglePassword('id_password', 'eyeIcon')"><i class="far fa-eye" id="eyeIcon"></i></span>
+        <span class="input-group-text eye-btn" onclick="togglePassword('id_password', 'eyeIcon')"><i class="far fa-eye-slash" id="eyeIcon"></i></span>
       </div>
       {% for error in form.password.errors %}
         <small class="text-danger d-block">{{ error }}</small>
@@ -73,7 +73,8 @@
       <a href="{% url 'user_register' %}" class="text-decoration-none" style="color: #d6336c">Register Now</a>
     </div>
   </form>
-{% endblock %} {% block extra_script %}
+{% endblock %}
+{% block extra_script %}
   <script>
     function togglePassword(inputId, iconId) {
       const input = document.getElementById(inputId)
@@ -81,12 +82,12 @@
     
       if (input.type === 'password') {
         input.type = 'text'
-        icon.classList.remove('fa-eye')
-        icon.classList.add('fa-eye-slash')
-      } else {
-        input.type = 'password'
         icon.classList.remove('fa-eye-slash')
         icon.classList.add('fa-eye')
+      } else {
+        input.type = 'password'
+        icon.classList.remove('fa-eye')
+        icon.classList.add('fa-eye-slash')
       }
     }
   </script>

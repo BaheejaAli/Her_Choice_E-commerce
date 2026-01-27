@@ -2,7 +2,6 @@
 .container {
     max-width: 1200px;
     margin: 40px auto;
-    background: #fff;
 }
 
 /* Header */
@@ -50,108 +49,36 @@
 /* Grid */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /* Adjusted for product card width */
+    gap: 20px;
     padding: 0 40px 40px;
 }
 
-/* Card */
-.product-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    overflow: hidden;
+/* Heart Remove Button */
+.wishlist-remove-heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     background: #fff;
-}
-
-/* Image wrapper */
-.product-image-wrapper {
-    width: 100%;
-    height: 260px;
-    background: #f8f8f8;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.product-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-/* Remove button */
-.remove-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-/* Stock label */
-.out-of-stock {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    background: #e91e63;
-    color: #fff;
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-}
-
-/* Info */
-.product-info {
-    padding: 18px;
-}
-
-.product-name {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 10px;
-}
-
-.product-price {
-    font-size: 18px;
-    font-weight: 600;
     color: #e91e63;
-    margin-bottom: 14px;
-}
-
-.old-price {
-    font-size: 14px;
-    color: #999;
-    margin-left: 8px;
-}
-
-/* Button */
-.add-to-cart-btn {
-    width: 100%;
-    padding: 12px;
-    background: #e91e63;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
+    /* Filled heart color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    font-size: 16px;
+    z-index: 10;
+    transition: transform 0.2s;
 }
 
-.add-to-cart-btn:hover {
-    background: #c2185b;
-}
-
-.add-to-cart-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+.wishlist-remove-heart:hover {
+    transform: scale(1.1);
 }
 
 /* Empty text */
@@ -159,4 +86,16 @@
     padding: 40px;
     font-size: 16px;
     color: #666;
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+/* Adjustments for Product Card reuse */
+.product-card {
+    height: 100%;
+}
+
+.product-img-container {
+    /* Match product_card.css but ensure relative positioning for the heart icon */
+    position: relative;
 }

@@ -18,6 +18,7 @@ from django.utils import timezone
 from accounts.models import CustomUser
 from .models import Wishlist, WishlistItem
 from django.db import transaction
+from .models import UserAddress
 
 #  only one image
 # def attach_display_image(products):
@@ -184,14 +185,6 @@ def edit_profile(request):
     else:
 
         form = UserProfileUpdateForm(instance=request.user)
-    # if not form.is_valid():
-    #     print("FORM ERRORS:", form.errors)
-
-    # print("FORM VALID:", form.is_valid())
-    # print("FORM ERRORS:", form.errors)
-    # print("OLD EMAIL:", old_email)
-    # print("NEW EMAIL:", form.cleaned_data.get('email') if form.is_valid() else None)
-
     return render(request, 'user_section/profile_edit.html', {'form': form})
 
 
@@ -293,7 +286,7 @@ def profile_add_address(request):
 
 @login_required
 def profile_edit_address(request, address_id):
-    address = get_object_or_404(request.user.addresses, id=address_id)
+    address = get_object_or_404(UserAddress, id=address_id, user=request.user)
     next_url = request.GET.get("next") or request.POST.get("next")
 
     if request.method == 'POST':
