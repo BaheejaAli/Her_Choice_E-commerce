@@ -1,0 +1,28 @@
+{% extends "user_section/profile_base.html" %}
+{% block profile_content %}
+
+<div class="cancel-container">
+    <h2>Cancel Order</h2>
+    <p>Order #{{ order.orderid }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Reason for cancellation</label>
+        <textarea name="cancel_reason"
+                  required
+                  placeholder="Please tell us why you are cancelling"
+                  style="width:100%; padding:10px; margin-bottom:15px;"></textarea>
+
+        <button type="submit" class="btn btn-danger">
+            Confirm Cancel
+        </button>
+
+        <a href="{% url 'order_details' order.id %}"
+           class="btn btn-secondary">
+            Go Back
+        </a>
+    </form>
+</div>
+
+{% endblock %}
