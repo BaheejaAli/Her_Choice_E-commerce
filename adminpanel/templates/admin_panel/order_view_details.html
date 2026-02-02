@@ -5,9 +5,14 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_view_details.css' %}" />
+          href="{% static 'css/admin_panel/order_view_details.css' %}?v=1.1" />
 {% endblock extra_css %}
 {% block content %}
+ {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
     <div class="order-detail-wrapper">
         <!-- Breadcrumbs -->
         <nav class="breadcrumbs">
@@ -44,6 +49,7 @@
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Total</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,6 +77,22 @@
                                     <td>{{ item.quantity }}</td>
                                     <td>₹ {{ item.price }}</td>
                                     <td>₹ {{ item.total_price }}</td>
+                                   <td>
+                                        {% if item.return_status != 'none' %}
+                                            <span class="item-badge status-{{ item.return_status|lower }}">
+                                                {{ item.get_return_status_display }}
+                                            </span>
+                                            {% if item.return_reason %}
+                                                <div class="return-reason-text" style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                                                    <strong>Reason:</strong> {{ item.return_reason|truncatechars:30 }}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="item-badge status-{{ item.status|lower }}">
+                                                {{ item.get_status_display }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% empty %}
                                 <tr>
@@ -150,10 +172,6 @@
                         <div class="summary-row">
                             <span class="label">Order Date</span>
                             <span class="value">{{ order.created_at|date:"M d, Y" }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="label">Tracking Number</span>
-                            <span class="value">TRK123456789</span>
                         </div>
                         <div class="divider"></div>
                         <div class="summary-row">

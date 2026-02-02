@@ -13,6 +13,11 @@ Order History | Her Choice
     <h1>My Orders</h1>
     <p class="subtitle">Track, return, or buy things again</p>
 </div>
+{% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
 <!-- Filter Tabs -->
 <div class="filter-tabs">
     <a href="{% url "order_history" %}" class="filter-tab {% if not status %}active{% endif %}">All Orders</a>

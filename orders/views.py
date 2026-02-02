@@ -5,6 +5,7 @@ from orders.models import Order,OrderItem
 from django.db.models import Q
 from django.contrib import messages
 from django.utils import timezone
+from django.db import transaction
 
 # Create your views here.
 @login_required
@@ -47,30 +48,71 @@ def order_invoice(request,order_id):
     return render(request, "orders/order_invoice.html",{"order":order})
 
 def cancel_order(request, order_id):
-    order = get_object_or_404(Order, id = order_id, user = request.user)
-    if order.status not in ["pending","processing"]:
-        messages.error(request,"This message cannot be cancelled.")
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status not in ["pending", "processing", "partially_cancelled"]:
+        messages.error(request, "This order cannot be cancelled anymore.")
         return redirect("order_details", order_id=order.id)
     
     if request.method == "POST":
+        selected_item_ids = request.POST.getlist('selected_items')
         cancel_reason = request.POST.get("cancel_reason", "").strip()
-        
-    for item in order.items.all():
-        if item.status != "cancelled":
-            variant = item.variant
-            variant.stock += item.quantity
-            variant.save(update_fields=["stock"])
 
-            item.status = "cancelled"
-            item.cancelled = True
-            item.cancelled_at = timezone.now()
-            item.save()
+        if not selected_item_ids:
+            messages.error(request, "No items were selected for cancellation.")
+            return redirect("order_details", order_id=order.id)
+
+        with transaction.atomic():
+            items_to_cancel = order.items.filter(id__in=selected_item_ids)
+            
+            for item in items_to_cancel:
+                if item.status != "cancelled":
+                    # Update Inventory
+                    variant = item.variant
+                    variant.stock += item.quantity
+                    variant.save(update_fields=["stock"])
+
+                    # Update Item Status
+                    item.status = "cancelled"
+                    item.cancel_reason = cancel_reason 
+                    item.cancelled_at = timezone.now()
+                    item.save()
+            
+            total_items = order.items.count()
+            cancelled_items_count = order.items.filter(status="cancelled").count()
+
+            if total_items == cancelled_items_count:
+                order.status = "cancelled"
+                messages.success(request, "Your entire order has been cancelled successfully.")
+            else:
+                order.status = "partially_cancelled"
+                messages.success(request, f"Successfully cancelled {len(selected_item_ids)} item(s).")
+            
+            order.save(update_fields=["status", "updated_at"])          
+        return redirect("order_details", order_id=order.id)
     
-    order.status ="cancelled"
-    order.cancel_reason = cancel_reason
-    order.save(update_fields=["status","updated_at"])
 
-    messages.success(request, "Your order has been cancelled successfully.")
-    return redirect("order_details", order_id=order.id)
+@login_required
+def return_request(request, order_id):
+    if request.method == "POST":
+        item_id = request.POST.get("item_id")
+        reason = request.POST.get("return_reason")
+        comment = request.POST.get("return_comment")
+
+        # 1. Fetch the item and ensure it belongs to the logged-in user
+        item = get_object_or_404(OrderItem, id=item_id, order__id=order_id, order__user=request.user)
+
+        # 2. Safety check: Only allow return if delivered and not already returned
+        if item.status == 'delivered' and item.return_status == 'none':
+            item.return_status = 'return_requested'
+            # You can save the reason/comment in a ReturnRequest model or a field on OrderItem
+            item.save()
+            
+            messages.success(request, f"Return request for {item.variant.product.name} has been submitted.")
+        else:
+            messages.error(request, "This item is not eligible for return.")
+
+    return redirect("order_details", order_id=order_id)
 
 
+
+       

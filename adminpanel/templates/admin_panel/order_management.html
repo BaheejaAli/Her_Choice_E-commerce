@@ -8,7 +8,7 @@
 {% endblock page_title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_management.css' %}?v=1.1" />
+          href="{% static 'css/admin_panel/order_management.css' %}?v=1.2" />
 {% endblock extra_css %}
 {% block content %}
     <div class="orders-wrapper">
@@ -37,6 +37,8 @@
             <div class="filter-tabs">
                 <a href="{% url 'order_management' %}"
                    class="filter-tab {% if not status %}active{% endif %}">All</a>
+                <a href="?status=return_requested"
+                   class="filter-tab {% if status == 'return_requested' %}active{% endif %}">Return Requests</a>
                 <a href="?status=pending"
                    class="filter-tab {% if status == 'pending' %}active{% endif %}">Pending</a>
                 <a href="?status=processing"
@@ -45,12 +47,12 @@
                    class="filter-tab {% if status == 'shipped' %}active{% endif %}">Shipped</a>
                 <a href="?status=delivered"
                    class="filter-tab {% if status == 'delivered' %}active{% endif %}">Delivered</a>
-                <a href="?status=cancelled"
-                   class="filter-tab {% if status == 'cancelled' %}active{% endif %}">Cancelled</a>
+                <a href="?status=partially_returned"
+                   class="filter-tab {% if status == 'partially_returned' %}active{% endif %}">Partially Returned</a>
                 <a href="?status=returned"
                    class="filter-tab {% if status == 'returned' %}active{% endif %}">Returned</a>
-                <a href="?status=failed"
-                   class="filter-tab {% if status == 'failed' %}active{% endif %}">Failed</a>
+                <a href="?status=cancelled"
+                   class="filter-tab {% if status == 'cancelled' %}active{% endif %}">Cancelled</a>
             </div>
         </div>
         <!-- Orders Table -->
