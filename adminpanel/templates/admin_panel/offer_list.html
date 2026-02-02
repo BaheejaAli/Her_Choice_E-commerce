@@ -1,0 +1,149 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+{% block title %}
+    Offer Management | Her Choice
+{% endblock title %}
+{% block page_title %}
+    Offer Management
+{% endblock page_title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/offer_list.css' %}?v=1.2">
+{% endblock extra_css %}
+{% block content %}
+    <div class="offer-management-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="header-section d-flex justify-content-between align-items-center mb-4">
+            <p class="text-muted m-0">Manage all discounts and promotional offers in one place.</p>
+            <a href="{% url 'offer_create' %}" class="create-offer-btn btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Create New Offer
+            </a>
+        </div>
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stats-card">
+                <h6>Total Offers</h6>
+                <h2>{{ all_offers_count }}</h2>
+            </div>
+            <div class="stats-card">
+                <h6>Product Offers</h6>
+                <h2>{{ product_offers_count }}</h2>
+            </div>
+            <div class="stats-card">
+                <h6>Category Offers</h6>
+                <h2>{{ category_offers_count }}</h2>
+            </div>
+        </div>
+        <div class="filter-section mb-4">
+            <div class="offer-tabs btn-group">
+                <a href="#"
+                   class="btn btn-outline-primary {% if not request.GET.type %}active{% endif %}">All Offers</a>
+                <a href="?type=product"
+                   class="btn btn-outline-primary {% if request.GET.type == 'product' %}active{% endif %}">
+                    Product Offers
+                </a>
+                <a href="?type=category"
+                   class="btn btn-outline-primary {% if request.GET.type == 'category' %}active{% endif %}">
+                    Category Offers
+                </a>
+            </div>
+        </div>
+        <div class="offer-table-wrapper section-card">
+            <table class="offer-table table">
+                <thead>
+                    <tr>
+                        <th>Offer Name</th>
+                        <th>Type</th>
+                        <th>Target</th>
+                        <th>Discount</th>
+                        <th>Validity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offer in offers %}
+                        <tr>
+                            <td>
+                                <strong>{{ offer.name }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge {% if offer.target_type == 'product' %}bg-info{% else %}bg-secondary{% endif %}">
+                                    {{ offer.target_type|title }}
+                                </span>
+                            </td>
+                            <td>#{{ offer.target_id }}</td>
+                            <td>
+                                <span class="text-success fw-bold">
+                                    {% if offer.discount_type == 'percentage' %}
+                                        {{ offer.discount_value }}% Off
+                                    {% else %}
+                                        ₹{{ offer.discount_value }} Off
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="d-block">Ends: {{ offer.end_at|date:"M d, Y"|default:"Never" }}</small>
+                            </td>
+                            <td>
+                                {% if offer.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons d-flex gap-2">
+                                    <a href="{% url 'offer_edit' offer.id %}"
+                                       class="btn btn-sm btn-outline-dark">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form action="{% url 'toggle_offer_status' offer.id %}"
+                                          method="POST"
+                                          onsubmit="return confirm('Change status for {{ offer.name }}?')">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-sm {% if offer.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                            <i class="fa-solid fa-power-off"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'delete_offer' offer.id %}"
+                                          method="POST"
+                                          onsubmit="return confirm('Permanently delete {{ offer.name }}?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state-container">
+                                    <div class="empty-state-icon">
+                                        <i class="fa-solid fa-tags"></i>
+                                    </div>
+                                    <h4>No Offers Found</h4>
+                                    <p>There are no active discounts for this category at the moment.</p>
+                                    <a href="#" class="empty-state-btn">
+                                        <i class="fa-solid fa-plus"></i> Create Your First Offer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

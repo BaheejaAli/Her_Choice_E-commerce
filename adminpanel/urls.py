@@ -8,7 +8,9 @@ from .views.categories import (
     CategoryListView, CategoryCreateView, CategoryUpdateView,toggle_category_status)
 from .views.products import (
     ProductListView,product_create, product_update, toggle_product_status, product_variant_add,product_variant_update,toggle_variant_status)
-from .views.orders import order_management,update_order_status, order_view_details
+from .views.orders import order_management,update_order_status, order_view_details, stock_management
+from .views.offers import offer_management, offer_create
+
 urlpatterns = [
 
     path("", admin_auth.admin_login, name="admin_login"),
@@ -39,6 +41,11 @@ urlpatterns = [
     path("orders/",order_management, name="order_management"),
     path("orders/update-status/<int:order_id>/", update_order_status, name="update_order_status"),
     path("orders/view-details/<int:order_id>/", order_view_details, name="order_view_details"),
-    
+
+    path("stock/",stock_management, name="stock_management"),
+
+    path("offers/",offer_management, name="offer_management"),
+    path("offers/create",offer_create, name="offer_create"),
+
 
 ]

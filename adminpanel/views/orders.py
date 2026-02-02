@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
 from orders.models import Order, OrderItem
 from django.db.models import Q
 from django.views.decorators.http import require_POST
@@ -8,6 +9,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
+from products.models import ProductVariant
 
 
 @never_cache
@@ -119,3 +121,35 @@ def order_view_details(request, order_id):
         "order_statuses": Order.STATUS_CHOICES,
         "payment_statuses": Order.PAYMENT_STATUS_CHOICES
     })
+
+def stock_management(request):
+    query = request.GET.get('q','')
+    stock_status = request.GET.get('stock_status', '')
+    variants = ProductVariant.objects.select_related('product','size','color').all()
+
+    if query:
+        variants = variants.filter(
+            Q(product__name__icontains=query) |
+            Q(sku__icontains=query)
+        )
+
+    if stock_status == 'in_stock':
+        variants = variants.filter(stock__gt=10)
+    elif stock_status == 'low_stock':
+        variants = variants.filter(stock__range=(1, 10))
+    elif stock_status == 'out_of_stock':
+        variants = variants.filter(stock=0)
+
+    total_items = ProductVariant.objects.count()
+    low_stock_count = ProductVariant.objects.filter(stock__gt=0, stock__lte=10).count()
+    out_of_stock_count = ProductVariant.objects.filter(stock=0).count()
+
+    context = {
+        'variants': variants,
+        'total_items': total_items,
+        'low_stock_count': low_stock_count,
+        'out_of_stock_count': out_of_stock_count,
+        'search_query': query,
+        'current_stock_filter': stock_status,
+    }
+    return render(request, "admin_panel/stock.html",context)

@@ -1,0 +1,130 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+{% block title %}
+    Her Choice | Stock Management 
+{% endblock title %}
+{% comment %} {% block page_title %}
+    Offer Management
+{% endblock page_title %} {% endcomment %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/stock.css' %}?v=1.3">
+{% endblock extra_css %}
+{% block content %}
+    <div class="inventory-container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-title">Inventory Management</h2>
+         <div class="stats-overview d-flex gap-3">
+            <div class="stat-card">
+                <span class="label">Low Stock:</span>
+                <span class="value text-warning">{{ low_stock_count }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="label">Out of Stock:</span>
+                <span class="value text-danger">{{ out_of_stock_count }}</span>
+            </div>
+        </div> 
+    </div>
+     <!-- SEARCH & FILTER -->
+    <form method="get" class="search-filter-form" id="filterForm">
+      <div class="filter-left">
+        <input type="text"
+               name="q"
+               class="search-input"
+               placeholder="Search products, brands, categories..."
+               value="{{ search_query }}" />
+        <button type="submit">
+          <i class="fa fa-search"></i> Search
+        </button>
+        {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+      </div>
+      <div class="filter-right">
+        <select name="stock_status" class="filter-select" onchange="this.form.submit()">
+        <option value="">All Stock Levels</option>
+        <option value="in_stock" {% if current_stock_filter == 'in_stock' %}selected{% endif %}>In Stock (>10)</option>
+        <option value="low_stock" {% if current_stock_filter == 'low_stock' %}selected{% endif %}>Low Stock (1-10)</option>
+        <option value="out_of_stock" {% if current_stock_filter == 'out_of_stock' %}selected{% endif %}>Out of Stock (0)</option>
+    </select>
+      </div>
+    </form>
+    <div class="table-responsive custom-table-card">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Product & SKU</th>
+                    <th>Variant Details</th>
+                    <th>Current Stock</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    {% comment %} <th class="text-center">Actions</th> {% endcomment %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for variant in variants %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ variant.product.name }}</div>
+                        <small class="text-muted text-uppercase">{{ variant.sku|default:"No SKU" }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">Size: {{ variant.size.name|default:"N/A" }}</span>
+                        <span class="badge bg-light text-dark border">Color: {{ variant.color.name }}</span>
+                    </td>
+                    <td>
+                        <div class="stock-input-group">
+                            <span class="qty-text">{{ variant.stock }}</span>
+                        </div>
+                    </td>
+                    <td>₹{{ variant.final_price }}</td>
+                    <td>
+                        <span class="status-badge {{ variant.stock_badge_class }}">
+                            {{ variant.stock_status }}
+                        </span>
+                    </td>
+                    {% comment %} <td class="text-center">
+                        <a href="{% url 'variant_edit' variant.id %}" class="btn-edit-stock">
+                            <i class="fas fa-edit"></i> Update Qty
+                        </a>
+                    </td> {% endcomment %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+    const searchInput = filterForm.querySelector('.search-input');
+    const stockSelect = filterForm.querySelector('.filter-select');
+
+    // Master function to clean URL and submit
+    function cleanAndSubmit(e) {
+        if (e) e.preventDefault(); // Stop default browser submit
+
+        const params = new URLSearchParams();
+        const qValue = searchInput.value.trim();
+        const stockValue = stockSelect.value;
+
+        // Only add parameters if they have a value
+        if (qValue) params.append('q', qValue);
+        if (stockValue) params.append('stock_status', stockValue);
+
+        const baseUrl = window.location.pathname;
+        const queryString = params.toString();
+        
+        // Final URL construction
+        window.location.href = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+    }
+
+    // Trigger on Dropdown change (instant)
+    stockSelect.addEventListener('change', cleanAndSubmit);
+
+    // Trigger on Form Submit (Enter key or Search Button)
+    filterForm.addEventListener('submit', cleanAndSubmit);
+});
+</script>
+{% endblock extra_js%}

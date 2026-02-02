@@ -142,6 +142,22 @@ class ProductVariant(models.Model):
         if errors:
             raise ValidationError(errors)
     
+    @property
+    def stock_status(self):
+        if self.stock <= 0:
+            return "Out of Stock"
+        elif self.stock <= 10: 
+            return "Low Stock"
+        return "In Stock"
+    
+    @property
+    def stock_badge_class(self):
+        if self.stock <= 0:
+            return "bg-danger"   
+        elif self.stock <= 10:
+            return "bg-warning text-dark"
+        return "bg-success"      
+    
     def save(self, *args, **kwargs):
         self.full_clean()   
         super().save(*args, **kwargs)

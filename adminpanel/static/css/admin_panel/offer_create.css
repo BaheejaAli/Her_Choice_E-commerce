@@ -1,0 +1,126 @@
+
+.offer-management-container {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Transform the section-card into the centered form-main-card style */
+.offer-form-wrapper.section-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 900px; /* Centered narrow width */
+    margin: 0 auto;
+    border: none;
+}
+
+/* Custom Labels - Styled like Product Form labels */
+.custom-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #636e72;
+    font-size: 1rem;
+    text-transform: none; /* Removing the table header uppercase style */
+    letter-spacing: normal;
+}
+
+/* Inputs & Selects - Matching the Product Form height and padding */
+.custom-input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #dfe6e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    background-color: #ffffff;
+}
+
+.custom-input:focus {
+    border-color: #e91e63;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+    background-color: #fff9fb;
+}
+.border-top {
+    border-top: 1px solid #eee !important;
+    margin-top: 2.5rem !important;
+    padding-top: 2rem !important;
+}
+
+.d-flex.gap-3 {
+    justify-content: center; /* Centering buttons like product form */
+    gap: 20px !important;
+}
+
+/* Save Button - Matches Product Form Save */
+.save-btn {
+    background: #e91e63;
+    color: #ffffff !important;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+    min-width: 220px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-btn:hover {
+    background: #c2185b;
+    transform: translateY(-2px);
+}
+
+/* Cancel Button - Matches Product Form Cancel */
+.cancel-btn {
+    background: #f1f2f6;
+    color: #2d3436 !important;
+    padding: 14px 36px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+    min-width: 220px;
+    text-align: center;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-btn:hover {
+    background: #dcdde1;
+}
+
+/* Header Text Adjustments */
+.header-section h4 {
+    font-size: 1.8rem;
+    color: #2d3436;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #e91e63;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.back-btn:hover {
+    color: var(--pink-dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    .save-btn, .cancel-btn {
+        min-width: 100%;
+    }
+}

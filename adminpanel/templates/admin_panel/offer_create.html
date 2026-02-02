@@ -1,0 +1,75 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+{% block title %}
+    Create Offer | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/offer_create.css' %}?v=1.1">
+{% endblock extra_css %}
+{% block content %}
+    <div class="offer-management-container">
+        <div class="header-section mb-4">
+            <div>
+                <h4 class="fw-bold mb-1">Create New Offer</h4>
+            </div>
+            <a href="{% url 'offer_management' %}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+        <div class="offer-form-wrapper section-card">
+            <form method="POST" class="p-4">
+                {% csrf_token %}
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <label class="custom-label">Offer Name</label>
+                        <input type="text"
+                               name="name"
+                               class="custom-input"
+                               placeholder="e.g., Seasonal Sale 2024"
+                               required>
+                    </div>
+                     <div class="col-md-4">
+                        <label class="custom-label">Offer Type</label>
+                        <select name="target_type" class="custom-input custom-select">
+                            <option value="product">Product</option>
+                            <option value="category">Category</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="custom-label">Discount Type</label>
+                        <select name="discount_type" class="custom-input custom-select">
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="fixed">Fixed Amount (₹)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="custom-label">Discount Value</label>
+                        <input type="number"
+                               name="discount_value"
+                               class="custom-input"
+                               placeholder="Value"
+                               required>
+                    </div>
+                   
+                    <div class="col-md-6">
+                        <label class="custom-label">Start Date</label>
+                        <input type="date" name="start_at" class="custom-input" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="custom-label">End Date (Optional)</label>
+                        <input type="date" name="end_at" class="custom-input">
+                    </div>
+                    <div class="col-12 mt-4 pt-4 border-top">
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="save-btn">
+                                <i class="fa-solid fa-check"></i> Save Offer
+                            </button>
+                            <a href="{% url 'offer_management' %}" class="cancel-btn">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

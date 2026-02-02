@@ -1,0 +1,245 @@
+:root {
+    --pink-main: #e91e63;
+    --pink-light: #f8bbd0;
+    --pink-soft: #fde4ec;
+    --pink-dark: #c2185b;
+    --text-dark: #333;
+    --text-muted: #777;
+    --bg-page: #fdf7f9;
+    --bg-card: #ffffff;
+    --border-light: #eee;
+    --radius: 12px;
+    --transition: 0.2s ease-in-out;
+}
+
+/* Container */
+.offer-management-container {
+    padding: 24px;
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Updated Create Button (No border, no shadow) */
+.create-offer-btn {
+    background: var(--pink-main);
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    box-shadow: none;
+}
+
+.create-offer-btn:hover {
+    background: var(--pink-dark);
+    transform: translateY(-2px);
+    box-shadow: none; /* Shadow removed as requested */
+}
+
+/* Filter Section (Tabs with gaps) */
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.offer-tabs.btn-group {
+    background: transparent;
+    padding: 0;
+    border: none;
+    display: flex;
+    gap: 12px;
+    width: 50%;
+}
+
+.offer-tabs .btn-outline-primary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: var(--radius) !important; /* Individual rounded corners */
+    transition: var(--transition);
+}
+
+.offer-tabs .btn-outline-primary:hover {
+    background: var(--pink-soft);
+    color: var(--pink-main);
+    border-color: var(--pink-light) !important;
+}
+
+.offer-tabs .btn-outline-primary.active {
+    background: var(--pink-main) !important;
+    color: white !important;
+    border-color: var(--pink-main) !important;
+}
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stats-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.stats-card h2 {
+    color: var(--pink-main);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Table Card Wrapper */
+.offer-table-wrapper {
+    background: var(--bg-card);
+    padding: 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+}
+
+.offer-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.offer-table th {
+    background: #fafafa;
+    padding: 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-light);
+}
+
+.offer-table td {
+    padding: 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.offer-table tbody tr:hover {
+    background-color: #fff9fb;
+}
+
+/* Discount & Badge Styles */
+.text-success.fw-bold {
+    color: #2e7d32 !important;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.bg-info { background-color: #e3f2fd !important; color: #1565c0 !important; }
+.bg-secondary { background-color: #f5f5f5 !important; color: #616161 !important; }
+.bg-success { background-color: #e8f7ee !important; color: #2e7d32 !important; }
+.bg-danger { background-color: #fdeaea !important; color: #c62828 !important; }
+
+/* Action Buttons & Forms */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.action-buttons form {
+    margin: 0;
+}
+
+.btn-sm {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.btn-outline-dark:hover { background: #333; color: white; }
+.btn-outline-warning { color: #856404; border-color: #ffe69c; background: #fff3cd; }
+.btn-outline-warning:hover { background: #ffc107; color: #000; }
+.btn-outline-success { color: #155724; border-color: #c3e6cb; background: #d4edda; }
+.btn-outline-danger { color: #721c24; border-color: #f5c6cb; background: #f8d7da; }
+
+
+/* Empty State Styling */
+.empty-state-container {
+    padding: 60px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background-color: var(--pink-soft);
+    color: var(--pink-main);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.empty-state-container h4 {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.empty-state-container p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    max-width: 300px;
+}
+
+.empty-state-btn {
+    background: var(--pink-main);
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.empty-state-btn:hover {
+    background: var(--pink-dark);
+    transform: translateY(-2px);
+}
+
+.empty-state-btn i {
+    margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-section { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .offer-table-wrapper { overflow-x: auto; }
+    .offer-table { min-width: 900px; }
+}

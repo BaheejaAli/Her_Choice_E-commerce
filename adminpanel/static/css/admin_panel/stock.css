@@ -1,0 +1,164 @@
+/* Container & Titles */
+.admin-title {
+    color: #2d3436;
+    font-weight: 700;
+    border-left: 5px solid #e91e63; /* Pink theme accent */
+    padding-left: 15px;
+}
+
+/* Custom Table Card */
+.custom-table-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: #636e72;
+    padding: 15px;
+}
+
+/* Stock Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.bg-danger { background-color: #ff7675 !important; color: white; }
+.bg-warning { background-color: #fab1a0 !important; color: #d35400; }
+.bg-success { background-color: #55efc4 !important; color: #00b894; }
+
+/* Action Buttons */
+.btn-edit-stock {
+    text-decoration: none;
+    color: #0984e3;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-edit-stock:hover {
+    color: #e91e63;
+}
+
+/* Stats Summary */
+.stat-card {
+    background: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid #dfe6e9;
+    font-size: 0.9rem;
+}
+
+.stat-card .value {
+    font-weight: 800;
+    margin-left: 5px;
+}
+/* Search & Filter Form Container */
+.search-filter-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    gap: 15px;
+    flex-wrap: wrap; /* Responsive for smaller screens */
+}
+
+/* Left Side: Search Input and Button */
+.filter-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 16px;
+    border: 1.5px solid #eee;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #e91e63;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+}
+
+/* Search Button Style */
+.search-filter-form button[type="submit"] {
+    background-color: #e91e63;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-filter-form button[type="submit"]:hover {
+    background-color: #c2185b;
+}
+
+/* Clear Button Link */
+.clear-btn {
+    color: #636e72;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.clear-btn:hover {
+    color: #e91e63;
+    background-color: rgba(233, 30, 99, 0.05);
+}
+
+/* Right Side: Select Dropdown */
+.filter-right {
+    min-width: 200px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1.5px solid #eee;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 0.9rem;
+    color: #2d3436;
+    cursor: pointer;
+    appearance: none; /* Removes default OS arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23636e72' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+    transition: border-color 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #e91e63;
+}
