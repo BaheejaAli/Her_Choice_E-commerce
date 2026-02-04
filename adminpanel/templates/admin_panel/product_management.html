@@ -3,15 +3,14 @@
 {% block title %}
   Product Management | Her Choice
 {% endblock title %}
-{% block page_title %}
-  Product Management
-{% endblock page_title %}
+
 {% block extra_css %}
   <link rel="stylesheet"
         href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
 {% endblock extra_css %}
 {% block content %}
   <div class="product-management-wrapper">
+    <h2 class="admin-title">Products </h2>
     {% if messages %}
       <div class="messages-container">
         {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}

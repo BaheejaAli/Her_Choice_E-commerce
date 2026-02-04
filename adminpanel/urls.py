@@ -9,7 +9,7 @@ from .views.categories import (
 from .views.products import (
     ProductListView,product_create, product_update, toggle_product_status, product_variant_add,product_variant_update,toggle_variant_status)
 from .views.orders import order_management,update_order_status, order_view_details, stock_management
-from .views.offers import offer_management, offer_create
+from .views.offers import offer_management, offer_create,search_products, search_category, offer_edit, toggle_offer_status, delete_offer
 
 urlpatterns = [
 
@@ -46,6 +46,11 @@ urlpatterns = [
 
     path("offers/",offer_management, name="offer_management"),
     path("offers/create",offer_create, name="offer_create"),
+    path("offers/search-products/", search_products, name="search_products"),
+    path("offers/search-categories/", search_category, name="search_category"),
+    path("offers/edit/<int:offer_id>",offer_edit, name="offer_edit"),
+    path('offers/toggle-status/<int:offer_id>',toggle_offer_status,name="toggle_offer_status"),
+    path('offers/delete-offer/<int:offer_id>',delete_offer,name="delete_offer"),
 
 
 ]

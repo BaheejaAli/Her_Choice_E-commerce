@@ -84,7 +84,7 @@ class ProductVariant(models.Model):
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     base_price = models.DecimalField(max_digits=8, decimal_places=2)
-    offer_price = models.DecimalField(
+    offerz_price = models.DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True
     )
 

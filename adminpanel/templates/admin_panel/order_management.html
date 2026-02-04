@@ -3,15 +3,14 @@
 {% block title %}
     Orders | Her Choice Admin
 {% endblock title %}
-{% block page_title %}
-    Orders
-{% endblock page_title %}
+
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_management.css' %}?v=1.2" />
+          href="{% static 'css/admin_panel/order_management.css' %}?v=1.3" />
 {% endblock extra_css %}
 {% block content %}
     <div class="orders-wrapper">
+        <h2 class="admin-title">Orders </h2>
         <!-- Search Bar -->
         <form method="get" class="search-section">
             <div class="search-row">

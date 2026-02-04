@@ -1,70 +1,94 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-    Create Offer | Her Choice
+    {% if is_edit %}
+        Edit Offer | Her Choice
+    {% else %}
+        Create Offer | Her Choice
+    {% endif %}
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
           href="{% static 'css/admin_panel/offer_create.css' %}?v=1.1">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+          rel="stylesheet" />
 {% endblock extra_css %}
 {% block content %}
     <div class="offer-management-container">
         <div class="header-section mb-4">
             <div>
-                <h4 class="fw-bold mb-1">Create New Offer</h4>
+                <h4 class="fw-bold mb-1">
+                    {% if is_edit %}
+                        Edit Offer
+                    {% else %}
+                        Create New Offer
+                    {% endif %}
+                </h4>
             </div>
             <a href="{% url 'offer_management' %}" class="back-btn">
                 <i class="fa-solid fa-arrow-left"></i> Back to List
             </a>
         </div>
         <div class="offer-form-wrapper section-card">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        {% if field.errors %}{{ field.label }}: {{ field.errors }}{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
             <form method="POST" class="p-4">
                 {% csrf_token %}
                 <div class="row g-4">
                     <div class="col-md-12">
                         <label class="custom-label">Offer Name</label>
-                        <input type="text"
-                               name="name"
-                               class="custom-input"
-                               placeholder="e.g., Seasonal Sale 2024"
-                               required>
+                        {{ form.name }}
+                        {{ form.name.errors }}
                     </div>
-                     <div class="col-md-4">
+                    <div class="col-md-4">
                         <label class="custom-label">Offer Type</label>
-                        <select name="target_type" class="custom-input custom-select">
-                            <option value="product">Product</option>
-                            <option value="category">Category</option>
-                        </select>
+                        {{ form.offer_type }}
+                        {{ form.offer_type.errors }}
                     </div>
                     <div class="col-md-4">
-                        <label class="custom-label">Discount Type</label>
-                        <select name="discount_type" class="custom-input custom-select">
-                            <option value="percentage">Percentage (%)</option>
-                            <option value="fixed">Fixed Amount (₹)</option>
-                        </select>
+                        <label class="custom-label">Discount (%)</label>
+                        {{ form.discount_percentage }}
+                        {{ form.discount_percentage.errors }}
                     </div>
-                    <div class="col-md-4">
-                        <label class="custom-label">Discount Value</label>
-                        <input type="number"
-                               name="discount_value"
-                               class="custom-input"
-                               placeholder="Value"
-                               required>
+                    <!-- Is Active -->
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check mt-4">
+                            {{ form.is_active }}
+                            <label class="form-check-label fw-semibold ms-1">Active</label>
+                        </div>
+                        {{ form.is_active.errors }}
                     </div>
-                   
+                    <!-- Product Multi Select -->
+                    <div class="col-md-6 d-none" id="product-field">
+                        <label class="custom-label">Select Product(s)</label>
+                        {{ form.product }}
+                        {{ form.product.errors }}
+                    </div>
+                    <!-- Category Multi Select -->
+                    <div class="col-md-6 d-none" id="category-field">
+                        <label class="custom-label">Select Category(s)</label>
+                        {{ form.category }}
+                        {{ form.category.errors }}
+                    </div>
                     <div class="col-md-6">
                         <label class="custom-label">Start Date</label>
-                        <input type="date" name="start_at" class="custom-input" required>
+                        {{ form.start_at }}
+                        {{ form.start_at.errors }}
                     </div>
                     <div class="col-md-6">
                         <label class="custom-label">End Date (Optional)</label>
-                        <input type="date" name="end_at" class="custom-input">
+                        {{ form.end_at }}
+                        {{ form.end_at.errors }}
                     </div>
                     <div class="col-12 mt-4 pt-4 border-top">
                         <div class="d-flex gap-3">
-                            <button type="submit" class="save-btn">
-                                <i class="fa-solid fa-check"></i> Save Offer
-                            </button>
+                            <button type="submit" class="save-btn">Save Offer</button>
                             <a href="{% url 'offer_management' %}" class="cancel-btn">Cancel</a>
                         </div>
                     </div>
@@ -73,3 +97,102 @@
         </div>
     </div>
 {% endblock content %}
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+$(document).ready(function () {
+
+    const offerType = document.getElementById("id_offer_type");
+    const productField = document.getElementById("product-field");
+    const categoryField = document.getElementById("category-field");
+
+    const isEdit = {{ is_edit|default:"false"|yesno:"true,false" }};
+
+    /* =======================
+       TOGGLE TARGET FIELDS
+    ======================== */
+    function toggleTargetFields() {
+        const value = offerType.value;
+
+        productField.classList.add("d-none");
+        categoryField.classList.add("d-none");
+
+        // ❗ Clear selections ONLY in create mode
+        if (!isEdit) {
+            $('#id_product').val(null).trigger('change');
+            $('#id_category').val(null).trigger('change');
+        }
+
+        if (value === "product") {
+            productField.classList.remove("d-none");
+        } 
+        else if (value === "category") {
+            categoryField.classList.remove("d-none");
+        }
+    }
+
+    offerType.addEventListener("change", toggleTargetFields);
+
+    /* =======================
+       SELECT2 INITIALIZATION
+    ======================== */
+    $('#id_product').select2({
+        placeholder: "Type product name...",
+        minimumInputLength: 2,
+        width: '100%',
+        ajax: {
+            url: "{% url 'search_products' %}",
+            dataType: 'json',
+            delay: 250,
+            data: params => ({ q: params.term }),
+            processResults: data => ({ results: data.results })
+        }
+    });
+
+    $('#id_category').select2({
+        placeholder: "Type category name...",
+        minimumInputLength: 2,
+        width: '100%',
+        ajax: {
+            url: "{% url 'search_category' %}",
+            dataType: 'json',
+            delay: 250,
+            data: params => ({ q: params.term }),
+            processResults: data => ({ results: data.results })
+        }
+    });
+
+    /* =======================
+       PRELOAD SELECTED VALUES (EDIT MODE)
+    ======================== */
+    {% if is_edit %}
+        const offerTypeValue = "{{ offer.offer_type }}";
+
+        if (offerTypeValue === "product") {
+            productField.classList.remove("d-none");
+
+            const selectedProducts = {{ selected_products|safe }};
+            selectedProducts.forEach(item => {
+                const option = new Option(item.name, item.id, true, true);
+                $('#id_product').append(option);
+            });
+            $('#id_product').trigger('change');
+        }
+
+        if (offerTypeValue === "category") {
+            categoryField.classList.remove("d-none");
+
+            const selectedCategories = {{ selected_categories|safe }};
+            selectedCategories.forEach(item => {
+                const option = new Option(item.name, item.id, true, true);
+                $('#id_category').append(option);
+            });
+            $('#id_category').trigger('change');
+        }
+    {% endif %}
+
+    // Run once after everything is ready
+    toggleTargetFields();
+});
+    </script>
+{% endblock extra_js %}

@@ -3,15 +3,14 @@
 {% block title %}
   Brand Management | Her Choice
 {% endblock title %}
-{% block page_title %}
-  Brand Management
-{% endblock page_title %}
+
 {% block extra_css %}
   <link rel="stylesheet"
         href="{% static 'css/admin_panel/brand_management.css' %}" />
 {% endblock extra_css %}
 {% block content %}
   <div class="brand-management-wrapper">
+    <h2 class="admin-title">Brands </h2>
     {% if messages %}
       <div class="messages-container">
         {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}

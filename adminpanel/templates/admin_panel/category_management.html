@@ -3,15 +3,14 @@
 {% block title %}
   Category Management | Her Choice
 {% endblock title %}
-{% block page_title %}
-  Category Management
-{% endblock page_title %}
+
 {% block extra_css %}
   <link rel="stylesheet"
         href="{% static 'css/admin_panel/category_management.css' %}?v=1.4">
 {% endblock extra_css %}
 {% block content %}
   <div class="category-management-wrapper">
+    <h2 class="admin-title">Categories </h2>
     {% if messages %}
       <div class="messages-container">
         {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
