@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 class UserManager(BaseUserManager):
     # Custom user manager for the CustomUser model.
    
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, password=None, referred_by_code=None,**extra_fields):
         if not email:
             raise ValueError("User must have an email")
 
@@ -22,7 +22,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_active", True) 
         extra_fields.setdefault("is_verified", True)
 
-        # Raise an error if flags are not True
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
@@ -44,19 +43,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, blank=True, null=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     
-
-    # Permission/Status Flags
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)    
     is_staff = models.BooleanField(default=False) 
 
-    # Timestamps
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # Manager assignment and required settings
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]
 
@@ -68,6 +63,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+  
     
 
 
