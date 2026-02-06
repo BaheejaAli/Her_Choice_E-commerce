@@ -11,16 +11,6 @@
 {% endblock %}
 
 {% block content %}
-  {% if messages %}
-    <div class="messages-container">
-      {% for message in messages %}
-        <div class="message-item {{ message.tags }}">
-          {{ message|striptags }}
-          <span onclick="this.parentElement.remove()">×</span>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
 
   <!-- HERO -->
   <section class="hero-section">
@@ -60,28 +50,4 @@
       {% endfor %}
     </div>
   </section>
-{% endblock %}
-
-{% block extra_js %}
-  <script>
-    // Wait for the DOM to load
-    document.addEventListener('DOMContentLoaded', function () {
-      // Select all message items
-      const messages = document.querySelectorAll('.message-item')
-    
-      messages.forEach(function (message) {
-        // Set a timeout to remove the message after 4 seconds (4000ms)
-        setTimeout(function () {
-          // Add a smooth fade-out effect via JS
-          message.style.transition = 'opacity 0.5s ease'
-          message.style.opacity = '0'
-    
-          // Remove from DOM after transition ends
-          setTimeout(function () {
-            message.remove()
-          }, 500)
-        }, 4000)
-      })
-    })
-  </script>
 {% endblock %}

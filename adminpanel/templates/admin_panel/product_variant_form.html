@@ -80,16 +80,16 @@
           {% if form.base_price.errors %}<span class="error-message">{{ form.base_price.errors.0 }}</span>{% endif %}
         </div>
         <div class="form-group">
-          <label for="id_offer_price">Offer Price</label>
-          {{ form.offer_price }}
-          {% if form.offer_price.errors %}<span class="error-message">{{ form.offer_price.errors.0 }}</span>{% endif %}
+          <label for="id_sales_price">Sales Price</label>
+          {{ form.sales_price }}
+          {% if form.sales_price.errors %}<span class="error-message">{{ form.sales_price.errors.0 }}</span>{% endif %}
         </div>
       </div>
 
       <!-- Price Preview -->
       <div class="price-preview">
         <div class="price-preview-item"><span>Base Price:</span> <span id="pricePreview">₹0.00</span></div>
-        <div class="price-preview-item"><span>Offer Price:</span> <span id="offerPricePreview">-</span></div>
+        <div class="price-preview-item"><span>sales Price:</span> <span id="salesPricePreview">-</span></div>
         <div class="price-preview-item"><span>Discount:</span> <span id="discountPreview">0%</span></div>
         <div class="price-preview-item"><span>Final Price:</span> <span id="effectivePricePreview">₹0.00</span></div>
       </div>
@@ -177,15 +177,15 @@
      ===================================================== */
   function updatePricePreview() {
     const price = parseFloat(document.getElementById("id_base_price").value) || 0;
-    const offerPrice = parseFloat(document.getElementById("id_offer_price").value) || 0;
+    const salesPrice = parseFloat(document.getElementById("id_sales_price").value) || 0;
     document.getElementById("pricePreview").textContent = "₹" + price.toFixed(2);
-    if (offerPrice > 0 && offerPrice < price) {
-      const discount = (((price - offerPrice) / price) * 100).toFixed(0);
-      document.getElementById("offerPricePreview").textContent = "₹" + offerPrice.toFixed(2);
+    if (salesPrice > 0 && salesPrice < price) {
+      const discount = (((price - salesPrice) / price) * 100).toFixed(0);
+      document.getElementById("salesPricePreview").textContent = "₹" + salesPrice.toFixed(2);
       document.getElementById("discountPreview").textContent = discount + "%";
-      document.getElementById("effectivePricePreview").textContent = "₹" + offerPrice.toFixed(2);
+      document.getElementById("effectivePricePreview").textContent = "₹" + salesPrice.toFixed(2);
     } else {
-      document.getElementById("offerPricePreview").textContent = "-";
+      document.getElementById("salesPricePreview").textContent = "-";
       document.getElementById("discountPreview").textContent = "0%";
       document.getElementById("effectivePricePreview").textContent = "₹" + price.toFixed(2);
     }
@@ -193,7 +193,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("id_base_price")?.addEventListener("input", updatePricePreview);
-    document.getElementById("id_offer_price")?.addEventListener("input", updatePricePreview);
+    document.getElementById("id_sales_price")?.addEventListener("input", updatePricePreview);
     updatePricePreview();
   });
 

@@ -1,190 +1,175 @@
-  {% load static %}
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <title>
-        {% block title %}
-          Her Choice
-        {% endblock %}
-      </title>
-
-      <link rel="stylesheet" href="{% static 'css/user_section/base.css' %}?v=1.1" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-      {% block extra_css %}
-      {% endblock %}
-    </head>
-
-
-
-    <body>
-    
-      <!-- ====================== NAVBAR ====================== -->
-      <header class="header">
-        <nav class="nav-container">
-          <!-- Logo -->
-          <div class="logo">
-            <a href="/">Her Choice</a>
-          </div>
-
-          <!-- Menu -->
-          <ul class="menu">
-            <li>
-              <a href="/">Home</a>
-            </li>
-            <li>
-              <a href="{% url 'product_listing' %}">Shop</a>
-            </li>
-            <li>
-              <a href="{% url "about" %}">About</a>
-            </li>
-            <li>
-              <a href="{% url "contact" %}">Contact</a>
-            </li>
-          </ul>
-
-          <!-- Search box -->
-<div class="nav-search">
-  <form action="{% url 'product_listing' %}" method="GET" class="nav-search-form">
-    <div class="search-row">
-      <div class="search-box">
-        <input type="text" name="search" placeholder="Search for products..." value="{{ search_query|default:'' }}" />
-        <button type="submit" class="btn-search">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-
-      {% if search_query %}
-        <a href="{% url 'product_listing' %}" class="btn-clear-outside" title="Clear Search">
-          <i class="fa-solid fa-xmark"></i>
-        </a>
-      {% endif %}
-    </div>
-  </form>
-</div>
-
-          <!-- Icons + Auth -->
-          <div class="icons">
-            {% if user.is_authenticated %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>
+      {% block title %}Her Choice{% endblock %}
+    </title>
+    <link rel="stylesheet"
+          href="{% static 'css/user_section/base.css' %}" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- ====================== NAVBAR ====================== -->
+    <header class="header">
+      <nav class="nav-container">
+        <!-- Logo -->
+        <div class="logo">
+          <a href="/">Her Choice</a>
+        </div>
+        <!-- Menu -->
+        <ul class="menu">
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href="{% url 'product_listing' %}">Shop</a>
+          </li>
+          <li>
+            <a href="{% url "about" %}">About</a>
+          </li>
+          <li>
+            <a href="{% url "contact" %}">Contact</a>
+          </li>
+        </ul>
+        <!-- Search box -->
+        <div class="nav-search">
+          <form action="{% url 'product_listing' %}"
+                method="GET"
+                class="nav-search-form">
+            <div class="search-row">
+              <div class="search-box">
+                <input type="text"
+                       name="search"
+                       placeholder="Search for products..."
+                       value="{{ search_query|default:'' }}" />
+                <button type="submit" class="btn-search">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+              {% if search_query %}
+                <a href="{% url 'product_listing' %}"
+                   class="btn-clear-outside"
+                   title="Clear Search">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+        <!-- Icons + Auth -->
+        <div class="icons">
+          {% if user.is_authenticated %}
             <a href="{% url 'profile_info' %}" class="btn-profile">
               <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
-
-              <form action="{% url 'user_logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Logout</button>
-              </form>
-            {% else %}
-              <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
-            {% endif %}
-
-            <a href="{% url "wishlist_view" %}" class="icon-btn" title="Wishlist">
-              <i class="fa-regular fa-heart"></i>
-            </a>
-            
-            <a href="{% url "cart" %}" class="icon-btn" title="Cart"><i class="fa-solid fa-cart-shopping"></i></a>
-          </div>
-        </nav>
-      </header>
- 
-      <!-- ====================== CONTENT ====================== -->
-      <main>
-         {% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible">
-                <span class="message-text">{{ message }}</span>
-                <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
-            </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-        {% block content %}
-
-        {% endblock %}
-      </main>
-
-      <!-- ====================== FOOTER ====================== -->
-    
-      <footer class="footer">
-        <div class="footer-top">
-          <!-- Column 1: Brand -->
-          <div class="footer-col">
-            <h3 class="footer-logo">Her Choice</h3>
-            <p class="footer-text">Discover curated apparel loved by every woman with our certified customer service.</p>
-          </div>
-
-          <!-- Column 2: Shop -->
-          <div class="footer-col">
-            <h4>Shop</h4>
-            <ul>
-              <li>
-                <a href="#">All Products</a>
-              </li>
-              <li>
-                <a href="#">New Arrivals</a>
-              </li>
-              <li>
-                <a href="#">Best Sellers</a>
-              </li>
-              <li>
-                <a href="#">Accessories</a>
-              </li>
-              <li>
-                <a href="#">Sale</a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Column 3: Customer Service -->
-          <div class="footer-col">
-            <h4>Customer Service</h4>
-            <ul>
-              <li>
-                <a href="#">Contact Us</a>
-              </li>
-              <li>
-                <a href="#">Shipping & Returns</a>
-              </li>
-              <li>
-                <a href="#">Gift Cards</a>
-              </li>
-              <li>
-                <a href="#">Track Order</a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Column 4: Newsletter -->
-          <div class="footer-col">
-            <h4>Newsletter</h4>
-            <p>Subscribe to get special offers & insider info</p>
-            <form class="newsletter-form">
-              <input type="email" placeholder="Your email" required />
-              <button type="submit">Subscribe</button>
+            <form action="{% url 'user_logout' %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="logout-btn">Logout</button>
             </form>
-          </div>
+          {% else %}
+            <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
+          {% endif %}
+          <a href="{% url "wishlist_view" %}" class="icon-btn" title="Wishlist">
+            <i class="fa-regular fa-heart"></i>
+          </a>
+          <a href="{% url "cart" %}" class="icon-btn" title="Cart"><i class="fa-solid fa-cart-shopping"></i></a>
         </div>
-
-        <hr />
-
-        <div class="footer-bottom">
-          <p>© 2025 Her Choice. All rights reserved.</p>
-
-          <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Settings</a>
-          </div>
+      </nav>
+    </header>
+    <!-- ====================== CONTENT ====================== -->
+    <main>
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <!-- ====================== FOOTER ====================== -->
+    <footer class="footer">
+      <div class="footer-top">
+        <!-- Column 1: Brand -->
+        <div class="footer-col">
+          <h3 class="footer-logo">Her Choice</h3>
+          <p class="footer-text">Discover curated apparel loved by every woman with our certified customer service.</p>
         </div>
-      </footer>
-
-
-      {% block extra_js %}
-      {% endblock %}
-    </body>
-  </html>
-
-  
+        <!-- Column 2: Shop -->
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <ul>
+            <li>
+              <a href="#">All Products</a>
+            </li>
+            <li>
+              <a href="#">New Arrivals</a>
+            </li>
+            <li>
+              <a href="#">Best Sellers</a>
+            </li>
+            <li>
+              <a href="#">Accessories</a>
+            </li>
+            <li>
+              <a href="#">Sale</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Column 3: Customer Service -->
+        <div class="footer-col">
+          <h4>Customer Service</h4>
+          <ul>
+            <li>
+              <a href="#">Contact Us</a>
+            </li>
+            <li>
+              <a href="#">Shipping & Returns</a>
+            </li>
+            <li>
+              <a href="#">Gift Cards</a>
+            </li>
+            <li>
+              <a href="#">Track Order</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Column 4: Newsletter -->
+        <div class="footer-col">
+          <h4>Newsletter</h4>
+          <p>Subscribe to get special offers & insider info</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your email" required />
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <hr />
+      <div class="footer-bottom">
+        <p>© 2025 Her Choice. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Settings</a>
+        </div>
+      </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+    </script>
+    {% block extra_js %}
+    {% endblock %}
+  </body>
+</html>

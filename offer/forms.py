@@ -26,8 +26,6 @@ class OfferForm(forms.ModelForm):
         offer_type = cleaned_data.get('offer_type')
         product = cleaned_data.get('product')
         category = cleaned_data.get('category')
-        start_at = cleaned_data.get('start_at')
-        end_at = cleaned_data.get('end_at')
 
         if offer_type == 'product':
             if not product or not product.exists():

@@ -1,15 +1,10 @@
 {% load static %}
 
-{% with v=variant|default:product.variants.first %}
+{% with v=product.display_variant %}
 <div class="product-card">
-
   <div class="product-img-container">
     <a href="{% url 'product_detail' product.slug %}">
-      {% if v and v.images.first %}
-        <img src="{{ v.images.first.image.url }}"
-             alt="{{ product.name }}"
-             class="product-image">
-      {% elif product.display_image %}
+      {% if product.display_image %}
         <img src="{{ product.display_image.url }}"
              alt="{{ product.name }}"
              class="product-image">
@@ -17,6 +12,12 @@
         <div class="no-image-box">No Image</div>
       {% endif %}
     </a>
+    
+    {% if v and v.discount_percentage > 0 %}
+      <div class="discount-badge-overlay">
+        {{ v.discount_percentage }}% OFF
+      </div>
+    {% endif %}
   </div>
 
   <div class="product-info">
@@ -28,11 +29,14 @@
     </p>
 
     <div class="price">
-      {% if v and v.offer_price %}
-        <span class="offer-price">₹{{ v.offer_price }}</span>
-        <del class="old-price">₹{{ v.base_price }}</del>
-      {% elif v %}
-        <span class="regular-price">₹{{ v.base_price }}</span>
+      {% if v %}
+        <span class="sales-price">₹{{ v.final_price }}</span>
+        
+        {% if v.discount_percentage > 0 %}
+          <del class="old-price" style="color: #999; font-size: 0.9em; margin-left: 5px;">
+             ₹{{ v.base_price }}
+          </del>
+        {% endif %}
       {% endif %}
     </div>
 
@@ -47,10 +51,6 @@
                     onclick="addToWishlist({{ v.id }})">
               <i class="far fa-heart"></i>
             </button>
-
-          {% comment %} <a href="{% url 'checkout' %}?variant_id={{ v.id }}&qty=1" class="btn-buy">
-            Buy Now
-          </a> {% endcomment %}
         </div>
       {% else %}
         <div class="status-tag out-of-stock">

@@ -88,7 +88,7 @@ class ProductVariantForm(forms.ModelForm):
             "size",
             "color",
             "base_price",
-            "offer_price",
+            "sales_price",
             "stock",
         ]
         widgets = {
@@ -97,7 +97,7 @@ class ProductVariantForm(forms.ModelForm):
             "base_price": forms.NumberInput(
                 attrs={"class": "form-input-field", "min": 0}
             ),
-            "offer_price": forms.NumberInput(
+            "sales_price": forms.NumberInput(
                 attrs={"class": "form-input-field", "min": 0}
             ),
             "stock": forms.NumberInput(
@@ -123,16 +123,16 @@ class ProductVariantForm(forms.ModelForm):
             )
         return base_price
 
-    def clean_offer_price(self):
-        offer_price = self.cleaned_data.get("offer_price")
+    def clean_sales_price(self):
+        sales_price = self.cleaned_data.get("sales_price")
         base_price = self.cleaned_data.get("base_price")
 
-        if offer_price is not None and base_price is not None:
-            if offer_price >= base_price:
+        if sales_price is not None and base_price is not None:
+            if sales_price >= base_price:
                 raise forms.ValidationError(
-                    "Offer price must be less than base price."
+                    "sales price must be less than base price."
                 )
-        return offer_price
+        return sales_price
 
     def clean_stock(self):
         stock = self.cleaned_data.get("stock")

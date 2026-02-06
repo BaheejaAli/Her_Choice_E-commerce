@@ -19,24 +19,7 @@ from accounts.models import CustomUser
 from .models import Wishlist, WishlistItem
 from django.db import transaction
 from .models import UserAddress
-
-#  only one image
-# def attach_display_image(products):
-#     for product in products:
-#         product.display_image = None
-
-#         variant = product.variants.filter(is_active=True).first()
-#         if not variant:
-#             continue
-
-#         image = variant.images.filter(is_primary=True).first()
-#         if image:
-#             product.display_image = image.image
-
-# ONLY ONE active variant
-# def attach_display_variant(products):
-#     for product in products:
-#         product.display_variant = product.variants.filter(is_active=True).first()
+from products.utils import prepare_products_for_display
 
 
 def homepage(request):
@@ -60,15 +43,9 @@ def homepage(request):
         .prefetch_related("variants__images")
         .order_by("?")[:8]
     )
-
-#     attach_display_image(new_arrivals)
-#     attach_display_image(featured_products)
-#     attach_display_image(trending_products)
-
-#     attach_display_variant(new_arrivals)
-#     attach_display_variant(featured_products)
-#     attach_display_variant(trending_products)
-
+    prepare_products_for_display(new_arrivals)
+    prepare_products_for_display(featured_products)
+    prepare_products_for_display(trending_products)
 
     return render(
         request,
@@ -79,7 +56,6 @@ def homepage(request):
             "trending_products": trending_products,
         }
     )
-
    
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"

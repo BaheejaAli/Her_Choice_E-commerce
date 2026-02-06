@@ -2,12 +2,8 @@ from django.db import models
 from brandsandcategories.models import Brand, Category
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile
-from io import BytesIO
 from django.core.validators import FileExtensionValidator
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
-import cloudinary.uploader
+from offer.utils import get_best_offer
 
 # Create your models here.
 
@@ -18,8 +14,8 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
     description = models.TextField(max_length=250,blank=True,null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL,blank=True,null=True, related_name="products")
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL,blank=True,null=True, related_name="products")
     material = models.CharField(max_length=100,blank=True,null=True)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
@@ -60,6 +56,7 @@ class Product(models.Model):
 # =========================
 class Size(models.Model):
     name = models.CharField(max_length=10, unique=True)
+
     def __str__(self):
         return self.name
 
@@ -80,11 +77,11 @@ class Color(models.Model):
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="variants")
 
-    size = models.ForeignKey(Size, on_delete=models.CASCADE,null=True, blank=True)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL,null=True, blank=True)
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL,null=True, blank=True)
 
     base_price = models.DecimalField(max_digits=8, decimal_places=2)
-    offerz_price = models.DecimalField(
+    sales_price = models.DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True
     )
 
@@ -108,24 +105,6 @@ class ProductVariant(models.Model):
     # ---------- Derived values ----------
 
     @property
-    def final_price(self):
-        return self.offer_price if self.offer_price else self.base_price
-
-    @property
-    def discount_percentage(self):
-        if self.offer_price and self.base_price > self.offer_price:
-            discount = ((self.base_price - self.offer_price) /
-                        self.base_price) * 100
-            return int(discount)
-        return 0
-    
-    @property
-    def discount_value(self):
-        if self.offer_price and self.base_price > self.offer_price:
-            return self.base_price - self.offer_price
-        return 0
-    
-    @property
     def primary_image(self):
         return self.images.filter(is_primary=True).first()
 
@@ -136,8 +115,8 @@ class ProductVariant(models.Model):
         if self.base_price <= 0:
             errors['base_price'] = "Base price must be greater than zero."
 
-        if self.offer_price and self.offer_price >= self.base_price:
-            errors['offer_price'] = "Offer price must be less than base price."
+        if self.sales_price and self.sales_price >= self.base_price:
+            errors['sales_price'] = "Offer price must be less than base price."
 
         if errors:
             raise ValidationError(errors)

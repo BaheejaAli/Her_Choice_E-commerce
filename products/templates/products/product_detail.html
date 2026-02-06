@@ -1,30 +1,31 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/products/product_detail.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}" />
-
+  <link rel="stylesheet"
+        href="{% static 'css/products/product_detail.css' %}">
+  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}">
 {% endblock %}
 {% block content %}
   <div class="product-detail-wrapper">
+    <!-- Breadcrumb -->
     <nav class="breadcrumb-nav">
-      <a href="{% url 'user_homepage' %}">Home</a> <i class="fas fa-chevron-right"></i>
-      <a href="{% url 'product_listing' %}">Shop</a> <i class="fas fa-chevron-right"></i>
-      <span class="current">{{ product.category.name }}</span> <i class="fas fa-chevron-right"></i>
-      <span class="current">{{ product.name }}</span>
+      <a href="{% url 'user_homepage' %}">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="{% url 'product_listing' %}">Shop</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>{{ product.category.name }}</span>
+      <i class="fas fa-chevron-right"></i>
+      <span>{{ product.name }}</span>
     </nav>
     <div class="product-main-row">
+      <!-- LEFT : IMAGES -->
       <div class="product-image-section">
         <div class="main-img-container" id="zoom-container">
-          {% with first_image=selected_variant.images.all|first %}
-            {% if first_image %}
-              <img src="{{ first_image.image.url }}"
-                   id="product-img"
-                   alt="{{ product.name }}" />
+          {% with img=selected_variant.images.all|first %}
+            {% if img %}
+              <img src="{{ img.image.url }}" id="product-img" alt="{{ product.name }}">
             {% else %}
-              <img src="{% static 'images/placeholder.png' %}"
-                   id="product-img"
-                   alt="No image" />
+              <img src="{% static 'images/placeholder.png' %}" id="product-img">
             {% endif %}
           {% endwith %}
         </div>
@@ -32,80 +33,82 @@
           {% for image in selected_variant.images.all %}
             <div class="thumb-wrapper {% if forloop.first %}active{% endif %}"
                  onclick="changeImage(this, '{{ image.image.url }}')">
-              <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail" />
+              <img src="{{ image.image.url }}">
             </div>
           {% endfor %}
         </div>
       </div>
+      <!-- RIGHT : DETAILS -->
       <div class="product-info-section">
-        <div class="product-header">
-          <p class="brand-name">Brand: {{ product.brand.name }}</p>
-          <h1 class="product-title">{{ product.name }}</h1>
-          <div class="variant-preview-section">
-            <h4>Other Variants</h4>
-            <div class="variant-preview-list">
-              {% for v in color_variants %}
-                {% with img=v.images.all|first %}
-                  {% if img %}
-                    <a href="?variant={{ v.id }}"
-                       class="variant-preview {% if selected_variant.id == v.id %}active{% endif %}"
-                       title="{{ v.color.name }}">
-                      <img src="{{ img.image.url }}" alt="{{ v.color.name }}" />
-                    </a>
-                  {% endif %}
-                {% endwith %}
+        <p class="brand-name">Brand: {{ product.brand.name }}</p>
+        <h1 class="product-title">{{ product.name }}</h1>
+        <!-- Color Variants -->
+        <div class="variant-preview-section">
+          <h4>Other Colors</h4>
+          <div class="variant-preview-list">
+            {% for v in color_variants %}
+              {% with img=v.images.all|first %}
+                {% if img %}
+                  <a href="{% url 'product_detail_variant' product.slug v.sku %}"
+                     class="variant-preview {% if v.id == selected_variant.id %}active{% endif %}">
+                    <img src="{{ img.image.url }}">
+                  </a>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Size Variants -->
+        {% if sizes %}
+          <div class="size-section">
+            <h4>Size</h4>
+            <div class="size-options">
+              {% for v in variants %}
+                {% if v.color_id == selected_variant.color_id %}
+                  <a href="{% url 'product_detail_variant' product.slug v.sku %}"
+                     class="size-btn {% if v.id == selected_variant.id %}selected{% endif %}">{{ v.size.name }}</a>
+                {% endif %}
               {% endfor %}
             </div>
           </div>
-          {% if sizes %}
-            <div class="size-section">
-              <h4>Size</h4>
-              <div class="size-options">
-                {% for v in variants %}
-                  {% if v.color_id == selected_variant.color_id %}
-                    <button class="size-btn {% if selected_variant.id == v.id %}selected{% endif %}"
-                            onclick="changeVariant({{ v.id }}, this)">{{ v.size.name }}</button>
-                  {% endif %}
-                {% endfor %}
-              </div>
-            </div>
-          {% endif %}
-        </div>
+        {% endif %}
+        <!-- Rating (static placeholder) -->
         <div class="rating-container">
           <span class="rating-value">4.2 <i class="fas fa-star"></i></span>
           <span class="rating-separator">|</span>
           <span class="review-count">124 Reviews</span>
         </div>
-        <hr class="divider" />
+        <hr class="divider">
+        <!-- PRICE -->
         <div class="price-container">
-          <span class="current-price">₹{{ selected_variant.offer_price|default:selected_variant.base_price }}</span>
-          {% if selected_variant.offer_price %}
+          <span class="current-price">₹{{ selected_variant.final_price|default:selected_variant.base_price }}</span>
+          {% if selected_variant.discount_percentage > 0 %}
             <span class="mrp">MRP ₹{{ selected_variant.base_price }}</span>
             <span class="discount-percent">({{ selected_variant.discount_percentage }}% OFF)</span>
           {% endif %}
         </div>
         <p class="tax-info">Inclusive of all taxes</p>
+        <!-- STOCK -->
         <div class="stock-status">
           {% if selected_variant.stock <= 0 %}
             <span class="out-of-stock-msg">Out of Stock</span>
-            {% comment %} <p class="error-text">This product is currently unavailable.</p> {% endcomment %}
           {% elif selected_variant.stock < 10 %}
             <span class="low-stock-msg">Only {{ selected_variant.stock }} left!</span>
           {% else %}
             <span class="in-stock-msg">In Stock</span>
           {% endif %}
         </div>
+        <!-- ACTION BUTTONS -->
         <div class="action-btns">
           {% if selected_variant.is_active and selected_variant.stock > 0 %}
             <form class="add-to-cart-form">
               {% csrf_token %}
-              <input type="hidden" name="variant_id" value="{{ selected_variant.id }}" />
+              <input type="hidden" name="variant_id" value="{{ selected_variant.id }}">
               <button type="button" class="btn-add-cart" onclick="addToCart(this)">
                 <i class="fas fa-shopping-bag"></i> Add to Cart
               </button>
             </form>
-            <button type="button"
-                    class="btn-wishlist"
+            <button class="btn-wishlist"
                     onclick="addToWishlist({{ selected_variant.id }})">
               <i class="far fa-heart"></i>
             </button>
@@ -113,166 +116,59 @@
             <button class="btn-disabled" disabled>OUT OF STOCK</button>
           {% endif %}
         </div>
-        <hr class="divider" />
+        <hr class="divider">
+        <!-- DESCRIPTION -->
         <div class="product-details-container">
-          <div class="product-description">
-            <h4>PRODUCT DETAILS</h4>
-            <p>{{ product.description }}</p>
-          </div>
-          <div class="section mt-4">
-            <h4 class="section-title">Specifications</h4>
-            <div class="specs-grid">
-              <div class="spec-item">
-                <span class="spec-label">Category:</span>
-                <span class="spec-value">{{ product.category.name }}</span>
-              </div>
-              <div class="spec-item">
-                <span class="spec-label">Brand:</span>
-                <span class="spec-value">{{ product.brand.name }}</span>
-              </div>
-              <div class="spec-item">
-                <span class="spec-label">Stock Status:</span>
-                <span class="spec-value">
-                  {% if product.stock > 0 %}
-                    In Stock ({{ product.stock }} units)
-                  {% else %}
-                    Out of Stock
-                  {% endif %}
-                </span>
-              </div>
-            </div>
-          </div>
+          <h4>Product Details</h4>
+          <p>{{ product.description }}</p>
         </div>
       </div>
     </div>
   </div>
+  <!-- RELATED PRODUCTS -->
   {% if related_products %}
     <section class="related-products-section">
-      <h3 class="related-title">Featured items you may like</h3>
+      <h3 class="related-title">You may also like</h3>
       <div class="related-grid">
         {% for product in related_products %}
-          {% include "products/product_card.html" %} 
+          {% include "products/product_card.html" %}
         {% endfor %}
       </div>
     </section>
   {% endif %}
 {% endblock %}
+
 {% block extra_js %}
-  <script>
-  function getCSRFToken() {
+<script>
+function getCSRFToken() {
   return document.querySelector('[name=csrfmiddlewaretoken]').value;
 }
 
-  function changeImage(element, imageUrl) {
-    const mainImg = document.getElementById('product-img')
-    document.querySelectorAll('.thumb-wrapper').forEach((thumb) => {
-      thumb.classList.remove('active')
-    })
-    element.classList.add('active')
-    mainImg.src = imageUrl
-  }
+function addToCart(button) {
+  const form = button.closest("form");
+  const formData = new FormData(form);
 
-  function changeVariant(variantId, btn) {
-
-    // ✅ 1. Update URL (NO reload)
-    const newUrl = window.location.pathname + "?variant=" + variantId
-    window.history.pushState({}, "", newUrl)
-
-    // ✅ 2. Fetch variant data
-    fetch("{% url 'variant_detail_api' %}?variant_id=" + variantId)
-      .then(res => res.json())
-      .then(data => {
-
-        if (data.error) {
-          alert(data.error)
-          return
-        }
-
-        // ✅ Update price
-        document.querySelector(".current-price").innerText =
-          "₹" + data.price
-
-        // ✅ Update stock
-        const stockBox = document.querySelector(".stock-status")
-        stockBox.innerHTML =
-          data.stock <= 0
-            ? "<span class='out-of-stock-msg'>SOLD OUT</span>"
-            : "<span class='in-stock-msg'>In Stock</span>"
-
-        // ✅ Update image
-        if (data.images.length > 0) {
-          document.getElementById("product-img").src = data.images[0]
-        }
-
-        // ✅ Update cart variant id
-        document.querySelector("input[name='variant_id']").value =
-          data.variant_id
-
-        // ✅ Highlight selected size
-        document.querySelectorAll(".size-btn").forEach(b =>
-          b.classList.remove("selected")
-        )
-        btn.classList.add("selected")
-      })
-  }
-
-  
-  // IMAGE ZOOM
-  const zoomContainer = document.getElementById('zoom-container')
-  const productImg = document.getElementById('product-img')
-
-  if (zoomContainer && productImg) {
-    zoomContainer.addEventListener('mousemove', function (e) {
-      const rect = zoomContainer.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-
-      productImg.style.transformOrigin = `${x}px ${y}px`
-      productImg.style.transform = 'scale(2)'
-    })
-
-    zoomContainer.addEventListener('mouseleave', function () {
-      productImg.style.transform = 'scale(1)'
-    })
-  }
-
-
-
-  function addToCart(button) {
-    const form = button.closest('form')
-    const formData = new FormData(form)
-
-    fetch("{% url 'add_to_cart' %}", {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRFToken': getCSRFToken(),
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .then(res => res.json())
-    .then(data => alert(data.message))
-    .catch(() => alert("Something went wrong"))
-  }
-
-  function addToWishlist(variantId) {
-  fetch("{% url 'add_to_wishlist' %}", {
+  fetch("{% url 'add_to_cart' %}", {
     method: "POST",
+    body: formData,
     headers: {
       "X-CSRFToken": getCSRFToken(),
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: `variant_id=${variantId}`
+      "X-Requested-With": "XMLHttpRequest"
+    }
   })
-  .then(res => res.json())
+  .then(response => response.json())
   .then(data => {
-    alert(data.message)
-
-    {% comment %} if (data.status === "success") {
-     document.querySelector(".btn-wishlist i").classList.replace("far","fas")
-} {% endcomment %}
+    if (data.success) {
+      alert("✅ Added to cart");
+    } else {
+      alert(data.message || "Something went wrong");
+    }
   })
-  .catch(() => alert("Wishlist error"))
+  .catch(error => {
+    console.error(error);
+    alert("Server error");
+  });
 }
-  </script>
+</script>
+
 {% endblock %}

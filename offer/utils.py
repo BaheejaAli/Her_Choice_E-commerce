@@ -8,8 +8,8 @@ def get_best_offer(product):
         offer_type='product',
         product=product,
         is_active=True,
-        start_at_lte=now   
-    ).exclude(end_at_lt=now)
+        start_at__lte=now   
+    ).exclude(end_at__lt=now)
 
     category_offers = Offer.objects.filter(
         offer_type='category',
