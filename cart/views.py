@@ -14,7 +14,6 @@ from orders.models import Order,OrderItem
 def add_to_cart(request):
     try:
         variant_id = request.POST.get("variant_id")
-        # quantity = int(request.POST.get("quantity",1))
 
         if not variant_id:
             return JsonResponse({
@@ -83,6 +82,7 @@ def cart(request):
         "variant__color",
         "variant__size"
     ) if cart else []
+
     
     context = {
         "cart": cart,
@@ -131,7 +131,6 @@ def update_cart_quantity(request):
             "status": "error",
             "message": "Invalid action"
         }, status=400)
-
 
     return JsonResponse({
         "status": "success",
@@ -215,13 +214,22 @@ def checkout(request):
             item.quantity = variant.stock
             item.save(update_fields=["quantity"])
 
-        total_mrp += variant.base_price * item.quantity
-        total_discount += variant.discount_value * item.quantity
-        subtotal += variant.final_price * item.quantity
+        pricing = variant.get_pricing_data()
+        final_price = pricing["final_price"]
 
-    delivery_charge = 40 if subtotal > 0 else 0
-    tax = 0           
-    grand_total = subtotal + delivery_charge 
+        total_mrp += variant.base_price * item.quantity
+        subtotal += final_price * item.quantity
+        total_discount += (variant.base_price - final_price) * item.quantity
+
+    if subtotal > 500:
+        delivery_charge = 0
+    else:
+        delivery_charge = 40 if subtotal > 0 else 0
+    
+    tax_percentage = 5
+    tax = round((subtotal * tax_percentage) / 100, 2)
+
+    grand_total = subtotal + delivery_charge + tax
         
     addresses = UserAddress.objects.filter(user=request.user)
 
@@ -260,7 +268,7 @@ def checkout(request):
                     order=order,
                     variant=item.variant,
                     quantity= item.quantity,
-                    price= item.variant.final_price
+                    price= pricing["final_price"]
                 )
                 item.variant.stock -= item.quantity
                 item.variant.save(update_fields=["stock"])

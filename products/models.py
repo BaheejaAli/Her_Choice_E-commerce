@@ -121,6 +121,33 @@ class ProductVariant(models.Model):
         if errors:
             raise ValidationError(errors)
     
+    def get_pricing_data(self, offer=None):
+        if offer is None:
+            from offer.utils import get_best_offer
+            offer = get_best_offer(self.product)
+
+        prices = [self.base_price]
+        discounts = [0]
+
+        # Sales Price Logic
+        if self.sales_price and self.sales_price < self.base_price:
+            prices.append(self.sales_price)
+            sales_discount = int(((self.base_price - self.sales_price) / self.base_price) * 100)
+            discounts.append(sales_discount)
+
+        # Offer Logic
+        if offer and self.base_price > 0:
+            discount_amount = (self.base_price * offer.discount_percentage) / 100
+            offer_price = max(0, round(self.base_price - discount_amount))
+            prices.append(offer_price)
+            discounts.append(offer.discount_percentage)
+
+        return {
+            'final_price': min(prices),
+            'discount_percentage': max(discounts),
+            'active_offer': offer
+        }
+
     @property
     def stock_status(self):
         if self.stock <= 0:

@@ -16,13 +16,13 @@
       <form method="POST">
         {% csrf_token %}
 
-        {% if messages %}
+        {% comment %} {% if messages %}
           <div class="messages">
             {% for message in messages %}
               <div class="alert {{ message.tags }}">{{ message }}</div>
             {% endfor %}
           </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
 
         <!-- Address ID controlled by JS -->
         <input type="hidden" name="address_id" id="selected_address_id"

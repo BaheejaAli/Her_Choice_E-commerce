@@ -3,15 +3,15 @@
 ================================ */
 
 .product-detail-wrapper {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
 }
 
 /* ---------------- Breadcrumb ---------------- */
 .breadcrumb-nav {
-  font-size: 14px;
-  margin-bottom: 20px;
+  font-size: 15px;
+  margin-bottom: 24px;
   color: #777;
 }
 
@@ -21,51 +21,54 @@
 }
 
 .breadcrumb-nav i {
-  font-size: 10px;
-  margin: 0 6px;
+  font-size: 11px;
+  margin: 0 8px;
 }
 
 /* ---------------- Layout ---------------- */
 .product-main-row {
   display: flex;
-  gap: 40px;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
 /* ---------------- Images ---------------- */
 .product-image-section {
-  flex: 1;
-  min-width: 350px;
+  flex: 1.2;
+  min-width: 380px;
 }
 
 .main-img-container {
   width: 100%;
-  height: 420px;
+  height: 520px;
   border: 1px solid #eee;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #fafafa;
 }
 
 .main-img-container img {
-  max-width: 100%;
-  max-height: 100%;
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.35s ease;
 }
 
 .thumbnail-grid {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 14px;
+  margin-top: 16px;
 }
 
 .thumb-wrapper {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border: 1px solid #ddd;
   cursor: pointer;
-  padding: 3px;
+  padding: 4px;
+  background: #fff;
 }
 
 .thumb-wrapper.active {
@@ -81,36 +84,38 @@
 /* ---------------- Info ---------------- */
 .product-info-section {
   flex: 1;
-  min-width: 350px;
+  min-width: 380px;
 }
 
 .brand-name {
-  font-size: 14px;
+  font-size: 15px;
   color: #777;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .product-title {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 600;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 /* ---------------- Variants ---------------- */
 .variant-preview-section h4 {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
 }
 
 .variant-preview-list {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .variant-preview {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   border: 1px solid #ddd;
-  padding: 2px;
+  padding: 3px;
+  background: #fff;
 }
 
 .variant-preview.active {
@@ -125,21 +130,21 @@
 
 /* ---------------- Size ---------------- */
 .size-section {
-  margin-top: 20px;
+  margin-top: 26px;
 }
 
 .size-options {
   display: flex;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .size-btn {
-  padding: 6px 14px;
+  padding: 8px 18px;
   border: 1px solid #ccc;
   background: #fff;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .size-btn.selected {
@@ -149,143 +154,143 @@
 
 /* ---------------- Rating ---------------- */
 .rating-container {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.rating-value {
-  color: #ff9800;
-  font-weight: 600;
-}
-
-.rating-separator {
-  margin: 0 8px;
-  color: #ccc;
+  margin-top: 18px;
+  font-size: 15px;
 }
 
 /* ---------------- Price ---------------- */
 .price-container {
-  margin: 18px 0;
+  margin: 22px 0;
 }
 
 .current-price {
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 700;
 }
 
 .mrp {
-  margin-left: 12px;
+  margin-left: 14px;
   color: #999;
   text-decoration: line-through;
+  font-size: 16px;
 }
 
 .discount-percent {
-  margin-left: 8px;
+  margin-left: 10px;
   color: #388e3c;
   font-weight: 600;
+  font-size: 16px;
 }
 
 .tax-info {
-  font-size: 12px;
+  font-size: 13px;
   color: #777;
 }
 
 /* ---------------- Stock ---------------- */
 .stock-status {
-  margin: 12px 0;
+  margin: 14px 0;
+  font-size: 15px;
 }
 
-.in-stock-msg {
-  color: #2e7d32;
-  font-weight: 600;
-}
+/* ===============================
+   ADD TO CART + WISHLIST (ROW)
+================================ */
 
-.low-stock-msg {
-  color: #f57c00;
-  font-weight: 600;
-}
-
-.out-of-stock-msg {
-  color: #c62828;
-  font-weight: 600;
-}
-
-/* ---------------- Buttons ---------------- */
 .action-btns {
   display: flex;
-  gap: 12px;
-  margin: 20px 0;
+  gap: 16px;
+  margin: 26px 0;
+  width: 100%;
+  align-items: stretch;
 }
 
+/* form should behave like a flex item */
+.action-btns form {
+  flex: 1;
+}
+
+/* ADD TO CART – PRIMARY PINK */
 .btn-add-cart {
-  padding: 12px 20px;
-  background: #000;
+  width: 100%;
+  height: 56px;
+  background: #ff005c;
   color: #fff;
   border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
 }
 
 .btn-add-cart:hover {
-  background: #333;
+  background: #e60052;
+  transform: translateY(-1px);
 }
 
-.btn-wishlist {
-  width: 46px;
-  height: 46px;
-  border: 1px solid #ccc;
-  background: #fff;
-  cursor: pointer;
-}
-
-.btn-disabled {
-  padding: 12px 20px;
-  background: #ccc;
-  border: none;
+.btn-add-cart:disabled {
+  background: #ffc1d6;
   cursor: not-allowed;
 }
+
 
 /* ---------------- Divider ---------------- */
 .divider {
   border: none;
   border-top: 1px solid #eee;
-  margin: 25px 0;
+  margin: 34px 0;
 }
 
 /* ---------------- Description ---------------- */
 .product-details-container h4 {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-size: 17px;
 }
 
 .product-details-container p {
-  font-size: 14px;
+  font-size: 15px;
   color: #555;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 /* ---------------- Related ---------------- */
 .related-products-section {
-  margin-top: 60px;
+  margin-top: 70px;
 }
 
 .related-title {
-  font-size: 22px;
-  margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 24px;
 }
 
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
 }
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 768px) {
   .product-main-row {
     flex-direction: column;
+    gap: 40px;
   }
 
   .main-img-container {
-    height: 320px;
+    height: 360px;
+  }
+
+  .action-btns {
+    flex-direction: column;
+  }
+
+  .btn-add-cart,
+  .btn-wishlist {
+    width: 100%;
   }
 }

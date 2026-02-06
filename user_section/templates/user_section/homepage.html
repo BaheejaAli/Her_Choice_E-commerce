@@ -51,3 +51,113 @@
     </div>
   </section>
 {% endblock %}
+{% block extra_js %}
+<script>
+/* =========================
+   CSRF TOKEN
+========================= */
+function getCSRFToken() {
+    let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    if (!token) token = getCookie('csrftoken');
+    return token;
+}
+
+/* =========================
+   COOKIE HELPER
+========================= */
+function getCookie(name) {
+    let cookieValue = null;
+    document.cookie.split(';').forEach(cookie => {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        }
+    });
+    return cookieValue;
+}
+
+/* =========================
+   ADD TO WISHLIST
+========================= */
+function addToWishlist(variantId) {
+    fetch("{% url 'add_to_wishlist' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        body: `variant_id=${variantId}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        Toast.fire({
+            icon: data.status === "success" ? "success" : "warning",
+            title: data.message
+        });
+    })
+    .catch(() => {
+        Toast.fire({
+            icon: "error",
+            title: "Please login to use wishlist"
+        });
+    });
+}
+
+/* =========================
+   QUICK ADD TO CART (HOMEPAGE)
+========================= */
+function quickAddToCart(button, variantId) {
+    if (!variantId) {
+        Toast.fire({
+            icon: "warning",
+            title: "Variant not available"
+        });
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("variant_id", variantId);
+
+    fetch("{% url 'add_to_cart' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        body: formData
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+
+        Toast.fire({
+            icon: ok ? "success" : "warning",
+            title: data.message || "Action failed"
+        });
+
+        if (ok) {
+            const originalText = button.innerText;
+            button.innerText = "Added ✓";
+            button.disabled = true;
+
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.disabled = false;
+            }, 1800);
+
+            // Update cart badge
+            if (data.data?.cart_count) {
+                const badge = document.querySelector(".cart-count-badge");
+                if (badge) badge.innerText = data.data.cart_count;
+            }
+        }
+    })
+    .catch(() => {
+        Toast.fire({
+            icon: "error",
+            title: "Network error. Please refresh"
+        });
+    });
+}
+</script>
+{% endblock %}

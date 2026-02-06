@@ -105,5 +105,99 @@
         // Reload the page with the updated parameters
         window.location.search = urlParams.toString();
     }
+
+function getCSRFToken() {
+    let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    if (!token) token = getCookie('csrftoken');
+    return token;
+}
+
+/* =========================
+   Wishlist
+========================= */
+function addToWishlist(variantId) {
+    fetch("{% url 'add_to_wishlist' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `variant_id=${variantId}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        Toast.fire({
+            icon: data.status === "success" ? "success" : "warning",
+            title: data.message
+        });
+    })
+    .catch(() => {
+        Toast.fire({
+            icon: "error",
+            title: "Please login to use wishlist"
+        });
+    });
+}
+
+/* =========================
+   Quick Add to Cart
+========================= */
+function quickAddToCart(button, variantId) {
+    const formData = new FormData();
+    formData.append('variant_id', variantId);
+
+    fetch("{% url 'add_to_cart' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+
+        Toast.fire({
+            icon: ok ? "success" : "warning",
+            title: data.message || "Action failed"
+        });
+
+        if (ok) {
+            const originalText = button.innerText;
+            button.innerText = "Added ✓";
+            button.disabled = true;
+
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.disabled = false;
+            }, 2000);
+
+            if (data.data?.cart_count) {
+                const badge = document.querySelector('.cart-count-badge');
+                if (badge) badge.innerText = data.data.cart_count;
+            }
+        }
+    })
+    .catch(() => {
+        Toast.fire({
+            icon: "error",
+            title: "Network error. Please refresh."
+        });
+    });
+}
+
+/* =========================
+   Cookie helper
+========================= */
+function getCookie(name) {
+    let cookieValue = null;
+    document.cookie.split(';').forEach(cookie => {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        }
+    });
+    return cookieValue;
+}
 </script>
-{% endblock %}
+{% endblock extra_js %}

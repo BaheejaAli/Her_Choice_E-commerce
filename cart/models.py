@@ -46,12 +46,21 @@ class CartItem(models.Model):
         unique_together = ("cart","variant")
 
     @property
+    def pricing(self):
+        return self.variant.get_pricing_data()
+
+    @property
     def sub_total(self):
-        return self.quantity * self.variant.final_price
-    
+        return self.quantity * self.pricing["final_price"]
+
     @property
     def base_sub_total(self):
         return self.quantity * self.variant.base_price
+
+    @property
+    def discount_percentage(self):
+        return self.pricing["discount_percentage"]
+
     
 
 

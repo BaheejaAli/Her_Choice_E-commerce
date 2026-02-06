@@ -7,7 +7,7 @@ from django.db.models import Case, When, F, DecimalField, Count, Min
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
-from products.utils import prepare_products_for_display, apply_pricing
+from products.utils import prepare_products_for_display
 
 
 # -------------------------
@@ -120,21 +120,23 @@ def product_detail_view(request, slug, sku=None):
     if not variants.exists():
         messages.warning(request, "Product unavailable")
         return redirect("user_homepage")
-    
-    apply_pricing(product, variants)
 
     if sku:
         selected_variant = variants.filter(sku=sku).first()
     else:
-        variant_id = request.GET.get("variant")
-        if variant_id:
-            selected_variant = variants.filter(id=variant_id).first()
-        else:
-            selected_variant = variants.filter(stock__gt=0).first()
+        selected_variant = variants.filter(stock__gt=0).first()
 
     if not selected_variant:
-        selected_variant = variants.first()
+        messages.warning(request, "Variant not found")
+        return redirect("product_listing")
 
+   
+    pricing = selected_variant.get_pricing_data()
+    selected_variant.final_price = pricing["final_price"]
+    selected_variant.discount_percentage = pricing["discount_percentage"]
+
+    product.active_offer = pricing["active_offer"]
+    
     color_variants = (variants.order_by("color_id","id").distinct("color_id"))
     sizes = Size.objects.filter(productvariant__product = product, productvariant__color= selected_variant.color).distinct()
     related_products = (Product.objects
