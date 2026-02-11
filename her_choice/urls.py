@@ -13,6 +13,7 @@ urlpatterns = [
 
     path("admin-panel/", include("adminpanel.urls")),
     path("", include("user_section.urls")),
+    path("", include("offer.urls")),
 ]
 
 if settings.DEBUG:

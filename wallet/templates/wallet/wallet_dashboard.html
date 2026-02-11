@@ -1,0 +1,78 @@
+{% extends 'user_section/profile_base.html' %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/wallet/wallet_dashboard.css' %}?v=1.1" />
+    <link rel="stylesheet"
+          href="{% static 'css/user_section/profile_base.css' %}" />
+{% endblock %}
+{% block title %}Her Choice | Wallet{% endblock %}
+{% block profile_content %}
+    <h2 class="wallet-title">My Wallet</h2>
+
+<!-- Balance Card -->
+<div class="wallet-card">
+    <div class="wallet-card-left">
+        <p class="wallet-label">Available Balance</p>
+        <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
+
+        <a href="#" class="wallet-btn">+ Add Money</a>
+    </div>
+</div>
+
+<!-- Transaction Section -->
+<div class="transaction-section">
+    <h3>Transaction History</h3>
+
+    {% if transactions %}
+        <div class="transaction-list">
+            {% for transaction in transactions %}
+                <div class="transaction-item">
+
+                    <div class="transaction-icon 
+                        {% if transaction.transaction_type == 'credit' %}
+                            credit-icon
+                        {% else %}
+                            debit-icon
+                        {% endif %}
+                    ">
+                        {% if transaction.transaction_type == 'credit' %}
+                            ↓
+                        {% else %}
+                            ↑
+                        {% endif %}
+                    </div>
+
+                    <div class="transaction-info">
+                        <p class="transaction-description">
+                            {{ transaction.description }}
+                        </p>
+                        <span class="transaction-date">
+                            {{ transaction.created_at|date:"F d, Y" }}
+                        </span>
+                    </div>
+
+                    <div class="transaction-amount 
+                        {% if transaction.transaction_type == 'credit' %}
+                            credit
+                        {% else %}
+                            debit
+                        {% endif %}
+                    ">
+                        {% if transaction.transaction_type == 'credit' %}
+                            +₹ {{ transaction.amount }}
+                        {% else %}
+                            -₹ {{ transaction.amount }}
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-transaction">No transactions yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+{% block extra_js %}{% endblock %}

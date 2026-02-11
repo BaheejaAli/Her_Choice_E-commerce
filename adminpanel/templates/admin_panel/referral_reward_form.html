@@ -1,0 +1,61 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+{% block title %}
+    {% if reward %}
+        Edit
+    {% else %}
+        Add
+    {% endif %}
+    Referral Reward
+{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/referral_reward_form.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="reward-wrapper">
+        <div class="reward-header">
+            <h2>
+                {% if reward %}
+                    Edit
+                {% else %}
+                    Add
+                {% endif %}
+                Referral Reward
+            </h2>
+        </div>
+        <div class="reward-card">
+            <form method="POST" class="reward-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Referrer Amount</label>
+                        <input type="number"
+                               step="0.01"
+                               name="referrer_amount"
+                               value="{{ reward.referrer_amount|default:'' }}"
+                               required>
+                    </div>
+                    <div class="form-group half">
+                        <label>Receiver Amount</label>
+                        <input type="number"
+                               step="0.01"
+                               name="receiver_amount"
+                               value="{{ reward.receiver_amount|default:'' }}"
+                               required>
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox"
+                           name="is_active"
+                           {% if reward and reward.is_active %}checked{% endif %}>
+                    <label>Set as Active Reward</label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Save</button>
+                    <a href="{% url 'referral_reward_list' %}" class="cancel-btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

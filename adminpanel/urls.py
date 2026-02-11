@@ -10,7 +10,7 @@ from .views.products import (
     ProductListView,product_create, product_update, toggle_product_status, product_variant_add,product_variant_update,toggle_variant_status)
 from .views.orders import order_management,update_order_status, order_view_details, stock_management
 from .views.offers import offer_management, offer_create,search_products, search_category, offer_edit, toggle_offer_status, delete_offer
-
+from .views.referrals import referral_reward_list, referral_reward_add, referral_reward_edit, referral_reward_toggle
 urlpatterns = [
 
     path("", admin_auth.admin_login, name="admin_login"),
@@ -51,6 +51,12 @@ urlpatterns = [
     path("offers/edit/<int:offer_id>",offer_edit, name="offer_edit"),
     path('offers/toggle-status/<int:offer_id>',toggle_offer_status,name="toggle_offer_status"),
     path('offers/delete-offer/<int:offer_id>',delete_offer,name="delete_offer"),
+
+    path("referral-reward/", referral_reward_list, name="referral_reward_list"),
+    path("referral-reward/add/", referral_reward_add, name="referral_reward_add"),
+    path("referral-reward/edit/<int:id>/", referral_reward_edit, name="referral_reward_edit"),
+    path("referral-reward/toggle/<int:id>/", referral_reward_toggle, name="referral_reward_toggle"),
+
 
 
 ]

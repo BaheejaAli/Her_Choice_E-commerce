@@ -54,3 +54,5 @@ class WishlistItem(models.Model):
                                     name = 'unique_wishlist_variant')
         ]
 
+
+

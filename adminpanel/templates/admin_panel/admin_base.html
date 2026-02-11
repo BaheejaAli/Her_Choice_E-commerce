@@ -21,7 +21,8 @@
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <!-- Custom CSS -->
-        <link rel="stylesheet" href="{% static 'css/admin_panel/admin_base.css' %}?v=1.1">
+        <link rel="stylesheet"
+              href="{% static 'css/admin_panel/admin_base.css' %}?v=1.1">
         {% block extra_css %}
         {% endblock extra_css %}
     </head>
@@ -91,6 +92,13 @@
                             <i class="fa fa-gift" aria-hidden="true"></i>Offers
                         </li>
                     </a>
+                    <a href="{% url 'referral_reward_list' %}"
+                       style="text-decoration: none"
+                       class="{% if request.resolver_match.url_name == 'referral_reward_list' %}active{% endif %}">
+                        <li>
+                            <i class="fa-solid fa-share-nodes"></i> Referral Rewards
+                        </li>
+                    </a>
                     <a href="#"
                        style="text-decoration: none"
                        class="{% if request.resolver_match.url_name == 'payments_list' %}active{% endif %}">
@@ -123,7 +131,6 @@
             </aside>
             {% comment %} MAIN CONTENT {% endcomment %}
             <main class="main-content">
-              
                 <!-- Page Content -->
                 <div class="page-content">
                     {% block content %}
