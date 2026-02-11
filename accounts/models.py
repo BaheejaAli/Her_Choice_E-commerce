@@ -43,6 +43,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, blank=True, null=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     
+    has_used_referral = models.BooleanField(default=False)
+    has_seen_referral_page = models.BooleanField(default=False)
+
+    # Permission/Status Flags
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)    

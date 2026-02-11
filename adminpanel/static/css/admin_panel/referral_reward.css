@@ -1,0 +1,138 @@
+/* ==============================
+   REFERRAL REWARD ADMIN STYLE
+================================ */
+
+/* Wrapper */
+.reward-wrapper {
+    padding: 25px;
+}
+
+/* Header */
+.reward-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.reward-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Add Button */
+.add-btn {
+    background: #ff2f7d;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
+.add-btn:hover {
+    background: #d4145a;
+    color: white;
+}
+
+/* Card */
+.reward-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Table */
+.reward-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.reward-table th {
+    text-align: left;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #666;
+    padding: 12px 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.reward-table td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #f2f2f2;
+    vertical-align: middle;
+}
+
+.reward-table tr:hover {
+    background: #fafafa;
+}
+
+/* Status Button */
+.status-btn {
+    min-width: 90px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 20px;
+    transition: 0.3s ease;
+}
+
+/* Active Style */
+.status-btn.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.status-btn.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Inactive Style */
+.status-btn.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.status-btn.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Edit Button */
+.edit-btn {
+    background: #ffc107;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    text-decoration: none;
+    color: #000;
+    transition: 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: #e0a800;
+    color: #000;
+}
+
+/* Empty State */
+.empty-state {
+    padding: 25px;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reward-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .reward-table th,
+    .reward-table td {
+        font-size: 12px;
+    }
+}

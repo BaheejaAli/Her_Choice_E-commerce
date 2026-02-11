@@ -71,22 +71,24 @@ def user_login(request):
             if user is not None:
                 if user.is_active:
                     login(request,user)
-                    
-                    # Check if this is a newly verified user
-                    if request.session.get('newly_verified'):
-                        del request.session['newly_verified']
-                        messages.success(request, f"Welcome {user.first_name}! Your account has been successfully created and verified.")
-                    else:
-                        messages.success(request, f"Welcome back,{user.first_name}!")
-                    
-                    return redirect('user_homepage')
-                else:
-                    messages.warning(request, 'Your account is not active. Please verify your email.')
-                    return redirect('user_login')
-            else:
-                error_message = 'Invalid email or password.'
-                return render(request, 'accounts/user_login.html', {'form': form, 'error': error_message}) 
 
+                    if not user.has_seen_referral_page:
+                        messages.info(request, "You can apply a referral code if you have one.")
+                        return redirect('apply_referral_page')
+
+                    messages.success(request, f"Welcome back, {user.first_name}!")
+                    return redirect('user_homepage')
+                
+                else:
+                    messages.warning(request, "Account not active.")
+                    return redirect("user_login")
+            else:
+                error_message = "Invalid email or password."
+                return render(request, 'accounts/user_login.html', {'form': form, 'error': error_message})
+
+                    # if request.session.get('newly_verified'):
+                    #     del request.session['newly_verified']
+                    #     messages.success(request, f"Welcome {user.first_name}! Your account has been successfully created and verified.")            
     else:
         form = UserLoginForm()
     

@@ -1,0 +1,134 @@
+/* ==============================
+   REFERRAL REWARD FORM STYLE
+================================ */
+
+.reward-wrapper {
+    padding: 25px;
+}
+
+.reward-header {
+    margin-bottom: 20px;
+}
+
+.reward-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Card Container */
+.reward-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Form Layout */
+.reward-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Two-column layout */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+/* Labels */
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+/* Inputs */
+.form-group input[type="number"] {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.form-group input[type="number"]:focus {
+    outline: none;
+    border-color: #ff2f7d;
+    box-shadow: 0 0 0 2px rgba(255, 47, 125, 0.15);
+}
+
+/* Checkbox */
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #28a745;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.save-btn {
+    background: #28a745;
+    border: none;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.save-btn:hover {
+    background: #218838;
+}
+
+.cancel-btn {
+    background: #6c757d;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background: #5a6268;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+}
