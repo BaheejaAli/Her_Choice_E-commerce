@@ -1,0 +1,54 @@
+/* Container */
+.referral-card {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Input Field */
+.referral-input {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Submit Button */
+.btn-submit {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Horizontal Rule */
+.section-divider {
+    margin: 30px 0;
+}
+
+/* Skip Button */
+.btn-skip {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: #6c757d;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+/* Message Styling */
+.error-text {
+    color: red;
+}
+
+/* Referral Code Text */
+.referral-code-text {
+    font-weight: bold;
+    font-size: 18px;
+}

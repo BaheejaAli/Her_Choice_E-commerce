@@ -23,7 +23,8 @@ urlpatterns = [
     path('reset-verify/', user_auth.user_reset_password_verify, name='user_reset_password_verify'),
     path('reset-password/', user_auth.user_reset_password, name='user_reset_password'),
     path('resend-otp/', user_auth.user_resend_otp, name='user_resend_otp'),
-
+    path("apply-referral/", user_auth.apply_referral, name="apply_referral"),
+    
 ]
 
 

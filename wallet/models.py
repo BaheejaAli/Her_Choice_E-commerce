@@ -8,14 +8,22 @@ class Wallet(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def add_funds(self,amount):
+        if amount>0:
+            self.balance += amount
+            self.save()
+            return True
+        return False
+
     def __str__(self):
         return f"{self.user.email} Wallet"
 
 
 class WalletTransaction(models.Model):
     TRANSACTION_TYPE = (
-        ('credit', 'Credit'),
-        ('debit', 'Debit'),
+        ('DEPOSIT', 'Deposit'),
+        ('WITHDRAW', 'Withdrawal'),
+        ('REFERRAL', 'Referral Reward'),
     )
 
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
