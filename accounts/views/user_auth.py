@@ -11,7 +11,14 @@ from django.utils import timezone
 from accounts.utils import send_otp_email
 from django.views.decorators.cache import never_cache
 from accounts.decorators import logout_required
-from allauth.socialaccount.providers.google.views import oauth2_callback
+# from allauth.socialaccount.providers.google.views import oauth2_callback
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from offer.models import Referral, ReferralUsage, ReferralReward
+from django.db import transaction
+
+
+# Create your views here.
 
 # Define the OTP expiry duration (e.g., 5 minutes)
 OTP_EXPIRY_SECONDS = 100
@@ -72,10 +79,6 @@ def user_login(request):
                 if user.is_active:
                     login(request,user)
 
-                    if not user.has_seen_referral_page:
-                        messages.info(request, "You can apply a referral code if you have one.")
-                        return redirect('apply_referral_page')
-
                     messages.success(request, f"Welcome back, {user.first_name}!")
                     return redirect('user_homepage')
                 
@@ -122,6 +125,8 @@ def user_otp_verify(request):
                 user = CustomUser.objects.get(email=verification_email)
                 user.is_active = True
                 user.save()
+
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
                 # Clear OTP session data
                 del request.session['verification_email']
@@ -132,7 +137,7 @@ def user_otp_verify(request):
                 request.session['newly_verified'] = True
 
                 messages.success(request, 'Email successfully verified. Welcome!')
-                return redirect('user_login')
+                return redirect('apply_referral')
             
             except CustomUser.DoesNotExist:
                 messages.error(request, 'User account not found.')
@@ -146,6 +151,74 @@ def user_otp_verify(request):
         'otp_expiry': otp_expiry,
     }
     return render(request, 'accounts/user_otp_verify.html', context)
+
+
+# ================== APPLY REFERRAL ==============
+@login_required
+def apply_referral(request):
+    if request.user.has_used_referral:
+        return redirect("user_homepage")
+    
+    if request.method == "GET":
+        if not request.user.has_seen_referral_page:
+            request.user.has_seen_referral_page = True
+            request.user.save()
+
+    
+    if request.method == "POST":
+        code = request.POST.get("referral_code","").strip().upper()
+
+        try:
+            referral = Referral.objects.get(referral_code = code)
+        
+            if referral.user == request.user:
+                messages.error(request, "You cannot use your own referral code.")
+                return redirect("apply_referral")
+            
+            if ReferralUsage.objects.filter(receiver=request.user).exists():
+                messages.error(request, "Referral already used.")
+                return redirect("user_homepage")
+            
+            with transaction.atomic():
+                from wallet.models import Wallet
+                reward = ReferralReward.objects.filter(is_active=True).first()
+                referrer_amount= reward.referrer_amount if reward else 0
+                receiver_amount = reward.receiver_amount if reward else 0
+
+                ReferralUsage.objects.create(
+                    referrer=referral.user,
+                    receiver=request.user,
+                    referrer_reward_amount=referrer_amount,
+                    receiver_reward_amount=receiver_amount
+                )
+                print(referrer_amount)
+                print(receiver_amount)
+                referrer_wallet, _ = Wallet.objects.get_or_create(user=referral.user)
+                referrer_wallet.balance += referrer_amount
+                referrer_wallet.save()
+
+                receiver_wallet, _ = Wallet.objects.get_or_create(user=request.user)
+                receiver_wallet.balance += receiver_amount
+                receiver_wallet.save()
+
+                referral.used_count += 1
+                referral.save()
+
+                request.user.has_used_referral = True
+                request.user.save()
+
+            messages.success(request, "Referral applied successfully!")
+            return redirect("user_homepage")
+        
+        except Referral.DoesNotExist:
+            messages.error(request, "Invalid referral code.")
+            return redirect("apply_referral")
+            
+    return render(request, "accounts/user_apply_referral.html")
+
+    
+
+
 
 # ================== USER RESEND OTP VERIFICATION  ==============
 

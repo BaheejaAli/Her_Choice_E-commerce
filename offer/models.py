@@ -84,13 +84,9 @@ class ReferralUsage(models.Model):
             if self.referrer == self.receiver:
                 raise ValueError("User cannot use their own referral code.")
 
-            referral = Referral.objects.filter(user=self.referrer).first()
-            if referral:
-                referral.used_count += 1
-                referral.save()
-
         super().save(*args, **kwargs)
 
+# for the admin side
 class ReferralReward(models.Model):
     referrer_amount = models.DecimalField(max_digits=10, decimal_places=2)
     receiver_amount = models.DecimalField(max_digits=10, decimal_places=2)

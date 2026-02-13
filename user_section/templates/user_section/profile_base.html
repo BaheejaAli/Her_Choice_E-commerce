@@ -2,7 +2,7 @@
 {% load static %}
 {% block extra_css %}
   <link rel="stylesheet"
-        href="{% static 'css/user_section/profile_base.css' %}?v=1.1" />
+        href="{% static 'css/user_section/profile_base.css' %}?v=1.2" />
   <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
 {% endblock extra_css %}
 {% block content %}
@@ -68,7 +68,7 @@
         </li>
         <li>
           <a href="{% url 'wallet_dashboard' %}"
-             class="{% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
+             class="{% if request.resolver_match.url_name == 'wallet_dashboard'  or request.resolver_match.url_name == 'add_money' %}active{% endif %}">
             <span class="menu-icon"><i class="fas fa-wallet"></i></span>
             Wallet
           </a>

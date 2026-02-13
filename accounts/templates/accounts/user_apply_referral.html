@@ -1,0 +1,48 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/accounts/user_apply_referral.css' %}?v=1.1">
+{% endblock %}
+
+{% block content %}
+
+<div class="referral-card">
+
+    <h2>🎁 Apply Referral Code</h2>
+    <p>If you have a referral code, enter it below and earn rewards!</p>
+
+    {% comment %} {% if messages %}
+        {% for message in messages %}
+            <p class="error-text">{{ message }}</p>
+        {% endfor %}
+    {% endif %} {% endcomment %}
+
+    <form method="POST" action="{% url 'apply_referral' %}">
+        {% csrf_token %}
+        <input type="text" name="referral_code"
+               placeholder="Enter referral code"
+               class="referral-input"
+               required>
+
+        <button type="submit" class="btn-submit">
+            Apply Code
+        </button>
+    </form>
+
+    <hr class="section-divider">
+
+    <a href="{% url 'user_homepage' %}" class="btn-skip">
+        Skip
+    </a>
+
+    <hr class="section-divider">
+
+    <h4>Your Referral Code:</h4>
+    <p class="referral-code-text">
+        {{ request.user.referral_profile.referral_code }}
+    </p>
+
+</div>
+
+{% endblock %}
