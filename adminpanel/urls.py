@@ -11,6 +11,8 @@ from .views.products import (
 from .views.orders import order_management,update_order_status, order_view_details, stock_management
 from .views.offers import offer_management, offer_create,search_products, search_category, offer_edit, toggle_offer_status, delete_offer
 from .views.referrals import referral_reward_list, referral_reward_add, referral_reward_edit, referral_reward_toggle
+from .views.coupon import coupon_management, create_coupon, edit_coupon, toggle_coupon_status, delete_coupon
+from .views.sales import sales_report
 urlpatterns = [
 
     path("", admin_auth.admin_login, name="admin_login"),
@@ -57,6 +59,15 @@ urlpatterns = [
     path("referral-reward/edit/<int:id>/", referral_reward_edit, name="referral_reward_edit"),
     path("referral-reward/toggle/<int:id>/", referral_reward_toggle, name="referral_reward_toggle"),
 
+    path('coupons/', coupon_management, name='coupon_management'),
+    path('coupons/create/', create_coupon, name='create_coupon'),
+    path('coupons/edit/<int:coupon_id>/', edit_coupon, name='edit_coupon'),
+    path('coupons/toggle/<int:coupon_id>/', toggle_coupon_status, name='toggle_coupon_status'),
+    path('coupons/delete/<int:coupon_id>/', delete_coupon, name='delete_coupon'),
+    # path('coupons/usage/<int:coupon_id>/', coupon_usage_report, name='admin_coupon_usage_report'),
 
+    path("sales-report/", sales_report, name="sales_report")
 
 ]
+
+

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.2" />
+<link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -68,17 +68,17 @@
               <h2 class="section-title">💳 Payment Method</h2>
 
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="COD" checked>
+                <input type="radio" name="payment_method" value="cod" checked>
                 Cash on Delivery
               </label>
 
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="RAZORPAY">
+                <input type="radio" name="payment_method" value="razorpay">
                 Razorpay
               </label>
 
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="WALLET">
+                <input type="radio" name="payment_method" value="wallet">
                 Wallet
               </label>
 
@@ -142,6 +142,38 @@
                   <span>₹{{ grand_total }}</span>
                 </div>
               </div>
+
+                <!-- COUPON CODE SECTION -->
+              <div class="coupon-section">
+                <h3 class="coupon-title">Apply Coupon</h3>
+                
+                <div class="coupon-input-wrapper">
+                  <div class="input-group">
+                    <span class="coupon-icon">🏷️</span>
+                    <input 
+                      type="text" 
+                      id="coupon_input" 
+                      class="coupon-input" 
+                      placeholder="Enter coupon code"
+                      value="{{ applied_coupon_code|default:'' }}"
+                    />
+                  </div>
+                  <button type="button" id="apply_coupon_btn" class="apply-coupon-btn">
+                    Apply
+                  </button>
+                </div>
+
+                <!-- Coupon message (success/error) -->
+                <div id="coupon_message" class="coupon-message"></div>
+
+                <!-- Remove coupon button (shown when coupon is applied) -->
+                {% if applied_coupon_code %}
+                <button type="button" id="remove_coupon_btn" class="remove-coupon-btn">
+                  ✕ Remove Coupon
+                </button>
+                {% endif %}
+              </div>
+              
             </div>
           </div>
         </div>

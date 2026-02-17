@@ -73,12 +73,6 @@
             <input type="text" value="{{ referral.used_count }}" readonly />
           </div>
           <div class="form-group">
-            <label>Wallet Balance</label>
-            <input type="text" value="{{ wallet.points }} Points" readonly />
-          </div>
-        </div>
-        <div class="form-row single">
-          <div class="form-group">
             <label>Referral Status</label>
             {% if user.has_used_referral %}
               <input type="text" value="Referral Applied" readonly />
@@ -87,6 +81,7 @@
             {% endif %}
           </div>
         </div>
+     
       </section>
     </main>
   </div>

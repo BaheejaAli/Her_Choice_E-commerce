@@ -38,11 +38,6 @@
                             <i class="fa-solid fa-house"></i> Dashboard
                         </li>
                     </a>
-                    {% comment %} <li class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">
-                <a href="{% url 'user_management' %}">
-                    <i class="fa-solid fa-users"></i> Users
-                </a>
-                    </li> {% endcomment %}
                     <a href="{% url "user_management" %}"
                        style="text-decoration: none"
                        class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">
@@ -99,25 +94,19 @@
                             <i class="fa-solid fa-share-nodes"></i> Referral Rewards
                         </li>
                     </a>
-                    <a href="#"
+                    <a href="{% url 'coupon_management' %}"
                        style="text-decoration: none"
-                       class="{% if request.resolver_match.url_name == 'payments_list' %}active{% endif %}">
+                       class="{% if request.resolver_match.url_name == 'coupon_management' %}active{% endif %}">
                         <li>
-                            <i class="fa-solid fa-credit-card"></i> Payments
+                            <i class="fa-solid fa-tags"></i> Coupons
                         </li>
                     </a>
-                    <a href="#"
+                   
+                    <a href="{% url 'sales_report' %}"
                        style="text-decoration: none"
-                       class="{% if request.resolver_match.url_name == 'promotions_list' %}active{% endif %}">
+                       class="{% if request.resolver_match.url_name == 'sales_report' %}active{% endif %}">
                         <li>
-                            <i class="fa-solid fa-tags"></i> Promotions
-                        </li>
-                    </a>
-                    <a href="#"
-                       style="text-decoration: none"
-                       class="{% if request.resolver_match.url_name == 'reports_page' %}active{% endif %}">
-                        <li>
-                            <i class="fa-solid fa-chart-line"></i> Reports
+                            <i class="fa-solid fa-chart-line"></i> Sales Reports
                         </li>
                     </a>
                     <a href="{% url "admin_logout" %}"

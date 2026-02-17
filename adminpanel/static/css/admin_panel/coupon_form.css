@@ -1,0 +1,141 @@
+:root {
+    --pink: #e91e63;
+    --pink-dark: #c2185b;
+    --border: #eaeaea;
+    --gray: #666;
+}
+
+.page-wrapper {
+    padding: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* Breadcrumb */
+.breadcrumb-wrapper {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: var(--gray);
+}
+
+.breadcrumb-wrapper a {
+    text-decoration: none;
+    color: var(--pink);
+    font-weight: 600;
+}
+
+.breadcrumb-wrapper span {
+    margin: 0 6px;
+}
+
+/* Header */
+.page-header h2 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Card */
+.form-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+}
+
+/* Section Title */
+.section-title {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding-left: 12px;
+    border-left: 4px solid var(--pink);
+}
+
+/* Form Layout */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fafafa;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--pink);
+    background: #fff;
+    outline: none;
+}
+
+/* Checkbox */
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Buttons */
+.form-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary {
+    padding: 12px 25px;
+    background: var(--pink);
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--pink-dark);
+}
+
+.btn-secondary {
+    padding: 12px 25px;
+    background: #f3f3f3;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+/* Errors */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin-top: 6px;
+}
+
+.errorlist li {
+    color: #dc3545;
+    font-size: 13px;
+}

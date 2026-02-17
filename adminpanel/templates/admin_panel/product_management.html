@@ -3,14 +3,13 @@
 {% block title %}
   Product Management | Her Choice
 {% endblock title %}
-
 {% block extra_css %}
   <link rel="stylesheet"
         href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
 {% endblock extra_css %}
 {% block content %}
   <div class="product-management-wrapper">
-    <h2 class="admin-title">Products </h2>
+    <h2 class="admin-title">Products</h2>
     {% if messages %}
       <div class="messages-container">
         {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
@@ -122,7 +121,18 @@
                           <tr>
                             <td>{{ variant.size.name }}</td>
                             <td>{{ variant.color.name }}</td>
-                            <td>₹ {{ variant.final_price }}</td>
+                            <td>
+                              {% with pricing=variant.get_pricing_data %}
+                                {% if pricing.discount_percentage > 0 %}
+                                  <small style="text-decoration: line-through; color: #888;">₹ {{ variant.base_price }}</small>
+                                  <br>
+                                  <strong class="text-success">₹ {{ pricing.final_price }}</strong>
+                                  <span class="badge bg-info" style="font-size: 0.7rem;">{{ pricing.discount_percentage }}% OFF</span>
+                                {% else %}
+                                  <strong>₹{{ variant.base_price }}</strong>
+                                {% endif %}
+                              {% endwith %}
+                            </td>
                             <td>{{ variant.stock }}</td>
                             <td>
                               <button class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"

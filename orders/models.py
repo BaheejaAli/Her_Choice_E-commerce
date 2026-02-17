@@ -4,6 +4,7 @@ from user_section.models import UserAddress
 from products.models import ProductVariant
 import uuid
 from django.utils import timezone
+from django.db.models import Count, Q
 
 
 class Order(models.Model):
@@ -47,6 +48,7 @@ class Order(models.Model):
         ('pending', 'Pending'),
         ('paid', 'Paid'),
         ('failed', 'Failed'),
+        ('partially_refunded','Partially Refunded'),
         ('refunded', 'Refunded'),
     )
 
@@ -65,6 +67,8 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+
     # autogenerate the order id
     def save(self,*args, **kwargs):
         if not self.orderid:
@@ -74,44 +78,43 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id}"
     
-    def update_order_status(self):
-        items = self.items.all()
-        total_items = items.count()
-        if total_items == 0:
-            return
-        
-        cancelled_count = items.filter(status='cancelled').count()
-        returned_count = items.filter(return_status='returned').count()
-        requested_count = items.filter(return_status='return_requested').count()
-        approved_count = items.filter(return_status='return_approved').count()
-        rejected_count = items.filter(return_status='return_rejected').count()  
-        delivered_count = items.filter(status='delivered', return_status='none').count()
-
-        if cancelled_count == total_items:
-            new_status = 'cancelled'
-        elif returned_count == total_items:
-            new_status = 'returned'
-        elif requested_count == total_items:
-            new_status = 'return_requested'
-        elif approved_count == total_items:
-            new_status = 'return_approved'
-        elif (delivered_count + rejected_count + cancelled_count) == total_items and returned_count == 0:
-            new_status = 'delivered'
-            
-        elif requested_count > 0:
-            new_status = 'return_requested'
     
-        elif approved_count > 0 or returned_count > 0:
+
+    def update_order_status(self):
+        # One query to rule them all
+        stats = self.items.aggregate(
+            total=Count('id'),
+            cancelled=Count('id', filter=Q(status='cancelled')),
+            returned=Count('id', filter=Q(return_status='returned')),
+            requested=Count('id', filter=Q(return_status='return_requested')),
+            approved=Count('id', filter=Q(return_status='return_approved')),
+            rejected=Count('id', filter=Q(return_status='return_rejected')),
+            delivered_none=Count('id', filter=Q(status='delivered', return_status='none'))
+        )
+
+        total = stats['total']
+        if total == 0: return
+
+        # Use the aggregated data
+        if stats['cancelled'] == total:
+            new_status = 'cancelled'
+        elif stats['returned'] == total:
+            new_status = 'returned'
+        elif stats['approved'] > 0 and (stats['approved'] + stats['returned'] + stats['cancelled']) == total:
+            new_status = 'return_approved'
+        elif stats['returned'] > 0:
             new_status = 'partially_returned'
-        elif cancelled_count > 0:
-            new_status = 'partially_cancelled'
+        elif stats['requested'] > 0:
+            new_status = 'return_requested'
+        elif (stats['delivered_none'] + stats['rejected'] + stats['cancelled']) == total:
+            new_status = 'delivered'
         else:
             new_status = self.status
 
         if self.status != new_status:
             self.status = new_status
             self.save(update_fields=['status', 'updated_at'])
-    
+            
     @property
     def has_cancellable_items(self):
         return self.items.exclude(status__in=['cancelled', 'delivered']).exists()

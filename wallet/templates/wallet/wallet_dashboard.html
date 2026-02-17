@@ -9,77 +9,53 @@
 {% block title %}Her Choice | Wallet{% endblock %}
 {% block profile_content %}
     <h2 class="wallet-title">My Wallet</h2>
-
-<!-- Balance Card -->
-<div class="wallet-card">
-    <div class="wallet-card-left">
-        
-        {% if active_reward %}
-    <div class="referral-section">
-        <h3>Refer and earn ₹{{ active_reward.referrer_amount }}!</h3>
-        <p>Your code: <strong>{{ user_referral.referral_code }}</strong></p>
-    </div>
-{% endif %}
-<p class="wallet-label">Available Balance</p>
-        <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
-
-        <a href="{% url 'add_money' %}" class="wallet-btn">+ Add Money</a>
-    </div>
-</div>
-
-<!-- Transaction Section -->
-<div class="transaction-section">
-    <h3>Transaction History</h3>
-
-    {% if transactions %}
-        <div class="transaction-list">
-            {% for transaction in transactions %}
-                <div class="transaction-item">
-
-                    <div class="transaction-icon 
-                        {% if transaction.transaction_type == 'credit' %}
-                            credit-icon
-                        {% else %}
-                            debit-icon
-                        {% endif %}
-                    ">
-                        {% if transaction.transaction_type == 'credit' %}
-                            ↓
-                        {% else %}
-                            ↑
-                        {% endif %}
-                    </div>
-
-                    <div class="transaction-info">
-                        <p class="transaction-description">
-                            {{ transaction.description }}
-                        </p>
-                        <span class="transaction-date">
-                            {{ transaction.created_at|date:"F d, Y" }}
-                        </span>
-                    </div>
-
-                    <div class="transaction-amount 
-                        {% if transaction.transaction_type == 'credit' %}
-                            credit
-                        {% else %}
-                            debit
-                        {% endif %}
-                    ">
-                        {% if transaction.transaction_type == 'credit' %}
-                            +₹ {{ transaction.amount }}
-                        {% else %}
-                            -₹ {{ transaction.amount }}
-                        {% endif %}
-                    </div>
-
+    <!-- Balance Card -->
+    <div class="wallet-card">
+        <div class="wallet-card-left">
+            {% if active_reward %}
+                <div class="referral-section">
+                    <h3>Refer and earn ₹{{ active_reward.referrer_amount }}!</h3>
+                    <p>
+                        Your code: <strong>{{ user_referral.referral_code }}</strong>
+                    </p>
                 </div>
-            {% endfor %}
+            {% endif %}
+            <p class="wallet-label">Available Balance</p>
+            <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
+            <a href="{% url 'add_money' %}" class="wallet-btn">+ Add Money</a>
         </div>
-    {% else %}
-        <p class="no-transaction">No transactions yet.</p>
-    {% endif %}
-</div>
-
+    </div>
+    <!-- Transaction Section -->
+    <div class="transaction-section">
+        <h3>Transaction History</h3>
+        {% if transactions %}
+            <div class="transaction-list">
+                {% for transaction in transactions %}
+                    <div class="transaction-item">
+                        <div class="transaction-icon">
+                            {% if transaction.transaction_type == 'PAYMENT' %}
+                                <span>Out</span>
+                            {% else %}
+                                <span>In</span>
+                            {% endif %}
+                        </div>
+                        <div class="transaction-info">
+                            <p>{{ transaction.description }}</p>
+                            <small>{{ transaction.created_at|date:"d M Y" }}</small>
+                        </div>
+                        <div class="transaction-amount">
+                            {% if transaction.transaction_type == 'PAYMENT' %}
+                                <span style="color: red;">- ₹{{ transaction.amount }}</span>
+                            {% else %}
+                                <span style="color: green;">+ ₹{{ transaction.amount }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-transaction">No transactions yet.</p>
+        {% endif %}
+    </div>
 {% endblock %}
 {% block extra_js %}{% endblock %}

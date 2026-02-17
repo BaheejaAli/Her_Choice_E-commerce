@@ -1,0 +1,233 @@
+{% extends "admin_panel/admin_base.html" %}
+{% load static %}
+{% block title %}
+    Coupon Management | Her Choice
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/coupon_management.css' %}?v=1.1">
+{% endblock extra_css %}
+{% block content %}
+    <div class="coupon-management-container">
+        <div class="header-row">
+            <div>
+                <h2 class="admin-title">Coupons</h2>
+                <p class="text-muted">Manage discount coupons and promotional codes.</p>
+            </div>
+            <a href="{% url 'create_coupon' %}" class="btn-create">
+                <i class="fas fa-plus"></i>
+                <span>Create Coupon</span>
+            </a>
+        </div>
+        {% comment %} {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %} {% endcomment %}
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stats-card">
+                <h6>Total Coupons</h6>
+                <h2>{{ total_coupons }}</h2>
+            </div>
+            <div class="stats-card">
+                <h6>Active Coupons</h6>
+                <h2>{{ active_coupons }}</h2>
+            </div>
+            <div class="stats-card">
+                <h6>Expired Coupons</h6>
+                <h2>{{ expired_coupons }}</h2>
+            </div>
+          
+        </div>
+        <!-- SEARCH & FILTER -->
+        <form method="get" class="search-filter-form" id="filterForm">
+            <div class="filter-left">
+                <input type="text"
+                       name="q"
+                       class="search-input"
+                       placeholder="Search by coupon code "
+                       value="{{ search_query }}">
+                <button type="submit">
+                    <i class="fa fa-search"></i> Search
+                </button>
+                {% if search_query or status %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+            </div>
+            <div class="filter-right">
+                <select name="status" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive"
+                            {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="expired"
+                            {% if status == 'expired' %}selected{% endif %}>Expired</option>
+                </select>
+                <select name="type" id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="PERCENTAGE"
+                            {% if type_filter == 'PERCENTAGE' %}selected{% endif %}>Percentage</option>
+                    <option value="FIXED" {% if type_filter == 'FIXED' %}selected{% endif %}>Fixed Amount</option>
+                </select>
+            </div>
+        </form>
+        <!-- COUPON TABLE -->
+        <div class="coupon-table-wrapper">
+            <h5>All Coupons</h5>
+            <table class="coupon-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Discount</th>
+                        <th>Min. Purchase</th>
+                        <th>Usage</th>
+                        <th>Valid Period</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coupon in coupons %}
+                        <tr>
+                            <td>
+                                <div class="coupon-code">
+                                    <span class="code-badge">{{ coupon.code }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="discount-value">{{ coupon.discount_percentage }}%</div>
+                            </td>
+                            <td>₹ {{ coupon.minimum_amount|default:"0" }}</td>
+                            <td>
+                                <div class="usage-info">
+                                    <span class="usage-count">{{ coupon.used_count }}</span>
+                                    {% comment %} {% if coupon.max_usage %}
+                                        / {{ coupon.max_usage }}
+                                    {% else %}
+                                        / ∞
+                                    {% endif %} {% endcomment %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-range">
+                                    <p>{{ coupon.valid_from|date:"M d, Y" }} to {{ coupon.valid_to|date:"M d, Y" }}</p>
+                                    
+                                </div>
+                            </td>
+                            <td>
+                                {% if coupon.status == "active" %}
+                                    <span class="badge bg-success">Active</span>
+                                {% elif coupon.status == "inactive" %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% elif coupon.status == "expired" %}
+                                    <span class="badge bg-danger">Expired</span>
+                                {% elif coupon.status == "scheduled" %}
+                                    <span class="badge bg-warning">Scheduled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'edit_coupon' coupon.id %}" class="btn-action btn-edit">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form method="POST"
+                                          action="{% url 'delete_coupon' coupon.id %}"
+                                          class="delete-form"
+                                          style="display:inline">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn-action btn-delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="empty">
+                                <div class="empty-state">
+                                    <i class="fa fa-ticket"></i>
+                                    <p>No coupons found</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- PAGINATION -->
+            {% include "pagination.html" %}
+        </div>
+    </div>
+   
+    <!-- DELETE MODAL -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteModalText"></p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="deleteForm">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".delete-form").forEach(function(form) {
+
+        form.querySelector(".btn-delete").addEventListener("click", function () {
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This coupon will be permanently deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e91e63",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+
+        });
+
+    });
+
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const statusFilter = document.getElementById("statusFilter");
+    const filterForm = document.getElementById("filterForm");
+
+    if (statusFilter) {
+        statusFilter.addEventListener("change", function () {
+            filterForm.submit();
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

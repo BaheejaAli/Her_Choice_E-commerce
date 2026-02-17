@@ -1,0 +1,110 @@
+/* static/css/reports.css */
+.report-container {
+    display: flex;
+    max-width: 100%;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.report-main-content {
+    flex: 1;
+    padding: 32px 40px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+/* Filter Section Styling */
+.filter-section {
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid #e5e5e5;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.filter-group input, .filter-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+}
+
+/* Metrics Cards */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6b9d;
+}
+
+/* Table Styling */
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #fafafa;
+    padding: 12px;
+    text-align: left;
+    font-size: 12px;
+    color: #666;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.discount-badge {
+    background: #fff0f5;
+    color: #c44569;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}

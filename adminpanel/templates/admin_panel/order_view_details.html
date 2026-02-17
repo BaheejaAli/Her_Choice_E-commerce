@@ -5,13 +5,13 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/order_view_details.css' %}?v=1.1" />
+          href="{% static 'css/admin_panel/order_view_details.css' %}" />
 {% endblock extra_css %}
 {% block content %}
- {% if messages %}
-      <div class="messages-container">
-        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-      </div>
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+        </div>
     {% endif %}
     <div class="order-detail-wrapper">
         <!-- Breadcrumbs -->
@@ -77,20 +77,19 @@
                                     <td>{{ item.quantity }}</td>
                                     <td>₹ {{ item.price }}</td>
                                     <td>₹ {{ item.total_price }}</td>
-                                   <td>
+                                    <td>
                                         {% if item.return_status != 'none' %}
-                                            <span class="item-badge status-{{ item.return_status|lower }}">
-                                                {{ item.get_return_status_display }}
-                                            </span>
+                                            <span class="item-badge status-{{ item.return_status|lower }}">{{ item.get_return_status_display }}</span>
                                             {% if item.return_reason %}
-                                                <div class="return-reason-text" style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                                                <div class="return-reason-text"
+                                                     style="font-size: 0.8rem;
+                                                            color: #666;
+                                                            margin-top: 5px">
                                                     <strong>Reason:</strong> {{ item.return_reason|truncatechars:30 }}
                                                 </div>
                                             {% endif %}
                                         {% else %}
-                                            <span class="item-badge status-{{ item.status|lower }}">
-                                                {{ item.get_status_display }}
-                                            </span>
+                                            <span class="item-badge status-{{ item.status|lower }}">{{ item.get_status_display }}</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -170,6 +169,10 @@
                             <span class="value">{{ order.get_payment_method_display }}</span>
                         </div>
                         <div class="summary-row">
+                            <span class="label">Payment Status</span>
+                            <span class="value status-badge status-{{ order.payment_status|lower }}">{{ order.get_payment_status_display }}</span>
+                        </div>
+                        <div class="summary-row">
                             <span class="label">Order Date</span>
                             <span class="value">{{ order.created_at|date:"M d, Y" }}</span>
                         </div>
@@ -207,17 +210,6 @@
                                     {% if value in allowed_statuses %}
                                         <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
                                     {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="manage-field">
-                            <label>Payment Status</label>
-                            <select name="payment_status" class="form-select">
-                                {% for value, label in payment_statuses %}
-                                    <option value="{{ value }}"
-                                            {% if order.payment_status == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
