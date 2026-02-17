@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from orders.models import Order, OrderItem
-from django.db.models import Q
+from django.db.models import Q,F,Count
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
 from products.models import ProductVariant
+from wallet.models import Wallet, WalletTransaction
+from decimal import Decimal
 
 
 @never_cache
@@ -48,62 +50,130 @@ def order_management(request):
 
     return render(request, "admin_panel/order_management.html", context)
 
-
 @login_required
 @never_cache
 @require_POST
 def update_order_status(request, order_id):
-
     new_status = request.POST.get("status")
-    new_payment_status = request.POST.get("payment_status")
-
-    if not order_id:
-        messages.error(request, "Missing order identifier.")
-        return redirect("order_management")
-
     order = get_object_or_404(Order, id=order_id)
+    
+    total_refunded_now = Decimal('0')
+
     with transaction.atomic():
         if new_status:
             current_status = order.status.lower()
             if new_status != current_status:
                 if new_status not in order.ADMIN_STATUS_FLOW.get(current_status, []):
                     messages.error(request, f"Invalid move: {current_status} to {new_status}")   
-                    return redirect("order_view_details", id=order_id)
+                    return redirect("order_view_details", order_id=order.id)
                 
                 order.status = new_status
-                
-                if new_status in ['shipped', 'delivered', 'cancelled']:
-                    active_items = order.items.exclude(status='cancelled').exclude(
-                        return_status__in=['return_requested', 'return_approved', 'returned'])
-                    active_items.update(status=new_status)
 
-                    if new_status == 'delivered':
-                        active_items.update(delivered_at=timezone.now())
+                # DELIVERY LOGIC
+                if new_status == 'delivered':
+                    order.items.exclude(status='cancelled').update(status='delivered', delivered_at=timezone.now())
+                    if order.payment_method == 'cod':
+                        order.payment_status = 'paid'
 
-                    if new_status == 'cancelled':
-                        active_items.update(cancelled_at=timezone.now())
+                # CANCELLATION LOGIC
+                elif new_status == 'cancelled':
+                    active_items = order.items.exclude(status='cancelled')
+                    total_refunded_now = Decimal('0')
+
+                    for item in active_items:
+                        item.status = 'cancelled'
+                        item.cancelled_at = timezone.now()
+                        item.save()
+
+                        ProductVariant.objects.filter(id=item.variant.id).update(stock=F('stock') + item.quantity)
+                        
+                        if order.payment_status in ['paid', 'partially_refunded']:
+                            item_price = Decimal(str(item.total_price))
+                            
+                            if item_price > 0:
+                                wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                                wallet.add_funds(item_price)
+
+                                # Record Transaction
+                                WalletTransaction.objects.create(
+                                    wallet=wallet,
+                                    amount=item_price,
+                                    transaction_type='REFUND',
+                                    description=f"Refund for cancelled item: {item.variant.product.name} (Order: {order.orderid})"
+                                )
+                                total_refunded_now += item_price
+
+                    # 4. Sync Payment Status after cancellation
+                    stats = order.items.aggregate(
+                        total=Count('id'),
+                        cancelled=Count('id', filter=Q(status='cancelled')),
+                        returned=Count('id', filter=Q(return_status='returned'))
+                    )
+
+                    if (stats['cancelled'] + stats['returned']) == stats['total']:
+                        order.payment_status = 'refunded'
+                    elif stats['cancelled'] > 0 and order.payment_status in ['paid', 'partially_refunded']:
+                        order.payment_status = 'partially_refunded'
+
+                    if total_refunded_now > 0:
+                        messages.success(request, f"₹ {total_refunded_now} refunded to wallet due to cancellation.")
+
+
+                # RETURN & REFUND LOGIC
+                elif new_status == 'returned':
+                    approved_items = order.items.filter(return_status='return_approved')
+                    total_refunded_now = Decimal('0')
+
+                    for item in approved_items:
+                        item.return_status = 'returned'
+                        item.returned_at = timezone.now()
+                        item.save()
+                        
+                        # Restore Stock
+                        ProductVariant.objects.filter(id=item.variant.id).update(stock=F('stock') + item.quantity)
+                        item_total = Decimal(str(item.total_price))
+                        
+                        if order.payment_status in ['paid', 'partially_refunded'] and item_total > 0:
+                            wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                            wallet.balance += item_total
+                            wallet.save()
+
+                            WalletTransaction.objects.create(
+                                wallet=wallet,
+                                amount=item_total,
+                                transaction_type='REFUND',
+                                description=f"Refund for: {item.variant.product.name}"
+                            )      
+                            total_refunded_now += item_total                     
+
+                    # Recalculate Payment Status automatically
+                    stats = order.items.aggregate(
+                        total=Count('id'),
+                        returned=Count('id', filter=Q(return_status='returned')),
+                        cancelled=Count('id', filter=Q(status='cancelled'))
+                    )
+                    
+                    if (stats['returned'] + stats['cancelled']) == stats['total']:
+                        order.payment_status = 'refunded'
+                    elif stats['returned'] > 0:
+                        order.payment_status = 'partially_refunded'
+
+                    if total_refunded_now > 0:
+                        messages.success(request, f"₹ {total_refunded_now} refunded to wallet.")
 
                 elif new_status == 'return_approved':
                     order.items.filter(return_status='return_requested').update(return_status='return_approved')
                 
                 elif new_status == 'return_rejected':
                     order.items.filter(return_status='return_requested').update(return_status='return_rejected')
-                
-                elif new_status == 'returned':
-                    approved_items = order.items.filter(return_status='return_approved')
-                    for item in approved_items:
-                        item.return_status = 'returned'
-                        item.save()
 
-        if new_payment_status:
-            order.payment_status = new_payment_status
-
+        # Save the automated changes
         order.save()
         order.update_order_status()
+
+
     messages.success(request, f"Order #{order.orderid} updated successfully.")
     return redirect("order_view_details", order_id=order.id)
-
-
 @login_required
 @never_cache
 def order_view_details(request, order_id):

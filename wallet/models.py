@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from decimal import Decimal
 
 # Create your models here.
 class Wallet(models.Model):
@@ -10,7 +11,15 @@ class Wallet(models.Model):
 
     def add_funds(self,amount):
         if amount>0:
-            self.balance += amount
+            self.balance += Decimal(str(amount))
+            self.save()
+            return True
+        return False
+    
+    def deduct_funds(self, amount):
+        amount = Decimal(str(amount))
+        if 0 < amount <= self.balance:
+            self.balance -= amount
             self.save()
             return True
         return False
@@ -22,8 +31,9 @@ class Wallet(models.Model):
 class WalletTransaction(models.Model):
     TRANSACTION_TYPE = (
         ('DEPOSIT', 'Deposit'),
-        ('WITHDRAW', 'Withdrawal'),
+        ('PAYMENT', 'Order Payment'),
         ('REFERRAL', 'Referral Reward'),
+        ('REFUND', 'Refund'),
     )
 
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')

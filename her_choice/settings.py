@@ -242,3 +242,6 @@ CLOUDINARY_URL= env("CLOUDINARY_URL")
 DEFAULT_FROM_EMAIL = 'noreply@yourapp.com'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+RAZORPAY_KEY_ID=env("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET=env("RAZORPAY_KEY_SECRET")
+

@@ -1,0 +1,519 @@
+:root {
+    --pink-main: #e91e63;
+    --pink-light: #f8bbd0;
+    --pink-soft: #fde4ec;
+    --pink-dark: #c2185b;
+    --text-dark: #333;
+    --text-muted: #777;
+    --bg-page: #fdf7f9;
+    --bg-card: #ffffff;
+    --border-light: #eee;
+    --radius: 12px;
+    --transition: 0.2s ease-in-out;
+}
+
+.coupon-management-container {
+    padding: 24px;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.btn-create {
+    background: var(--pink-main);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-create:hover {
+    background: var(--pink-dark);
+    transform: translateY(-1px);
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    background: var(--pink-soft);
+    color: var(--pink-dark);
+    margin-bottom: 16px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stats-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+}
+
+.stats-card h6 {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.stats-card h2 {
+    color: var(--pink-main);
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.search-filter-form {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-left {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    font-size: 15px;
+}
+
+.filter-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-filter-form select,
+.search-filter-form button {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    font-size: 14px;
+}
+
+.search-filter-form button {
+    background: var(--pink-main);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.clear-btn {
+    color: var(--pink-main);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.coupon-table-wrapper {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+}
+
+.coupon-table-wrapper h5 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+/* =========================
+   TABLE STYLING
+========================= */
+
+.coupon-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.coupon-table th,
+.coupon-table td {
+    padding: 16px 14px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.coupon-table thead tr {
+    border-bottom: 2px solid var(--border-light);
+}
+
+.coupon-table tbody tr {
+    border-bottom: 1px solid var(--border-light);
+    transition: var(--transition);
+}
+
+.coupon-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.coupon-table th {
+    font-weight: 700;
+    font-size: 14px;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* =========================
+   COUPON SPECIFIC STYLES
+========================= */
+
+.coupon-code {
+    font-family: 'Courier New', monospace;
+}
+
+.code-badge {
+    background: var(--pink-soft);
+    color: var(--pink-dark);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.coupon-description {
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.discount-value {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--pink-main);
+}
+
+.type-badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.type-percentage {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.type-fixed {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.usage-info {
+    font-size: 14px;
+}
+
+.usage-count {
+    font-weight: 700;
+    color: var(--pink-main);
+}
+
+.date-range {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.date-range small {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.status {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status.active {
+    background: #e8f7ee;
+    color: #2e7d32;
+}
+
+.status.inactive {
+    background: #fdeaea;
+    color: #c62828;
+}
+
+.status.expired {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.btn-edit {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.btn-edit:hover {
+    background: #1976d2;
+    color: white;
+}
+
+.btn-toggle-on {
+    background: #e8f7ee;
+    color: #2e7d32;
+}
+
+.btn-toggle-on:hover {
+    background: #2e7d32;
+    color: white;
+}
+
+.btn-toggle-off {
+    background: #fdeaea;
+    color: #c62828;
+}
+
+.btn-toggle-off:hover {
+    background: #c62828;
+    color: white;
+}
+
+.btn-delete {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.btn-delete:hover {
+    background: #c62828;
+    color: white;
+}
+
+/* =========================
+   MODAL STYLES
+========================= */
+
+.modal-content {
+    border-radius: var(--radius);
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-light);
+    padding: 20px 24px;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-light);
+    padding: 16px 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.required {
+    color: #c62828;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--pink-main);
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.form-check-label {
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--pink-main);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--pink-dark);
+}
+
+.btn-secondary {
+    background: #f5f5f5;
+    color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+.btn-danger {
+    background: #c62828;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b71c1c;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty {
+    text-align: center;
+    padding: 60px 0;
+    background: #fafafa;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #9ca3af;
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #d1d5db;
+}
+
+.empty-state p {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+    .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .search-filter-form {
+        flex-direction: column;
+    }
+
+    .filter-left,
+    .filter-right {
+        width: 100%;
+    }
+
+    .search-input {
+        max-width: 100%;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .coupon-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .coupon-table {
+        min-width: 1000px;
+    }
+}
