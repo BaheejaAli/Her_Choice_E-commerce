@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .date-range {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .summary-box {
+            margin-top: 25px;
+            width: 40%;
+            float: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: #2E86C1;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+
+        td {
+            padding: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Her Choice</h1>
+<h2 style="text-align:center; margin-top:0;">Sales Report</h2>
+
+<div class="date-range">
+    Report Period: {{ start_date|date:"d-m-Y" }} to {{ end_date|date:"d-m-Y" }}
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th class="text-right">Subtotal</th>
+            <th class="text-right">Discount</th>
+            <th class="text-right">Final Amount</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.created_at|date:"d-m-Y" }}</td>
+            <td>{{ order.user.get_full_name }}</td>
+            <td class="text-right">₹ {{ order.subtotal }}</td>
+            <td class="text-right">
+                {% if order.discount > 0 %}
+                    -₹ {{ order.discount }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td class="text-right">
+                <strong>₹ {{ order.total }}</strong>
+            </td>
+            <td>{{ order.status }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="text-align:center;">
+                No orders found for this period.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="summary-box">
+    <table>
+        <tr>
+            <td><strong>Total Orders</strong></td>
+            <td class="text-right">{{ total.sales_count }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total Discount Given</strong></td>
+            <td class="text-right">-₹ {{ total.total_discount|default:"0.00" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Net Sales</strong></td>
+            <td class="text-right">₹ {{ total.total_order_amount|default:"0.00" }}</td>
+        </tr>
+    </table>
+</div>
+
+<div style="clear: both;"></div>
+
+<div class="footer">
+    Generated on {{ now|date:"d-m-Y H:i" }} |
+    Her Choice Admin System
+</div>
+
+</body>
+</html>
