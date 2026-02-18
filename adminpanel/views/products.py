@@ -20,7 +20,7 @@ def is_admin(user):
     return user.is_staff or user.is_superuser
 
 # =========== Product List View (Read) ===========
-@method_decorator([user_passes_test(is_admin), never_cache], name="dispatch")
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name="dispatch")
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = "admin_panel/product_management.html"

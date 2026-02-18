@@ -11,9 +11,8 @@ from django.utils import timezone
 from accounts.utils import send_otp_email
 from django.views.decorators.cache import never_cache
 from accounts.decorators import logout_required
-# from allauth.socialaccount.providers.google.views import oauth2_callback
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from allauth.socialaccount.providers.google.views import oauth2_callback
+from django.views.decorators.http import require_POST
 from offer.models import Referral, ReferralUsage, ReferralReward
 from django.db import transaction
 
@@ -223,6 +222,7 @@ def apply_referral(request):
 # ================== USER RESEND OTP VERIFICATION  ==============
 
 @never_cache
+@require_POST
 def user_resend_otp(request):
     verification_email = request.session.get('verification_email')
     reset_email = request.session.get('reset_email')

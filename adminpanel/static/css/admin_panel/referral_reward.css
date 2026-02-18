@@ -1,10 +1,13 @@
 /* ==============================
    REFERRAL REWARD ADMIN STYLE
+   (Matching Product Management)
 ================================ */
 
 /* Wrapper */
 .reward-wrapper {
-    padding: 25px;
+    background: #f5f7fb;
+    padding: 24px;
+    min-height: 100vh;
 }
 
 /* Header */
@@ -12,57 +15,67 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 16px 20px;
+    border-radius: 14px;
     margin-bottom: 20px;
 }
 
 .reward-header h2 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 600;
-    color: #333;
+    color: #111827;
+    margin: 0;
 }
 
 /* Add Button */
 .add-btn {
-    background: #ff2f7d;
-    color: white;
-    padding: 8px 18px;
-    border-radius: 6px;
-    text-decoration: none;
+    background: #ff0f7b;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 500;
-    transition: 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: 0.2s ease;
 }
 
 .add-btn:hover {
-    background: #d4145a;
+    background: #e80d6f;
     color: white;
 }
 
 /* Card */
 .reward-card {
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 18px;
 }
 
 /* Table */
 .reward-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 15px;
 }
 
 .reward-table th {
     text-align: left;
-    font-size: 13px;
+    padding: 14px 12px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #000000;
+    border-bottom: 1px solid #e5e7eb;
     text-transform: uppercase;
-    color: #666;
-    padding: 12px 10px;
-    border-bottom: 2px solid #eee;
+    letter-spacing: 0.5px;
 }
 
 .reward-table td {
-    padding: 14px 10px;
-    border-bottom: 1px solid #f2f2f2;
+    padding: 16px 12px;
+    border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
 }
 
@@ -70,57 +83,55 @@
     background: #fafafa;
 }
 
-/* Status Button */
+/* ================== STATUS PILL (Product Style) ================== */
 .status-btn {
-    min-width: 90px;
-    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
     font-weight: 500;
-    border-radius: 20px;
-    transition: 0.3s ease;
+    border: none;
+    min-width: 90px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
 }
 
-/* Active Style */
 .status-btn.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
+    background: #e7f8ef !important;
+    color: #16a34a !important;
 }
 
-.status-btn.btn-success:hover {
-    background-color: #218838;
-}
-
-/* Inactive Style */
 .status-btn.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
+    background: #fdecec !important;
+    color: #dc2626 !important;
 }
 
-.status-btn.btn-secondary:hover {
-    background-color: #5a6268;
+/* ================== ACTION BUTTONS (Product Style) ================== */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
-/* Edit Button */
-.edit-btn {
-    background: #ffc107;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
+.action-btn {
+    font-size: 18px;
+    color: #1e40af;
     text-decoration: none;
-    color: #000;
-    transition: 0.3s ease;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
 }
 
-.edit-btn:hover {
-    background: #e0a800;
-    color: #000;
+.action-btn:hover {
+    text-decoration: underline;
 }
 
 /* Empty State */
 .empty-state {
-    padding: 25px;
+    padding: 30px;
     text-align: center;
-    color: #777;
-    font-style: italic;
+    color: #9ca3af;
+    font-size: 14px;
 }
 
 /* Responsive */

@@ -14,9 +14,8 @@ from django.conf import settings
 from .utils import create_order_instance, finalize_order
 from decimal import Decimal
 from wallet.models import WalletTransaction
-
-# Create your views here.
-
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 @require_POST
 @login_required
@@ -191,6 +190,8 @@ razorpay_client = razorpay.Client(
 
 @login_required
 def checkout(request):
+
+    # FETCH CART & VALIDATE
     cart = get_object_or_404(Cart, user=request.user, is_active=True)
     cart_items = cart.items.select_related(
         "variant",
@@ -203,6 +204,7 @@ def checkout(request):
         messages.warning(request, "Your cart is empty")
         return redirect("cart")
 
+    # CALCULATE BASE TOTALS
     total_mrp = 0
     total_discount = 0
     subtotal = 0
@@ -241,53 +243,56 @@ def checkout(request):
     else:
         delivery_charge = 40 if subtotal > 0 else 0
 
+    # ---------HANDLE COUPON-------------
     coupon_discount = 0
     applied_coupon = None
-
+    # Apply coupon
     if request.method == "POST":
-        coupon_code = request.POST.get("coupon_code")
+        if "apply_coupon" in request.POST:
+            coupon_code = request.POST.get("coupon_code", "").strip().upper()
 
-        if coupon_code:
-            try:
-                coupon = Coupon.objects.get(code=coupon_code.upper())
-                is_valid, message = coupon.is_valid(subtotal)
-                if is_valid:
-                    coupon_discount = coupon.calculate_discount(subtotal)
-                    grand_total -= coupon_discount
-                    applied_coupon = coupon
+            if coupon_code:
+                try:
+                    coupon = Coupon.objects.get(code=coupon_code, is_active=True)
+                    is_valid, message = coupon.is_valid(subtotal, request.user)
 
-                else:
-                    messages.error(request, "Coupon is invalid.")
-            except Coupon.DoesNotExist:
-                messages.error(request, "Invalid coupon code.")
+                    if is_valid:
+                        request.session["coupon_code"] = coupon.code
+                        messages.success(request, "Coupon applied successfully!")
+                    else:
+                        messages.error(request, message)
+                
+                except Coupon.DoesNotExist:
+                    messages.error(request, "Invalid coupon code.")
+            
+            return redirect("checkout")
+    
+        # Remove coupon
+        if "remove_coupon" in request.POST:
+            request.session.pop("coupon_code", None)
+            messages.success(request, "Coupon removed.")
+            return redirect("checkout")
+    
+    coupon_code = request.session.get("coupon_code")
 
-    discounted_subtotal = subtotal - coupon_discount
-    if discounted_subtotal < 0:
-        discounted_subtotal = 0
+    if coupon_code:
+        try:
+            applied_coupon = Coupon.objects.get(code=coupon_code)
+            coupon_discount = applied_coupon.calculate_discount(subtotal)
+        except Coupon.DoesNotExist:
+            request.session.pop("coupon_code", None)   
 
+    # FINAL TOTAL CALCULATION
+    discounted_subtotal = max(subtotal - coupon_discount, 0)
     tax_percentage = 5
     tax = round((discounted_subtotal * tax_percentage) / 100, 2)
-
     grand_total = discounted_subtotal + delivery_charge + tax
-
-    addresses = UserAddress.objects.filter(user=request.user)
-    default_address = addresses.filter(is_default=True).first()
-
-    context = {
-        "cart": cart,
-        "cart_items": cart_items,
-        "subtotal": subtotal,
-        "discount": total_discount,
-        "delivery_charge": delivery_charge,
-        "tax": tax,
-        "grand_total": grand_total,
-        "addresses": addresses,
-        "default_address": default_address,
-    }
     
-    if request.method == "POST":
+
+    # ORDER PLACEMENT
+    if request.method == "POST" and "place_order" in request.POST:
         address_id = request.POST.get("address_id")
-        payment_method = request.POST.get("payment_method", "COD")
+        payment_method = request.POST.get("payment_method", "cod")
 
         if not address_id:
             messages.error(request, "Please select a delivery address.")
@@ -299,13 +304,13 @@ def checkout(request):
             user=request.user
         )
 
-
         # CASH ON DELIVERY
         if payment_method == "cod":
             with transaction.atomic():
                 order = create_order_instance(
                     request, selected_address, subtotal, total_discount, coupon_discount, tax, grand_total, delivery_charge, "cod")
                 finalize_order(order, cart_items, cart, applied_coupon)
+            request.session.pop("coupon_code", None)
             return redirect("order_success", order_id=order.id)
 
         # WALLET PAYMENT
@@ -323,6 +328,7 @@ def checkout(request):
                         description=f"Payment for Order #{order.orderid}"
                     )
                     finalize_order(order, cart_items, cart, applied_coupon)
+                request.session.pop("coupon_code", None)
                 messages.success(request, "Order placed successfully using Wallet!")
                 return redirect("order_success", order_id=order.id)
             else:
@@ -343,20 +349,43 @@ def checkout(request):
                 order.coupon = applied_coupon
                 order.save()
 
-            context.update({
+            razorpay_context = {
                 "order": order,
                 "razorpay_order_id": razorpay_order['id'],
                 "razorpay_key": settings.RAZORPAY_KEY_ID,
                 "amount": int(grand_total * 100),
-            })
-            return render(request, "cart/razorpay_checkout.html", context)
+            }
+            return render(request, "cart/razorpay_checkout.html", razorpay_context)
 
-   
+    # CONTEXT FOR TEMPLATE
+    addresses = UserAddress.objects.filter(user=request.user)
+    default_address = addresses.filter(is_default=True).first()
+
+    available_coupons = Coupon.objects.filter(
+        is_active=True,
+        valid_from__lte=timezone.now(),
+        valid_to__gte=timezone.now()
+    )
+    context = {
+        "cart": cart,
+        "cart_items": cart_items,
+        "subtotal": subtotal,
+        "discount": total_discount,
+        "coupon_discount": coupon_discount,
+        "delivery_charge": delivery_charge,
+        "tax": tax,
+        "grand_total": grand_total,
+        "addresses": addresses,
+        "default_address": default_address,
+        "available_coupons":available_coupons,
+        "applied_coupon_code": coupon_code,
+    }
+    
     return render(request, "cart/checkout.html", context)
 
-from django.views.decorators.csrf import csrf_exempt
-
 @csrf_exempt
+@require_POST
+@login_required
 def payment_handler(request):
     if request.method == "POST":
         payment_id = request.POST.get('razorpay_payment_id')
@@ -395,11 +424,12 @@ def payment_handler(request):
             
     return redirect("checkout")
 
+@login_required
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, "cart/order_success.html", {"order": order, "success_message": "Thank you for your purchase!"})
 
-
+@login_required
 def order_failure(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, "cart/order_failure.html", {

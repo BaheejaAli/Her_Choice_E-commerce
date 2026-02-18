@@ -19,7 +19,7 @@ def is_admin(user):
     return user.is_staff or user.is_superuser
 
 # =========== Brand List View (Read) ===========
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class BrandListView(LoginRequiredMixin, ListView):
     model = Brand
     template_name = 'admin_panel/brand_management.html'
@@ -98,7 +98,7 @@ def toggle_brand_status(request, brand_id):
 # =============== Brand Update View ===================
 
 
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class BrandUpdateView(LoginRequiredMixin, UpdateView):
     model = Brand
     form_class = BrandForm
@@ -117,7 +117,7 @@ class BrandUpdateView(LoginRequiredMixin, UpdateView):
 # ============== Brand Create View ===================
 
 
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class BrandCreateView(LoginRequiredMixin, CreateView):
     model = Brand
     form_class = BrandForm

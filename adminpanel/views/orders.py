@@ -12,10 +12,15 @@ from django.db import transaction
 from products.models import ProductVariant
 from wallet.models import Wallet, WalletTransaction
 from decimal import Decimal
+from django.contrib.auth.decorators import user_passes_test
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
 
 
-@never_cache
 @login_required
+@user_passes_test(is_admin)
+@never_cache
 def order_management(request):
     status = request.GET.get("status")
     query = request.GET.get("q", "").strip().lower()
@@ -50,9 +55,10 @@ def order_management(request):
 
     return render(request, "admin_panel/order_management.html", context)
 
-@login_required
-@never_cache
 @require_POST
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def update_order_status(request, order_id):
     new_status = request.POST.get("status")
     order = get_object_or_404(Order, id=order_id)
@@ -174,7 +180,9 @@ def update_order_status(request, order_id):
 
     messages.success(request, f"Order #{order.orderid} updated successfully.")
     return redirect("order_view_details", order_id=order.id)
+
 @login_required
+@user_passes_test(is_admin)
 @never_cache
 def order_view_details(request, order_id):
     order = get_object_or_404(Order.objects.select_related("user", "address", "billing_address")
@@ -192,6 +200,9 @@ def order_view_details(request, order_id):
         "payment_statuses": Order.PAYMENT_STATUS_CHOICES
     })
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def stock_management(request):
     query = request.GET.get('q','')
     stock_status = request.GET.get('stock_status', '')

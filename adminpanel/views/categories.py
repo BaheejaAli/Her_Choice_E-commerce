@@ -20,7 +20,7 @@ def is_admin(user):
     return user.is_staff or user.is_superuser
 
 # =========== Category List View (Read) ===========
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'admin_panel/category_management.html'
@@ -71,7 +71,7 @@ class CategoryListView(LoginRequiredMixin, ListView):
 # ============== Category Create View ===================
 
 
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
@@ -89,7 +89,7 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 # =============== Category Update View ===================
 
 
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
 class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm

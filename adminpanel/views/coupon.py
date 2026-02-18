@@ -5,7 +5,16 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def coupon_management(request):
     coupons = Coupon.objects.all().order_by('-created_at')
 
@@ -49,6 +58,9 @@ def coupon_management(request):
     }
     return render(request, "admin_panel/coupon_management.html", context)
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def create_coupon(request):
     if request.method == 'POST':
         form = CouponForm(request.POST)
@@ -64,6 +76,9 @@ def create_coupon(request):
     return render(request, "admin_panel/coupon_form.html", {"form": form})
 
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def edit_coupon(request, coupon_id):
     coupon = get_object_or_404(Coupon, id=coupon_id)
 
@@ -80,6 +95,9 @@ def edit_coupon(request, coupon_id):
 
     return render(request, "admin_panel/coupon_form.html", {"form": form})
 
+@require_POST
+@login_required
+@user_passes_test(is_admin)
 def toggle_coupon_status(request, coupon_id):
     if request.method == 'POST':
         coupon = get_object_or_404(Coupon, id=coupon_id)
@@ -95,7 +113,9 @@ def toggle_coupon_status(request, coupon_id):
         )
     })
 
-
+@require_POST
+@login_required
+@user_passes_test(is_admin)
 def delete_coupon(request, coupon_id):
     if request.method == 'POST':
         print("the delete")

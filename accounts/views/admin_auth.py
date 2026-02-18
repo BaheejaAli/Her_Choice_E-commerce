@@ -47,6 +47,7 @@ def admin_login(request):
 
 # ================== Admin Forgot Password ==================
 # Handles admin forgot password by checking if the email exists
+@never_cache
 def admin_forgot_password(request):
     if request.method == "POST":
         form = AdminForgotPasswordForm(request.POST) # <--- Using the Form
@@ -93,6 +94,7 @@ def admin_forgot_password(request):
 
 # ================== Admin OTP Verification ==================
 # Verifies the OTP entered by the admin during password reset.
+@never_cache
 def admin_otp_verify(request):
     if request.method == "POST":
         entered_otp = request.POST.get("otp")
@@ -120,6 +122,7 @@ def admin_otp_verify(request):
 
 
 # ================== Admin Reset Password ==================
+@never_cache
 def admin_reset_password(request):
     # Ensure OTP was verified before resetting password 
     if not request.session.get("otp_verified"):
@@ -158,10 +161,12 @@ def admin_reset_password(request):
     return render(request, "accounts/admin_reset_password.html", {"form": form})
 
 # ================== Admin Reset Password Success ==================
+@never_cache
 def admin_reset_success(request):
     return render(request, "accounts/admin_reset_success.html")
 
 # ================== Admin Logout ==================
+@login_required
 def admin_logout(request):
     logout(request)
     return redirect("admin_login")

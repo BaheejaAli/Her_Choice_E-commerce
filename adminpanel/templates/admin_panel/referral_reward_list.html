@@ -2,105 +2,107 @@
 {% load static %}
 {% block title %}Referral Rewards{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/admin_panel/referral_reward.css' %}?v=1.1">
+<link rel="stylesheet" href="{% static 'css/admin_panel/referral_reward.css' %}?v=1.1">
 {% endblock %}
 {% block content %}
-    <form style="display:none;">
-        {% csrf_token %}
-    </form>
-    <div class="reward-wrapper">
-        <div class="reward-header">
-            <h2>Referral Reward Settings</h2>
-            <a href="{% url 'referral_reward_add' %}" class="add-btn">+ Add New Reward</a>
-        </div>
-        <div class="reward-card">
-            {% if rewards %}
-                <table class="reward-table">
-                    <thead>
-                        <tr>
-                            <th>Referrer Amount</th>
-                            <th>Receiver Amount</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for reward in rewards %}
-                            <tr>
-                                <td>₹ {{ reward.referrer_amount }}</td>
-                                <td>₹ {{ reward.receiver_amount }}</td>
-                                <td>
-                                    <button type="button" class="btn status-btn {% if reward.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                                            data-url="{% url 'referral_reward_toggle' reward.id %}"
-                                            onclick="toggleReferralStatus(this)">
-                                        {{ reward.is_active|yesno:"Active,Inactive" }}
-                                    </button>
-                                </td>
-                                <td>{{ reward.created_at|date:"d M Y" }}</td>
-                                <td>
-                                    <a href="{% url 'referral_reward_edit' reward.id %}" class="edit-btn">Edit</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="empty-state">No rewards configured.</div>
-            {% endif %}
-        </div>
+<form style="display:none;">
+    {% csrf_token %}
+</form>
+<div class="reward-wrapper">
+    <div class="reward-header">
+        <h2>Referral Reward Settings</h2>
+        <a href="{% url 'referral_reward_add' %}" class="add-btn">+ Add New Reward</a>
     </div>
+    <div class="reward-card">
+        {% if rewards %}
+        <table class="reward-table">
+            <thead>
+                <tr>
+                    <th>Referrer Amount</th>
+                    <th>Receiver Amount</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reward in rewards %}
+                <tr>
+                    <td>₹ {{ reward.referrer_amount }}</td>
+                    <td>₹ {{ reward.receiver_amount }}</td>
+                    <td>
+                        <button type="button"
+                            class="btn status-btn {% if reward.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                            data-url="{% url 'referral_reward_toggle' reward.id %}"
+                            onclick="toggleReferralStatus(this)">
+                            {{ reward.is_active|yesno:"Active,Inactive" }}
+                        </button>
+                    </td>
+                    <td>{{ reward.created_at|date:"d M Y" }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'referral_reward_edit' reward.id %}" class="action-btn">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No rewards configured.</div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
 {% block extra_js %}
-    <script>
-  function getCSRFToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]').value;
-}
+<script>
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
 
-function toggleReferralStatus(btn) {
-    const url = btn.dataset.url;
+    function toggleReferralStatus(btn) {
+        const url = btn.dataset.url;
 
-    btn.disabled = true;
+        btn.disabled = true;
 
-    fetch(url, {
-        method: 'POST',
-        credentials: "same-origin",
-        headers: {
-            'X-CSRFToken': getCSRFToken(),
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Request failed with status " + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
+        fetch(url, {
+            method: 'POST',
+            credentials: "same-origin",
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Request failed with status " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
 
-            // 🔥 Update only this button (like product toggle)
-            btn.textContent = data.is_active ? 'Active' : 'Inactive';
+                    // 🔥 Update only this button (like product toggle)
+                    btn.textContent = data.is_active ? 'Active' : 'Inactive';
 
-            btn.classList.toggle('btn-success', data.is_active);
-            btn.classList.toggle('btn-secondary', !data.is_active);
+                    btn.classList.toggle('btn-success', data.is_active);
+                    btn.classList.toggle('btn-secondary', !data.is_active);
 
-            // Optional Toast (since you already use SweetAlert)
-            Toast.fire({
-                icon: 'success',
-                title: data.message
+                    // Optional Toast (since you already use SweetAlert)
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Toggle failed. Check console.');
+            })
+            .finally(() => {
+                btn.disabled = false;
             });
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        alert('Toggle failed. Check console.');
-    })
-    .finally(() => {
-        btn.disabled = false;
-    });
-}
+    }
 
 
-    </script>
+</script>
 {% endblock %}

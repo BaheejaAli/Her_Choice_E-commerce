@@ -12,6 +12,11 @@ from django.http import HttpResponse
 from io import BytesIO
 from django.template.loader import render_to_string
 from weasyprint import HTML
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.cache import never_cache
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
 
 
 def get_filtered_orders(request):
@@ -47,6 +52,9 @@ def get_filtered_orders(request):
 
     return orders, start_date, end_date
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def sales_report(request):
     orders, start_date, end_date = get_filtered_orders(request)
     total = orders.aggregate(
@@ -69,7 +77,9 @@ def sales_report(request):
         }
     return render(request,"admin_panel/sales_report.html",context)
 
-
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def export_pdf(request):
     orders, start_date, end_date = get_filtered_orders(request)
 
@@ -94,8 +104,9 @@ def export_pdf(request):
 
     return response
 
-
-
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def export_excel(request):
     orders, start_date, end_date = get_filtered_orders(request)
 

@@ -402,6 +402,53 @@ a {
   font-weight: 600;
 }
 
+/* coupon*/
+.available-coupons {
+  margin-bottom: 15px;
+}
+.coupon-card {
+  border: 1px dashed #ccc;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+.coupon-card:hover {
+  background-color: #f5f5f5;
+}
+
+/* When user clicks coupon */
+.coupon-card.selected {
+  border: 2px solid #007bff;
+  background-color: #eef5ff;
+}
+
+/* When coupon is applied */
+.coupon-card.active-coupon {
+  border: 2px solid #28a745;
+  background-color: #eafaf1;
+}
+
+
+/* Highlight applied coupon */
+.active-coupon {
+  border: 2px solid #28a745;
+  background-color: #eafaf1;
+}
+
+.coupon-code {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.coupon-details {
+  font-size: 13px;
+  color: #555;
+}
+
+
 /* Responsive Design for Coupon Section */
 @media (max-width: 768px) {
   .coupon-input-wrapper {
