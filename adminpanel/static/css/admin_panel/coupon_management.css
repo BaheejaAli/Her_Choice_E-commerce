@@ -252,89 +252,74 @@
     color: var(--text-muted);
 }
 
-.status {
-    padding: 6px 14px;
+/* =========================
+   STATUS PILL (Product Style)
+========================= */
+.badge {
+    padding: 8px 16px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    min-width: 90px;
+    display: inline-block;
+    text-align: center;
+    cursor: default;
 }
 
-.status.active {
-    background: #e8f7ee;
-    color: #2e7d32;
+.badge.bg-success {
+    background: #e7f8ef !important;
+    color: #16a34a !important;
 }
 
-.status.inactive {
-    background: #fdeaea;
-    color: #c62828;
+.badge.bg-secondary {
+    background: #fdecec !important;
+    color: #dc2626 !important;
 }
 
-.status.expired {
-    background: #fff3e0;
-    color: #e65100;
+.badge.bg-danger {
+    background: #fdecec !important;
+    color: #dc2626 !important;
+}
+
+.badge.bg-warning {
+    background: #fff3e0 !important;
+    color: #e65100 !important;
 }
 
 /* =========================
-   ACTION BUTTONS
+   ACTION BUTTONS (Product Style)
 ========================= */
-
 .action-buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
+    align-items: center;
 }
 
 .btn-action {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    background: none;
     border: none;
     cursor: pointer;
-    display: flex;
+    font-size: 18px;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    font-size: 14px;
+    text-decoration: none;
 }
 
-.btn-edit {
-    background: #e3f2fd;
-    color: #1976d2;
+.btn-action.btn-edit {
+    color: #1e40af;
 }
 
-.btn-edit:hover {
-    background: #1976d2;
-    color: white;
+.btn-action.btn-edit:hover {
+    opacity: 0.85;
 }
 
-.btn-toggle-on {
-    background: #e8f7ee;
-    color: #2e7d32;
+.btn-action.btn-delete {
+    color: #dc2626;
 }
 
-.btn-toggle-on:hover {
-    background: #2e7d32;
-    color: white;
-}
-
-.btn-toggle-off {
-    background: #fdeaea;
-    color: #c62828;
-}
-
-.btn-toggle-off:hover {
-    background: #c62828;
-    color: white;
-}
-
-.btn-delete {
-    background: #ffebee;
-    color: #c62828;
-}
-
-.btn-delete:hover {
-    background: #c62828;
-    color: white;
+.btn-action.btn-delete:hover {
+    color: #b91c1c;
 }
 
 /* =========================

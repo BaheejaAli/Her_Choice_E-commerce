@@ -6,6 +6,9 @@ from django.db.models import Q
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
+from django.views.decorators.http import require_POST
+from decimal import Decimal
+from wallet.models import Wallet, WalletTransaction
 
 # Create your views here.
 @login_required
@@ -47,6 +50,8 @@ def order_invoice(request,order_id):
 
     return render(request, "orders/order_invoice.html",{"order":order})
 
+@login_required
+@require_POST
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     if order.status not in ["pending", "processing", "partially_cancelled"]:
@@ -63,7 +68,8 @@ def cancel_order(request, order_id):
 
         with transaction.atomic():
             items_to_cancel = order.items.filter(id__in=selected_item_ids)
-            
+            total_refund_amount = Decimal('0.00')
+
             for item in items_to_cancel:
                 if item.status != "cancelled":
                     # Update Inventory
@@ -76,22 +82,42 @@ def cancel_order(request, order_id):
                     item.cancel_reason = cancel_reason 
                     item.cancelled_at = timezone.now()
                     item.save()
-            
+
+                if order.payment_status == "paid" and order.payment_method in ["razorpay", "wallet"]:            
+                    refund_amount = Decimal(str(item.total_price))
+                    total_refund_amount += refund_amount
+
+            if total_refund_amount > 0:
+                wallet,_ = Wallet.objects.get_or_create(user=order.user)
+                wallet.balance += total_refund_amount
+                wallet.save()
+
+                WalletTransaction.objects.create(
+                    wallet = wallet,
+                    amount = total_refund_amount,
+                    transaction_type = "REFUND",
+                    description=f"Refund for cancelled items in Order {order.orderid}"
+                )
+                order.payment_status = "partially_refunded"
+
             total_items = order.items.count()
             cancelled_items_count = order.items.filter(status="cancelled").count()
 
             if total_items == cancelled_items_count:
                 order.status = "cancelled"
+                if order.payment_status == "partially_refunded":
+                    order.payment_status = "refunded"
                 messages.success(request, "Your entire order has been cancelled successfully.")
             else:
                 order.status = "partially_cancelled"
                 messages.success(request, f"Successfully cancelled {len(selected_item_ids)} item(s).")
             
-            order.save(update_fields=["status", "updated_at"])          
+            order.save(update_fields=["status", "payment_status", "updated_at"])          
         return redirect("order_details", order_id=order.id)
     
 
 @login_required
+@require_POST
 def return_request(request, order_id):
     if request.method == "POST":
         item_id = request.POST.get("item_id")

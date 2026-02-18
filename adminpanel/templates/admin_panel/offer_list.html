@@ -1,244 +1,239 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-    Offer Management | Her Choice
+Offer Management | Her Choice
 {% endblock title %}
 
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/admin_panel/offer_list.css' %}?v=1.2 ">
+<link rel="stylesheet" href="{% static 'css/admin_panel/offer_list.css' %}?v=1.2 ">
 {% endblock extra_css %}
 {% block content %}
-    <div class="offer-management-container">
-        {% comment %} {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %} {% endcomment %}
-        <div class="header-section d-flex justify-content-between align-items-center mb-4">
-            {% comment %} <p class="text-muted m-0"></p>{% endcomment %}
-            <h2 class="admin-title">Offer Management</h2>
-            <a href="{% url 'offer_create' %}"
-               class="create-offer-btn btn btn-primary">
-                <i class="fa-solid fa-plus"></i> Create New Offer
-            </a> 
-            
+<div class="offer-management-container">
+    {% comment %} {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %} {% endcomment %}
+    <div class="header-section d-flex justify-content-between align-items-center mb-4">
+        {% comment %} <p class="text-muted m-0"></p>{% endcomment %}
+        <h2 class="admin-title">Offer Management</h2>
+        <a href="{% url 'offer_create' %}" class="create-offer-btn btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Create New Offer
+        </a>
+
+    </div>
+    <!-- STATS -->
+    <div class="stats-row">
+        <div class="stats-card">
+            <h6>Total Offers</h6>
+            <h2>{{ all_offers_count }}</h2>
         </div>
-        <!-- STATS -->
-        <div class="stats-row">
-            <div class="stats-card">
-                <h6>Total Offers</h6>
-                <h2>{{ all_offers_count }}</h2>
-            </div>
-            <div class="stats-card">
-                <h6>Product Offers</h6>
-                <h2>{{ product_offers_count }}</h2>
-            </div>
-            <div class="stats-card">
-                <h6>Category Offers</h6>
-                <h2>{{ category_offers_count }}</h2>
-            </div>
+        <div class="stats-card">
+            <h6>Product Offers</h6>
+            <h2>{{ product_offers_count }}</h2>
         </div>
-        <div class="filter-section mb-4">
-            <div class="offer-tabs btn-group">
-                <a href="#"
-                   class="btn btn-outline-primary {% if not request.GET.type %}active{% endif %}">All Offers</a>
-                <a href="?type=product"
-                   class="btn btn-outline-primary {% if request.GET.type == 'product' %}active{% endif %}">
-                    Product Offers
-                </a>
-                <a href="?type=category"
-                   class="btn btn-outline-primary {% if request.GET.type == 'category' %}active{% endif %}">
-                    Category Offers
-                </a>
-            </div>
-        </div>
-        <div class="offer-table-wrapper section-card">
-            <table class="offer-table table">
-                <thead>
-                    <tr>
-                        <th>Offer Name</th>
-                        <th>Type</th>
-                        <th>Applied to</th>
-                        <th>Discount</th>
-                        <th>Validity</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in offer_list %}
-                        <tr>
-                            <td>
-                                <strong>{{ item.offer.name }}</strong>
-                            </td>
-                            <td>
-                                <span class="badge {% if item.offer.target_type == 'product' %}bg-info{% else %}bg-secondary{% endif %}">
-                                    {{ item.offer.offer_type|title }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if item.targets %}
-                                    {{ item.targets|safe }}
-                                {% else %}
-                                    <span class="text-muted">No Target</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="text-success fw-bold">{{ item.offer.discount_percentage }}% Off</span>
-                            </td>
-                            <td>
-                                {{ item.offer.start_at|date:"Y-m-d" }}
-                                →
-                                {% if item.offer.end_at %}
-                                    {{ item.offer.end_at|date:"Y-m-d" }}
-                                {% else %}
-                                    Never
-                                {% endif %}
-                            </td>
-                            <td class="text-center align-middle">
-                                <div style="cursor: pointer"
-                                     data-url="{% url 'toggle_offer_status' item.offer.id %}"
-                                     onclick="toggleOfferStatus(this, '{{ item.offer.id }}')">
-                                    <span id="status-badge-{{ item.offer.id }}"
-                                          class="badge {% if item.offer.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                        {{ item.offer.is_active|yesno:"Active,Inactive" }}
-                                    </span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="action-buttons d-flex gap-2">
-                                    <a href="{% url 'offer_edit' item.offer.id %}"
-                                       class="btn btn-sm btn-outline-dark">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="confirmDelete('{{ item.offer.id }}', '{{ item.offer.name }}')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7">
-                                <div class="empty-state-container">
-                                    <div class="empty-state-icon">
-                                        <i class="fa-solid fa-tags"></i>
-                                    </div>
-                                    <h4>No Offers Found</h4>
-                                    <p>There are no active discounts at the moment.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="stats-card">
+            <h6>Category Offers</h6>
+            <h2>{{ category_offers_count }}</h2>
         </div>
     </div>
+    <div class="filter-section mb-4">
+        <div class="offer-tabs btn-group">
+            <a href="#" class="btn btn-outline-primary {% if not request.GET.type %}active{% endif %}">All Offers</a>
+            <a href="?type=product"
+                class="btn btn-outline-primary {% if request.GET.type == 'product' %}active{% endif %}">
+                Product Offers
+            </a>
+            <a href="?type=category"
+                class="btn btn-outline-primary {% if request.GET.type == 'category' %}active{% endif %}">
+                Category Offers
+            </a>
+        </div>
+    </div>
+    <div class="offer-table-wrapper section-card">
+        <table class="offer-table table">
+            <thead>
+                <tr>
+                    <th>Offer Name</th>
+                    <th>Type</th>
+                    <th>Applied to</th>
+                    <th>Discount</th>
+                    <th>Validity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in offer_list %}
+                <tr>
+                    <td>
+                        <strong>{{ item.offer.name }}</strong>
+                    </td>
+                    <td>
+                        <span
+                            class="badge {% if item.offer.target_type == 'product' %}bg-info{% else %}bg-secondary{% endif %}">
+                            {{ item.offer.offer_type|title }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if item.targets %}
+                        {{ item.targets|safe }}
+                        {% else %}
+                        <span class="text-muted">No Target</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="text-success fw-bold">{{ item.offer.discount_percentage }}% Off</span>
+                    </td>
+                    <td>
+                        {{ item.offer.start_at|date:"Y-m-d" }}
+                        →
+                        {% if item.offer.end_at %}
+                        {{ item.offer.end_at|date:"Y-m-d" }}
+                        {% else %}
+                        Never
+                        {% endif %}
+                    </td>
+                    <td class="text-center align-middle">
+                        <div style="cursor: pointer" data-url="{% url 'toggle_offer_status' item.offer.id %}"
+                            onclick="toggleOfferStatus(this, '{{ item.offer.id }}')">
+                            <span id="status-badge-{{ item.offer.id }}"
+                                class="badge {% if item.offer.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ item.offer.is_active|yesno:"Active,Inactive" }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-buttons d-flex gap-2">
+                            <a href="{% url 'offer_edit' item.offer.id %}" class="btn btn-sm btn-outline-dark">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                onclick="confirmDelete('{{ item.offer.id }}', '{{ item.offer.name }}')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state-container">
+                            <div class="empty-state-icon">
+                                <i class="fa-solid fa-tags"></i>
+                            </div>
+                            <h4>No Offers Found</h4>
+                            <p>There are no active discounts at the moment.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock content %}
 {% block extra_js %}
-    <script>
-/* ============================
-   TOGGLE OFFER STATUS
-============================ */
-function toggleOfferStatus(container, offerId) {
-    const url = container.getAttribute('data-url');
-    const badge = document.getElementById(`status-badge-${offerId}`);
+<script>
+    /* ============================
+       TOGGLE OFFER STATUS
+    ============================ */
+    function toggleOfferStatus(container, offerId) {
+        const url = container.getAttribute('data-url');
+        const badge = document.getElementById(`status-badge-${offerId}`);
 
-    container.style.pointerEvents = 'none';
-    badge.style.opacity = '0.5';
+        container.style.pointerEvents = 'none';
+        badge.style.opacity = '0.5';
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            if (data.is_active) {
-                badge.className = 'badge bg-success';
-                badge.innerText = 'Active';
-            } else {
-                badge.className = 'badge bg-danger';
-                badge.innerText = 'Inactive';
-            }
-
-            Toast.fire({
-                icon: 'success',
-                title: 'Status updated'
-            });
-        }
-    })
-    .catch(() => {
-        Toast.fire({
-            icon: 'error',
-            title: 'Failed to update status'
-        });
-    })
-    .finally(() => {
-        container.style.pointerEvents = 'auto';
-        badge.style.opacity = '1';
-    });
-}
-
-
-/* ============================
-   DELETE OFFER (SweetAlert)
-============================ */
-function confirmDelete(offerId, offerName) {
-    Swal.fire({
-        title: 'Delete Offer?',
-        text: `Are you sure you want to delete "${offerName}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, delete it',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch("{% url 'delete_offer' 0 %}".replace('0', offerId),  {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                }
-            })
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    if (data.is_active) {
+                        badge.className = 'badge bg-success';
+                        badge.innerText = 'Active';
+                    } else {
+                        badge.className = 'badge bg-danger';
+                        badge.innerText = 'Inactive';
+                    }
+
                     Toast.fire({
                         icon: 'success',
-                        title: data.message
-                    });
-
-                    // Reload after short delay
-                    setTimeout(() => {
-                        location.reload();
-                    }, 800);
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Delete failed'
+                        title: 'Status updated'
                     });
                 }
             })
             .catch(() => {
                 Toast.fire({
                     icon: 'error',
-                    title: 'Something went wrong'
+                    title: 'Failed to update status'
                 });
+            })
+            .finally(() => {
+                container.style.pointerEvents = 'auto';
+                badge.style.opacity = '1';
             });
-        }
-    });
-}
-    </script>
+    }
+
+
+    /* ============================
+       DELETE OFFER (SweetAlert)
+    ============================ */
+    function confirmDelete(offerId, offerName) {
+        Swal.fire({
+            title: 'Delete Offer?',
+            text: `Are you sure you want to delete "${offerName}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("{% url 'delete_offer' 0 %}".replace('0', offerId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Toast.fire({
+                                icon: 'success',
+                                title: data.message
+                            });
+
+                            // Reload after short delay
+                            setTimeout(() => {
+                                location.reload();
+                            }, 800);
+                        } else {
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Delete failed'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Something went wrong'
+                        });
+                    });
+            }
+        });
+    }
+</script>
 {% endblock extra_js %}

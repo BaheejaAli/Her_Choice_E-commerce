@@ -17,8 +17,8 @@ from accounts.models import CustomUser
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
-@method_decorator([user_passes_test(is_admin), never_cache], name='dispatch')
-class UserListView(LoginRequiredMixin, ListView):
+@method_decorator([login_required, user_passes_test(is_admin), never_cache], name='dispatch')
+class UserListView(ListView):
     model = CustomUser
     template_name = 'admin_panel/user_management.html'
     context_object_name = 'users'
@@ -74,8 +74,10 @@ class UserListView(LoginRequiredMixin, ListView):
 
 
 # ========= USER TOGGLE STATUS(BLOCK/UNBLOCK) ==================
+@require_POST
 @login_required
 @user_passes_test(is_admin)
+@never_cache
 def toggle_user_status(request, user_id):
 
     if request.method == 'POST':

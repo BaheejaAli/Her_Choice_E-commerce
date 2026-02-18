@@ -145,22 +145,23 @@ class Coupon(models.Model):
         now = timezone.now()
 
         if not self.is_active:
-            return False
+            return False, "This coupon is inactive."
 
         if not (self.valid_from <= now <= self.valid_to):
-            return False
+            return False, "This coupon has expired or is not yet active."
 
         if self.used_count >= self.limit:
-            return False
+            return False, "Coupon usage limit reached."
 
         if cart_total < self.minimum_amount:
-            return False
+            return False, f"Minimum order amount is ₹{self.minimum_amount}"
 
         usage = CouponUsage.objects.filter(user=user, coupon=self).first()
         if usage and usage.used_count >= self.max_usage_per_user:
-            return False
+            return False, "You have already used this coupon."
 
-        return True
+        return True, "Coupon is valid."
+
     
     @property
     def status(self):

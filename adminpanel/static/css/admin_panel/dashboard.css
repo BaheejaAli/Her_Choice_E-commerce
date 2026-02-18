@@ -10,7 +10,7 @@
     border-radius: 12px;
     background: #ffffff;
     border: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .stats-card h6 {
@@ -27,6 +27,7 @@
 .success {
     color: #28a745;
 }
+
 .danger {
     color: #e74c3c;
 }
@@ -37,7 +38,7 @@
     border-radius: 12px;
     background: #ffffff;
     border: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* ALERTS */
@@ -51,7 +52,7 @@
 .recent-orders {
     border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .table thead {
@@ -60,4 +61,38 @@
 
 .table td {
     padding: 14px;
+}
+
+/* ===============================
+   STATUS PILL (Product Style)
+================================ */
+.badge {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    min-width: 90px;
+    display: inline-block;
+    text-align: center;
+}
+
+.badge.bg-success {
+    background: #e7f8ef !important;
+    color: #16a34a !important;
+}
+
+.badge.bg-danger {
+    background: #fdecec !important;
+    color: #dc2626 !important;
+}
+
+.badge.bg-warning {
+    background: #fff3e0 !important;
+    color: #e65100 !important;
+}
+
+.badge.bg-info {
+    background: #e3f2fd !important;
+    color: #1976d2 !important;
 }

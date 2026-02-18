@@ -4,7 +4,15 @@ from decimal import Decimal
 from offer.models import ReferralReward
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.cache import never_cache
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def referral_reward_list(request):
     rewards = ReferralReward.objects.all()
 
@@ -12,6 +20,9 @@ def referral_reward_list(request):
         "rewards": rewards   
     })
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def referral_reward_add(request):
     if request.method == "POST":
         referrer_amount = request.POST.get("referrer_amount")
@@ -28,6 +39,9 @@ def referral_reward_add(request):
 
     return render(request, "admin_panel/referral_reward_form.html")
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def referral_reward_edit(request, id):
     reward = get_object_or_404(ReferralReward, id=id)
 
@@ -45,6 +59,8 @@ def referral_reward_edit(request, id):
     })
 
 @require_POST
+@login_required
+@user_passes_test(is_admin)
 def referral_reward_toggle(request, id):
     reward = get_object_or_404(ReferralReward, id=id)
     reward.is_active = not reward.is_active

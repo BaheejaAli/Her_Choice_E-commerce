@@ -5,7 +5,16 @@ from django.contrib import messages
 from django.http import JsonResponse
 from products.models import Product
 from brandsandcategories.models import Category
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def offer_management(request):
     offer_type = request.GET.get('type')
     offers = Offer.objects.prefetch_related('product','category')
@@ -33,6 +42,9 @@ def offer_management(request):
     }
     return render(request, "admin_panel/offer_list.html", context)
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def offer_create(request):
     if request.method == 'POST':
         form = OfferForm(request.POST)
@@ -49,6 +61,8 @@ def offer_create(request):
     
     return render(request, "admin_panel/offer_create.html",{'form':form, 'is_edit':False})
 
+@login_required
+@user_passes_test(is_admin)
 def search_products(request):
     search_value = request.GET.get('q', '')
     
@@ -60,6 +74,8 @@ def search_products(request):
         
     return JsonResponse({'results': results})
 
+@login_required
+@user_passes_test(is_admin)
 def search_category(request):
     search_value = request.GET.get('q', '')
     
@@ -71,6 +87,9 @@ def search_category(request):
         
     return JsonResponse({'results': results})
 
+@login_required
+@user_passes_test(is_admin)
+@never_cache
 def offer_edit(request, offer_id):
     offer = get_object_or_404(Offer, id=offer_id)
 
@@ -94,12 +113,18 @@ def offer_edit(request, offer_id):
         'selected_categories':list(offer.category.values('id','name'))
     })
 
+@require_POST
+@login_required
+@user_passes_test(is_admin)
 def toggle_offer_status(request, offer_id):
     offer = get_object_or_404(Offer, id= offer_id)
     offer.is_active = not offer.is_active
     offer.save()
     return JsonResponse({'status': 'success', 'is_active': offer.is_active})
 
+@require_POST
+@login_required
+@user_passes_test(is_admin)
 def delete_offer(request, offer_id):
     offer = get_object_or_404(Offer, id= offer_id)
     if request.method == 'POST':
