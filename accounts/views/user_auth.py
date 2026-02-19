@@ -179,7 +179,7 @@ def apply_referral(request):
                 return redirect("user_homepage")
             
             with transaction.atomic():
-                from wallet.models import Wallet
+                from wallet.models import Wallet, WalletTransaction
                 reward = ReferralReward.objects.filter(is_active=True).first()
                 referrer_amount= reward.referrer_amount if reward else 0
                 receiver_amount = reward.receiver_amount if reward else 0
@@ -196,9 +196,23 @@ def apply_referral(request):
                 referrer_wallet.balance += referrer_amount
                 referrer_wallet.save()
 
+                WalletTransaction.objects.create(
+                    wallet=referrer_wallet,
+                    amount=referrer_amount,
+                    transaction_type="REFERRAL",
+                    description=f"Referral reward for referring {request.user.email}"
+                )
+
                 receiver_wallet, _ = Wallet.objects.get_or_create(user=request.user)
                 receiver_wallet.balance += receiver_amount
                 receiver_wallet.save()
+
+                WalletTransaction.objects.create(
+                    wallet=receiver_wallet,
+                    amount=receiver_amount,
+                    transaction_type="REFERRAL",
+                    description=f"Referral bonus for using code {referral.referral_code}"
+                )
 
                 referral.used_count += 1
                 referral.save()

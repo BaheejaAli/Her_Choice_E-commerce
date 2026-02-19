@@ -8,6 +8,7 @@ from brandsandcategories.models import Category
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -34,8 +35,21 @@ def offer_management(request):
             'targets': targets
         })
 
+    paginator = Paginator(offer_list, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'offer_list': offer_list,
+        "offer_list": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "is_paginated": page_obj.has_other_pages(),
+        "page_range": paginator.get_elided_page_range(
+            number=page_obj.number,
+            on_each_side=1,
+            on_ends=1
+        ),
+        
         'all_offers_count': Offer.objects.count(),
         'product_offers_count': Offer.objects.filter(offer_type='product').count(),
         'category_offers_count': Offer.objects.filter(offer_type='category').count(),

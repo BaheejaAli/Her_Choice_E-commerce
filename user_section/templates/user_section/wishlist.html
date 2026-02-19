@@ -1,91 +1,94 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
-
-{% block title %}
-Her Choice - Wishlist
-{% endblock %}
-
+{% block title %}Her Choice - Wishlist{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/user_section/wishlist.css' %}" />
-<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.3" />
+<link rel="stylesheet" href="{% static 'css/user_section/wishlist.css' %}?v=2.0" />
 {% endblock %}
-
 {% block content %}
-<div class="container">
+<div class="wishlist-container">
   <!-- Wishlist Header -->
   <div class="wishlist-header">
     <div class="wishlist-title">
-      <div class="heart-icon">♡</div>
+      <div class="heart-icon">♥</div>
       <div>
         <h1>My Wishlist</h1>
-        <p>{{ wishlist_items.count }} item{{ wishlist_items.count|pluralize }}</p>
+        <p>{{ wishlist_items.count }} item{{ wishlist_items.count|pluralize }} saved</p>
       </div>
     </div>
-
-    <a href="{% url 'user_homepage' %}" class="back-home">Back to Home</a>
+    <a href="{% url 'user_homepage' %}" class="back-home">
+      <i class="fas fa-arrow-left"></i> Continue Shopping
+    </a>
   </div>
 
-  <!-- Wishlist Products -->
-  <div class="products-grid">
+  <!-- Wishlist Products Grid -->
+  <div class="wishlist-grid">
     {% if wishlist_items %}
     {% for item in wishlist_items %}
     {% with v=item.variant p=item.variant.product %}
-    <div class="product-card">
-
-      <div class="product-img-container">
+    <div class="wl-card">
+      <!-- Image -->
+      <div class="wl-card__img-wrap">
         <a href="{% url 'product_detail' p.slug %}">
           {% if v.images.first %}
-          <img src="{{ v.images.first.image.url }}" alt="{{ p.name }}" class="product-image" />
+          <img src="{{ v.images.first.image.url }}" alt="{{ p.name }}" />
           {% else %}
-          <div class="no-image-box">No Image</div>
+          <div class="wl-card__no-img">No Image</div>
           {% endif %}
         </a>
-
-        <!-- Heart Icon for Remove -->
-        <button class="wishlist-remove-heart" onclick="removeFromWishlist({{ item.id }})" title="Remove from Wishlist">
-          <i class="fas fa-times "></i>
+        <!-- Discount Badge -->
+        {% if v.discount_percentage > 0 %}
+        <span class="wl-card__discount-tag">{{ v.discount_percentage }}% OFF</span>
+        {% endif %}
+        <!-- Remove Button -->
+        <button class="wl-card__remove" onclick="removeFromWishlist({{ item.id }})" title="Remove from Wishlist">
+          <i class="fas fa-times"></i>
         </button>
-
-        {% if v.stock <= 0 %} <div class="status-tag out-of-stock"
-          style="position: absolute; bottom: 5px; left: 5px; width: auto; font-size: 10px; padding: 4px;">
-          Out of Stock
+        <!-- Out of Stock Badge -->
+        {% if v.stock <= 0 %} <div class="wl-card__oos-badge">Out of Stock
       </div>
       {% endif %}
     </div>
 
-    <div class="product-info">
-      <p class="product-name">
+    <!-- Body -->
+    <div class="wl-card__body">
+      <p class="wl-card__name">
         <a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
       </p>
-
-      <div class="price">
-        {% if v.offer_price %}
-        <span class="offer-price">₹{{ v.offer_price }}</span>
-        <del class="old-price">₹{{ v.base_price }}</del>
+      <div class="wl-card__price">
+        {% if v.discount_percentage > 0 %}
+        <span class="wl-card__final-price">₹{{ v.final_price }}</span>
+        <del class="wl-card__orig-price">₹{{ v.base_price }}</del>
+        <span class="wl-card__off">{{ v.discount_percentage }}% off</span>
         {% else %}
-        <span class="regular-price">₹{{ v.base_price }}</span>
+        <span class="wl-card__regular-price">₹{{ v.base_price }}</span>
         {% endif %}
       </div>
-
-      <div class="button-group">
+      <div class="wl-card__actions">
         {% if v.stock > 0 %}
-        <button class="btn-add" onclick="addToCart({{ v.id }})">Add to Cart</button>
+        <button class="wl-card__btn" onclick="addToCart({{ v.id }})">
+          <i class="fas fa-shopping-bag"></i> Add to Cart
+        </button>
         {% else %}
-        <button class="btn-add" disabled style="opacity: 0.6; cursor: not-allowed;">Out of Stock</button>
+        <button class="wl-card__btn" disabled>
+          <i class="fas fa-ban"></i> Out of Stock
+        </button>
         {% endif %}
       </div>
     </div>
-
   </div>
   {% endwith %}
   {% endfor %}
   {% else %}
-  <p class="empty-text">Your wishlist is empty</p>
+  <div class="wl-empty">
+    <div class="wl-empty__icon">♥</div>
+    <h2 class="wl-empty__title">Your wishlist is empty</h2>
+    <p class="wl-empty__text">Start adding items you love and they'll show up here for easy access later.</p>
+    <a href="{% url 'user_homepage' %}" class="wl-empty__link">Browse Products</a>
+  </div>
   {% endif %}
 </div>
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <script>
   function removeFromWishlist(itemId) {

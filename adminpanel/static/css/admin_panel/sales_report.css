@@ -44,7 +44,8 @@
     font-weight: 500;
 }
 
-.filter-group input, .filter-group select {
+.filter-group input,
+.filter-group select {
     /* width: 100%; */
     padding: 10px;
     border: 1px solid #e5e5e5;
@@ -77,7 +78,7 @@
     overflow-x: auto;
     background: white;
     border: 1px solid #e5e5e5;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 table {
@@ -87,24 +88,25 @@ table {
 
 th {
     background: #fafafa;
-    padding: 12px;
+    padding: 16px 18px;
     text-align: left;
-    font-size: 12px;
-    color: #666;
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
     border-bottom: 2px solid #e5e5e5;
 }
 
 td {
-    padding: 14px;
+    padding: 18px;
     border-bottom: 1px solid #f0f0f0;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .discount-badge {
     background: #fff0f5;
     color: #c44569;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
     font-weight: bold;
 }

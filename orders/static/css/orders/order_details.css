@@ -21,7 +21,7 @@ body {
   background: white;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
@@ -98,22 +98,23 @@ body {
    TRACKING TIMELINE (REFINED)
    ============================================ */
 .tracking-section {
-  background: #f8fafc; /* Neutral light background instead of green/purple block */
+  background: #f8fafc;
+  /* Neutral light background instead of green/purple block */
   border: 1px solid #e2e8f0;
   border-radius: 15px;
   padding: 40px;
   margin-bottom: 35px;
 }
 
-.tracking-header h2 { 
-  font-size: 28px; 
-  margin-bottom: 10px; 
+.tracking-header h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
   text-align: center;
   color: #111827;
 }
 
-.tracking-header p { 
-  text-align: center; 
+.tracking-header p {
+  text-align: center;
   color: #6b7280;
 }
 
@@ -131,7 +132,8 @@ body {
   left: 50px;
   right: 50px;
   height: 4px;
-  background: #e2e8f0; /* Neutral line color */
+  background: #e2e8f0;
+  /* Neutral line color */
 }
 
 .step-icon {
@@ -163,8 +165,18 @@ body {
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
-.step-title { font-size: 16px; font-weight: 700; text-align: center; color: #1f2937;}
-.step-time { font-size: 13px; color: #6b7280; text-align: center;}
+.step-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2937;
+}
+
+.step-time {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
 
 /* ============================================
    PRODUCT ITEMS
@@ -177,7 +189,9 @@ body {
   border-bottom: 1px solid #f3f4f6;
 }
 
-.order-item:last-child { border-bottom: none; }
+.order-item:last-child {
+  border-bottom: none;
+}
 
 .item-image {
   width: 110px !important;
@@ -199,7 +213,9 @@ body {
   object-fit: contain;
 }
 
-.item-details { flex: 1; }
+.item-details {
+  flex: 1;
+}
 
 .item-name {
   font-size: 20px;
@@ -208,9 +224,17 @@ body {
   color: #111827;
 }
 
-.item-meta { font-size: 16px; color: #6b7280; margin-bottom: 8px; }
+.item-meta {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
 
-.item-price { font-size: 18px; font-weight: 800; color: #111827; }
+.item-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
 
 .item-status-container {
   display: flex;
@@ -233,44 +257,98 @@ body {
   display: inline-block;
 }
 
-.badge-cancelled { background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-.badge-returned { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+.badge-cancelled {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.badge-failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.badge-returned {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
 
 .return-btn-small {
-    background-color: transparent;
-    color: #e11d48; 
-    border: 1px solid #fda4af;
-    padding: 6px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
+  background-color: transparent;
+  color: #e11d48;
+  border: 1px solid #fda4af;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .return-btn-small:hover {
-    background-color: #e11d48 !important; 
-    color: #ffffff !important;  
-    border-color: #e11d48;
-    transform: translateY(-1px);
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  border-color: #e11d48;
+  transform: translateY(-1px);
 }
 
 /* ============================================
    ADDRESS & SUMMARY
    ============================================ */
-.address-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.address-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
 
-.address-content { display: flex; flex-direction: column; gap: 15px; }
-.address-name { font-size: 20px; font-weight: 700; margin: 0; }
-.address-line { font-size: 16px; line-height: 1.8; color: #4b5563; display: flex; gap: 12px; }
-.address-line i { color: #6366f1; margin-top: 6px; }
-.address-phone { margin-top: 10px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 12px; border-top: 1px dashed #eee; padding-top: 15px;}
+.address-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-.summary-row { display: flex; justify-content: space-between; font-size: 17px; margin-bottom: 15px; }
+.address-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.address-line {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4b5563;
+  display: flex;
+  gap: 12px;
+}
+
+.address-line i {
+  color: #6366f1;
+  margin-top: 6px;
+}
+
+.address-phone {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px dashed #eee;
+  padding-top: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  margin-bottom: 15px;
+}
 
 .total-row {
   font-size: 22px;
@@ -285,9 +363,12 @@ body {
    ============================================ */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.6);
-  display: none; 
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 10000;
@@ -300,11 +381,12 @@ body {
   max-width: 600px;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 #returnModal .modal-card {
-    border-top: 6px solid #ef4444; /* Accent color for Return */
+  border-top: 6px solid #ef4444;
+  /* Accent color for Return */
 }
 
 .modal-header {
@@ -316,43 +398,50 @@ body {
   align-items: center;
 }
 
-.modal-header h3 { font-size: 24px; font-weight: 800; margin: 0; color: #111827; }
+.modal-header h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  color: #111827;
+}
 
-.modal-body { padding: 30px; }
+.modal-body {
+  padding: 30px;
+}
 
-.reason-section label { 
-  display: block; 
-  font-weight: 700; 
-  margin-bottom: 10px; 
-  font-size: 18px; 
-  color: #111827; 
+.reason-section label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #111827;
 }
 
 /* Explicit Return Modal Input Styling */
-#returnModal select, 
+#returnModal select,
 #returnModal textarea,
 #cancelModal textarea {
-    width: 100% !important;
-    padding: 14px !important;
-    border: 2px solid #e5e7eb !important;
-    border-radius: 12px !important;
-    font-size: 1rem !important;
-    margin-top: 8px !important;
-    font-family: inherit !important;
-    background-color: #fff !important;
+  width: 100% !important;
+  padding: 14px !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  margin-top: 8px !important;
+  font-family: inherit !important;
+  background-color: #fff !important;
 }
 
-#returnModal textarea, 
-#cancelModal textarea { 
-    min-height: 120px; 
-    resize: none; 
+#returnModal textarea,
+#cancelModal textarea {
+  min-height: 120px;
+  resize: none;
 }
 
-#returnModal select:focus, 
+#returnModal select:focus,
 #returnModal textarea:focus {
-    outline: none !important;
-    border-color: #ef4444 !important;
-    background-color: #fffafb !important;
+  outline: none !important;
+  border-color: #ef4444 !important;
+  background-color: #fffafb !important;
 }
 
 .modal-footer {
@@ -362,283 +451,313 @@ body {
   border-top: 1px solid #eee;
 }
 
-.btn-confirm-return, .btn-confirm-cancel {
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    flex: 1;
-    transition: all 0.2s;
+.btn-confirm-return,
+.btn-confirm-cancel {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s;
 }
 
-.btn-confirm-return:hover { background-color: #dc2626; }
+.btn-confirm-return:hover {
+  background-color: #dc2626;
+}
 
 .btn-cancel-secondary {
-    background: #f3f4f6;
-    color: #4b5563;
-    flex: 1;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
+  background: #f3f4f6;
+  color: #4b5563;
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
 }
+
 /* --- Return Approved: Indigo (Waiting for Logistics) --- */
 .badge-return-approved {
-    background-color: #eef2ff;
-    color: #4338ca;
-    border: 1px solid #c7d2fe;
+  background-color: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
 }
 
 /* --- Return Rejected: Rose (Final Decision) --- */
 .badge-return-rejected {
-    background-color: #fff1f2;
-    color: #e11d48;
-    border: 1px solid #fecaca;
+  background-color: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecaca;
 }
 
 /* --- Return Requested: Amber (Action Required) --- */
 .badge-return-requested {
-    background-color: #fffbeb;
-    color: #b45309;
-    border: 1px solid #fde68a;
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
 }
+
 /* ============================================
    RESPONSIVE & UTILS
    ============================================ */
-.mt-3 { margin-top: 1.5rem; }
+.mt-3 {
+  margin-top: 1.5rem;
+}
 
 @media (max-width: 768px) {
-  .address-row { grid-template-columns: 1fr; }
-  .order-item { flex-direction: column; align-items: flex-start; }
-  .item-status-container { align-items: flex-start; width: 100%; margin-top: 10px; }
-  .timeline::before { display: none; }
-  .timeline { flex-direction: column; gap: 30px; }
+  .address-row {
+    grid-template-columns: 1fr;
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item-status-container {
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .timeline::before {
+    display: none;
+  }
+
+  .timeline {
+    flex-direction: column;
+    gap: 30px;
+  }
 }
 
 /* ============================================
    CANCEL ORDER SECTION & BUTTON
    ============================================ */
 .bottom-actions {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    background: #fff;
-    border-radius: 12px;
-    border: 1px dashed #fecaca;
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px dashed #fecaca;
 }
 
 .action-btn.danger-light {
-    background-color: #fff5f5;
-    color: #e11d48;
-    border: 1.5px solid #fda4af;
-    padding: 14px 28px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: #fff5f5;
+  color: #e11d48;
+  border: 1.5px solid #fda4af;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .action-btn.danger-light:hover {
-    background-color: #e11d48;
-    color: #ffffff;
-    border-color: #e11d48;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(225, 29, 72, 0.2);
+  background-color: #e11d48;
+  color: #ffffff;
+  border-color: #e11d48;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(225, 29, 72, 0.2);
 }
 
 /* ============================================
    CANCEL MODAL SPECIFIC STYLES
    ============================================ */
 #cancelModal .modal-card {
-    border-top: 6px solid #e11d48;
+  border-top: 6px solid #e11d48;
 }
 
 .modal-instruction {
-    color: #6b7280;
-    margin-bottom: 20px;
-    font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  font-size: 15px;
 }
 
 /* Item Selection List inside Modal */
 .variant-selection-list {
-    max-height: 280px;
-    overflow-y: auto;
-    margin-bottom: 25px;
-    padding-right: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 25px;
+  padding-right: 10px;
 }
 
 /* Custom Scrollbar for the list */
 .variant-selection-list::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
+
 .variant-selection-list::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
-    border-radius: 10px;
+  background: #e5e7eb;
+  border-radius: 10px;
 }
 
 .variant-option {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px;
-    border: 1px solid #f3f4f6;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .variant-option:hover {
-    background-color: #fff5f5;
-    border-color: #fda4af;
+  background-color: #fff5f5;
+  border-color: #fda4af;
 }
 
 .variant-option input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #e11d48;
-    cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #e11d48;
+  cursor: pointer;
 }
 
 .option-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
 }
 
 .option-content img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    object-fit: cover;
-    background: #f9fafb;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f9fafb;
 }
 
 .option-info {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .option-name {
-    font-weight: 700;
-    font-size: 15px;
-    color: #111827;
+  font-weight: 700;
+  font-size: 15px;
+  color: #111827;
 }
 
 .option-meta {
-    font-size: 13px;
-    color: #6b7280;
+  font-size: 13px;
+  color: #6b7280;
 }
 
 /* Confirm Cancel Button (Matches Return logic) */
 .btn-confirm-cancel {
-    background-color: #e11d48;
-    color: white;
+  background-color: #e11d48;
+  color: white;
 }
 
 .btn-confirm-cancel:hover {
-    background-color: #be123c;
+  background-color: #be123c;
 }
+
 /* ============================================
    CANCELLED ORDER STATUS BANNER
    ============================================ */
 .cancelled-section {
-    background-color: #fff5f5; /* Soft red background */
-    border: 1px solid #feb2b2;
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 35px;
-    display: flex;
-    justify-content: left;
-    animation: fadeInDown 0.5s ease-out;
+  background-color: #fff5f5;
+  /* Soft red background */
+  border: 1px solid #feb2b2;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 35px;
+  display: flex;
+  justify-content: left;
+  animation: fadeInDown 0.5s ease-out;
 }
 
 .cancelled-content {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  max-width: 600px;
 }
 
- .cancelled-icon {
-    width: 45px;
-    height: 45px;
-    background-color: #fff;
-    border: 3px solid #f56565;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    color: #f56565;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(245, 101, 101, 0.15);
-} 
+.cancelled-icon {
+  width: 45px;
+  height: 45px;
+  background-color: #fff;
+  border: 3px solid #f56565;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #f56565;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(245, 101, 101, 0.15);
+}
 
 .cancelled-info h2 {
-    color: #c53030;
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0 0 8px 0;
+  color: #c53030;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
 }
 
 .cancelled-info p {
-    color: #742a2a;
-    font-size: 16px;
-    margin: 0 0 5px 0;
-    line-height: 1.5;
+  color: #742a2a;
+  font-size: 16px;
+  margin: 0 0 5px 0;
+  line-height: 1.5;
 }
 
 .cancel-reason-text {
-    margin-top: 10px !important;
-    padding: 10px 15px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 8px;
-    font-style: italic;
-    border-left: 4px solid #f56565;
+  margin-top: 10px !important;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  font-style: italic;
+  border-left: 4px solid #f56565;
 }
 
 /* Specific Badge for the status list when cancelled */
 .badge-cancelled {
-    background-color: #fff5f5;
-    color: #e53e3e;
-    border: 1px solid #feb2b2;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 12px;
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 12px;
 }
 
 /* Animation for the banner */
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsiveness */
 @media (max-width: 600px) {
-    .cancelled-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    .cancelled-icon {
-        margin: 0 auto;
-    }
+  .cancelled-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cancelled-icon {
+    margin: 0 auto;
+  }
 }

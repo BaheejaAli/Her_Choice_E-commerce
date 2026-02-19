@@ -1,25 +1,56 @@
-{% extends "user_section/base.html" %}
+
 {% load static %}
 {% block title %}
     Invoice #{{ order.order_number }} | Her Choice
 {% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/orders/order_invoice.css' %}?v=1.1" />
+    <link rel="stylesheet" href="{% static 'css/orders/order_invoice_pdf.css' %}?v=2.0" />
+    <style>
+        .invoice-wrapper {
+            padding: 20px 0;
+        }
+        .invoice-actions {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-outline {
+            background: white;
+            color: #1f2937;
+            border: 2px solid #d946ef;
+        }
+        .btn-outline:hover {
+            background: #d946ef;
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+        }
+        @media print {
+            .invoice-actions {
+                display: none;
+            }
+        }
+    </style>
 {% endblock extra_css %}
 {% block content %}
     <div class="invoice-wrapper">
         <div class="container">
             <!-- Action Buttons -->
             <div class="invoice-actions">
-                {% comment %} <button onclick="window.print()" class="btn btn-primary">
-                    <i class="fas fa-print"></i> Print Invoice
-                </button> {% endcomment %}
                 <button onclick="downloadPDF()" class="btn btn-outline">
                     <i class="fas fa-download"></i> Download PDF
                 </button>
-                <a href="{% url 'order_details' order.id %}" class="btn btn-outline">
-                    <i class="fas fa-arrow-left"></i> Back to Order
-                </a>
             </div>
             <!-- Invoice Container -->
             <div class="invoice-container" id="invoice">

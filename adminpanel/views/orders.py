@@ -214,7 +214,9 @@ def stock_management(request):
             Q(sku__icontains=query)
         )
 
-    if stock_status == 'in_stock':
+    if stock_status == 'all':
+        variants = variants.all()
+    elif stock_status == 'in_stock':
         variants = variants.filter(stock__gt=10)
     elif stock_status == 'low_stock':
         variants = variants.filter(stock__range=(1, 10))
@@ -225,12 +227,26 @@ def stock_management(request):
     low_stock_count = ProductVariant.objects.filter(stock__gt=0, stock__lte=10).count()
     out_of_stock_count = ProductVariant.objects.filter(stock=0).count()
 
+    paginator = Paginator(variants, 8)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'variants': variants,
+        "variants": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "is_paginated": page_obj.has_other_pages(),
+        "page_range": paginator.get_elided_page_range(
+            number=page_obj.number,
+            on_each_side=1,
+            on_ends=1
+        ),
         'total_items': total_items,
         'low_stock_count': low_stock_count,
         'out_of_stock_count': out_of_stock_count,
-        'search_query': query,
-        'current_stock_filter': stock_status,
+        'query': query,
+        'status': stock_status,
     }
     return render(request, "admin_panel/stock.html",context)
+
+

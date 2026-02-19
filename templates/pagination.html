@@ -5,25 +5,25 @@
 <div class="pagination-container">
 
     {% if page_obj.has_previous %}
-        <a class="pg-btn nav" href="?page={{ page_obj.previous_page_number }}">‹</a>
+    <a class="pg-btn nav" href="?page={{ page_obj.previous_page_number }}{% if status %}&status={{ status }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">‹</a>
     {% else %}
-        <span class="pg-btn nav disabled">‹</span>
+    <span class="pg-btn nav disabled">‹</span>
     {% endif %}
 
     {% for page in page_range %}
-        {% if page == page_obj.number %}
-            <span class="pg-btn active">{{ page }}</span>
-        {% elif page == '…' %}
-            <span class="pg-btn dots">…</span>
-        {% else %}
-            <a class="pg-btn" href="?page={{ page }}">{{ page }}</a>
-        {% endif %}
+    {% if page == page_obj.number %}
+    <span class="pg-btn active">{{ page }}</span>
+    {% elif page == '…' %}
+    <span class="pg-btn dots">…</span>
+    {% else %}
+    <a class="pg-btn" href="?page={{ page }}{% if status %}&status={{ status }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ page }}</a>
+    {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-        <a class="pg-btn nav" href="?page={{ page_obj.next_page_number }}">›</a>
+    <a class="pg-btn nav" href="?page={{ page_obj.next_page_number }}{% if status %}&status={{ status }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">›</a>
     {% else %}
-        <span class="pg-btn nav disabled">›</span>
+    <span class="pg-btn nav disabled">›</span>
     {% endif %}
 
 </div>

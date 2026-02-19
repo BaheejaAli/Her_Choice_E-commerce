@@ -3,8 +3,7 @@
 
 {% block title %}Secure Payment | Her Choice{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/cart/razorpay_checkout.css' %}?v=1.1" />
+<link rel="stylesheet" href="{% static 'css/cart/razorpay_checkout.css' %}?v=1.1" />
 {% endblock extra_css %}
 
 {% block content %}
@@ -13,39 +12,60 @@
         <div class="spinner-container">
             <div class="loading-spinner"></div>
         </div>
-        
-        <h2 class="processing-title">Processing Your Payment</h2>
-        <p class="processing-text">Please do not refresh the page or click the back button. We are connecting you to the secure payment gateway.</p>
 
-        <form action="{% url 'payment_handler' %}" method="POST" id="razorpay-form">
-            {% csrf_token %}
-            <script
-                src="https://checkout.razorpay.com/v1/checkout.js"
-                data-key="{{ razorpay_key }}"
-                data-amount="{{ amount }}"
-                data-currency="INR"
-                data-order_id="{{ razorpay_order_id }}"
-                data-buttontext="Pay with Razorpay"
-                data-name="Her Choice"
-                data-description="Order #{{ order.orderid }}"
-                data-prefill.name="{{ order.user.get_full_name }}"
-                data-prefill.email="{{ order.user.email }}"
-                data-prefill.contact="{{ order.user.phone }}"
-                data-theme.color="#ff1493"
-            ></script>
-            <input type="hidden" name="order_internal_id" value="{{ order.id }}">
-        </form>
+        <h2 class="processing-title">Processing Your Payment</h2>
+        <p class="processing-text">Please do not refresh the page or click the back button. We are connecting you to the
+            secure payment gateway.</p>
     </div>
 </div>
 
+<form action="{% url 'payment_handler' %}" method="POST" id="razorpay-form" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    <input type="hidden" name="order_internal_id" value="{{ order.id }}">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-    // Automatically trigger the Razorpay modal on page load
-    window.onload = function() {
-        var rzpButton = document.querySelector('.razorpay-payment-button');
-        if (rzpButton) {
-            rzpButton.style.display = 'none'; // Hide the default ugly button
-            rzpButton.click();
+    var options = {
+        "key": "{{ razorpay_key }}",
+        "amount": "{{ amount }}",
+        "currency": "INR",
+        "name": "Her Choice",
+        "description": "Order #{{ order.orderid }}",
+        "order_id": "{{ razorpay_order_id }}",
+        "handler": function (response) {
+            // Payment successful — submit the form
+            document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+            document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+            document.getElementById('razorpay_signature').value = response.razorpay_signature;
+            document.getElementById('razorpay-form').submit();
+        },
+        "prefill": {
+            "name": "{{ order.user.get_full_name|escapejs }}",
+            "email": "{{ order.user.email|escapejs }}",
+            "contact": "{{ order.user.phone|escapejs }}"
+        },
+        "theme": {
+            "color": "#ff1493"
+        },
+        "modal": {
+            "ondismiss": function () {
+                // User cancelled/closed the Razorpay modal — go to failure page
+                window.location.href = "{% url 'order_failure' order.id %}";
+            }
         }
+    };
+
+    window.onload = function () {
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+            // Payment failed (card declined, etc.) — go to failure page
+            window.location.href = "{% url 'order_failure' order.id %}";
+        });
+        rzp.open();
     };
 </script>
 {% endblock %}
