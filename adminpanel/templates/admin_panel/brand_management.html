@@ -10,11 +10,6 @@ Brand Management | Her Choice
 {% block content %}
 <div class="brand-management-wrapper">
   <h2 class="admin-title">Brands </h2>
-  {% if messages %}
-  <div class="messages-container">
-    {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-  </div>
-  {% endif %}
   <!-- CSRF TOKEN FOR AJAX -->
   <form id="csrf-form">
     {% csrf_token %}
@@ -30,7 +25,11 @@ Brand Management | Her Choice
   <!-- SEARCH & FILTER (BACKEND DRIVEN) -->
   <form method="get" class="search-filter-form" id="filterForm">
     <div class="filter-left">
-      <input type="text" name="q" class="search-input" placeholder="Search brands..." value="{{ search_query }}" />
+        <input type="text"
+               name="q"
+               class="search-input"
+               placeholder="Search brands..."
+               value="{{ search_query }}" />
       <button type="submit">
         <i class="fa fa-search"></i> Search
       </button>
@@ -39,8 +38,10 @@ Brand Management | Her Choice
     <div class="filter-right">
       <select name="status" onchange="this.form.submit()">
         <option value="">All</option>
-        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
-        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          <option value="active"
+                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive"
+                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
       </select>
     </div>
   </form>
@@ -74,7 +75,8 @@ Brand Management | Her Choice
             <!-- STATUS BUTTON -->
             <button type="button"
               class="btn status-btn {% if brand.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-              data-url="{% url 'toggle_brand_status' brand.id %}" onclick="toggleBrandStatus(this)">{{ brand.is_active|yesno:"Active,Inactive" }}</button>
+                        data-url="{% url 'toggle_brand_status' brand.id %}"
+                        onclick="toggleBrandStatus(this)">{{ brand.is_active|yesno:"Active,Inactive" }}</button>
           </td>
           <td>
             <!-- EDIT BUTTON -->

@@ -23,30 +23,29 @@ def coupon_management(request):
     if query:
         coupons = coupons.filter(Q(code__icontains=query))
 
-    status_filter = request.GET.get("status_filter", "").strip()
+    status = request.GET.get("status","").strip()
     now = timezone.now()
 
-    if status_filter == "active":
+    if status == "active":
         coupons = coupons.filter(
             is_active=True,
             valid_from__lte=now,
             valid_to__gte=now
         )
-    elif status_filter == "inactive":
+    elif status == "inactive":
         coupons = coupons.filter(is_active=False)
 
-    elif status_filter == "expired":
+    elif status == "expired":
         coupons = coupons.filter(valid_to__lt=now)
 
-    elif status_filter == "scheduled":
+    elif status == "scheduled":
         coupons = coupons.filter(valid_from__gt=now)
 
     total_coupons = Coupon.objects.count()
     active_coupons = Coupon.objects.filter(
         is_active=True,
-        valid_from__lte=now,
-        valid_to__gte=now,
-    ).count()
+        valid_from__lte=timezone.now(),
+        valid_to__gte=timezone.now(),).count()
 
     expired_coupons = Coupon.objects.filter(valid_to__lt=now).count()
 
@@ -63,7 +62,7 @@ def coupon_management(request):
             on_each_side=1,
             on_ends=1
         ),
-        "status_filter": status_filter,
+        "status": status,
         "total_coupons": total_coupons,
         "active_coupons": active_coupons,
         "expired_coupons": expired_coupons,

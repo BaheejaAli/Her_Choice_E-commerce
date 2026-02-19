@@ -5,6 +5,7 @@ from products.models import ProductVariant
 import uuid
 from django.utils import timezone
 from django.db.models import Count, Q
+from decimal import Decimal
 
 
 class Order(models.Model):
@@ -98,7 +99,6 @@ class Order(models.Model):
         total = stats['total']
         if total == 0: return
 
-        # Use the aggregated data
         if stats['cancelled'] == total:
             new_status = 'cancelled'
         elif stats['returned'] == total:
@@ -123,20 +123,51 @@ class Order(models.Model):
         return self.items.exclude(status__in=['cancelled', 'delivered']).exists()
     
     def calculate_item_refund(self, item):
-        """Calculates the proportional refund for a single item, accounting for discounts and tax."""
         if self.subtotal == 0:
             return Decimal('0.00')
-        
-        # Proportional refund: (Item's Sales Price / Order's Total Sales Price) * (Amount paid for all items)
-        # Note: self.total includes tax and excludes coupon discounts
-        # We exclude delivery_charge for partial refunds
+   
         paid_for_items = self.total - self.delivery_charge
         proportion = Decimal(str(item.total_price)) / Decimal(str(self.subtotal))
         refund_amount = (proportion * paid_for_items).quantize(Decimal('0.01'))
         
         return refund_amount
     
+    @property
+    def coupon_discount(self):
+        # total = subtotal - coupon_discount + tax + delivery
+        # coupon_discount = subtotal + tax + delivery - total
+        return max(self.subtotal + self.tax + self.delivery_charge - self.total, Decimal('0.00'))
 
+    @property
+    def removed_subtotal(self):
+        # Includes both cancelled items and fully returned items
+        return sum(item.total_price for item in self.items.all() if item.status == 'cancelled' or item.return_status == 'returned')
+
+    @property
+    def effective_subtotal(self):
+        return self.subtotal - self.removed_subtotal
+
+    @property
+    def effective_discount(self):
+        if self.subtotal == 0: return Decimal('0.00')
+        return (self.effective_subtotal / self.subtotal * self.coupon_discount).quantize(Decimal('0.01'))
+
+    @property
+    def effective_tax(self):
+        if self.subtotal == 0: return Decimal('0.00')
+        return (self.effective_subtotal / self.subtotal * self.tax).quantize(Decimal('0.01'))
+
+    @property
+    def effective_total(self):
+        if self.status == 'cancelled' or self.status == 'returned':
+            return Decimal('0.00')
+        if self.subtotal == 0: return self.total
+        if self.removed_subtotal == self.subtotal:
+            return Decimal('0.00')
+        
+        paid_for_items = self.total - self.delivery_charge
+        removed_share = (self.removed_subtotal / self.subtotal * paid_for_items).quantize(Decimal('0.01'))
+        return self.total - removed_share
 
 
 class OrderItem(models.Model):

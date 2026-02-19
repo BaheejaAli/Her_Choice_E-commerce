@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Invoice #{{ order.orderid }} | Her Choice</title>
+  <title>Invoice # {{ order.orderid }} | Her Choice</title>
 
   <!-- Google Fonts for Elegant Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -210,6 +210,16 @@
       color: var(--status-pending);
     }
 
+    .status-cancelled {
+      background-color: #fce8e8;
+      color: #d93025;
+    }
+
+    .status-refunded {
+      background-color: #e8f0fe;
+      color: #1a73e8;
+    }
+
     /* ============================================
            ADDRESS SECTION
            ============================================ */
@@ -301,6 +311,19 @@
 
     .text-center {
       text-align: center !important;
+    }
+
+    .item-status-inline {
+      margin-top: 5px;
+      display: block;
+    }
+
+    .cancel-reason {
+      font-size: 11px;
+      color: var(--text-light);
+      font-style: italic;
+      margin-top: 2px;
+      display: block;
     }
 
     /* ============================================
@@ -484,6 +507,14 @@
                 </span>
               </td>
             </tr>
+            {% if order.status == 'cancelled' %}
+            <tr>
+              <td class="label">Order Status</td>
+              <td class="value">
+                <span class="status-badge status-cancelled">Cancelled</span>
+              </td>
+            </tr>
+            {% endif %}
           </table>
         </div>
       </header>
@@ -531,11 +562,21 @@
             <tr>
               <td class="item-info">
                 <span class="item-name">{{ item.variant.product.name }}</span>
-                <span class="item-variant">{{ item.variant.color.name }}{% if item.variant.size %} / {{item.variant.size.name }}{% endif %}</span>
+                <span class="item-variant">{{ item.variant.color.name }}{% if item.variant.size %} /
+                  {{item.variant.size.name }}{% endif %}</span>
+                {% if item.status == 'cancelled' %}
+                <div class="item-status-inline">
+                  <span class="status-badge status-cancelled" style="font-size: 9px; padding: 2px 6px;">Cancelled</span>
+                  {% if item.cancel_reason %}
+                  <span class="cancel-reason">Reason: {{ item.cancel_reason }}</span>
+                  {% endif %}
+                </div>
+                {% endif %}
               </td>
               <td class="text-center" style="font-weight: 500;">{{ item.quantity }}</td>
               <td class="text-right">₹ {{ item.price }}</td>
-              <td class="text-right" style="font-weight: 600;">₹ {{ item.total_price }}</td>
+              <td class="text-right" style="font-weight: 600;">₹ {% if item.status == 'cancelled' %}0.00{% else %}
+                {{ item.total_price }}{% endif %}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -546,21 +587,16 @@
         <table class="summary-table">
           <tr>
             <td class="label">Subtotal</td>
-            <td class="value">₹ {{ order.subtotal }}</td>
+            <td class="value">₹ {{ order.effective_subtotal }}</td>
           </tr>
-          {% if order.discount > 0 %}
-          <tr class="discount">
-            <td class="label">Discount Applied</td>
-            <td class="value">-₹ {{ order.discount }}</td>
-          </tr>
-          {% endif %}
+        
           <tr>
             <td class="label">Tax Estimation</td>
-            <td class="value">₹ {{ order.tax|default:"0.00" }}</td>
+            <td class="value">₹ {{ order.effective_tax|default:"0.00" }}</td>
           </tr>
           <tr class="total-row">
             <td class="label">Grand Total</td>
-            <td class="value">₹ {{ order.total }}</td>
+            <td class="value">₹ {{ order.effective_total }}</td>
           </tr>
         </table>
       </section>

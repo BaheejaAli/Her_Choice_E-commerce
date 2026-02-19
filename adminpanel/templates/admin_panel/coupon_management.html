@@ -4,7 +4,8 @@
 Coupon Management | Her Choice
 {% endblock title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/coupon_management.css' %}?v=1.2">
+    <link rel="stylesheet"
+          href="{% static 'css/admin_panel/coupon_management.css' %}?v=1.2">
 {% endblock extra_css %}
 {% block content %}
 <div class="coupon-management-container">
@@ -38,23 +39,30 @@ Coupon Management | Her Choice
     <!-- SEARCH & FILTER -->
     <form method="get" class="search-filter-form" id="filterForm">
         <div class="filter-left">
-            <input type="text" name="q" class="search-input" placeholder="Search by coupon code " value="{{ query }}">
+                <input type="text"
+                       name="query"
+                       class="search-input"
+                       placeholder="Search by coupon code "
+                       value="{{ query }}">
             <button type="submit">
                 <i class="fa fa-search"></i> Search
             </button>
-            {% if query or status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+                {% if query or status %}<a href="?" class="clear-btn">Clear</a>{% endif %}
         </div>
         <div class="filter-right">
-            <select name="status_filter" id="statusFilter">
+                <select name="status" id="statusFilter">
                 <option value="">All Status</option>
-                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
-                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
-                <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>Expired</option>
+                    <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive"
+                            {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="expired"
+                            {% if status == 'expired' %}selected{% endif %}>Expired</option>
             </select>
             <select name="type" id="typeFilter">
                 <option value="">All Types</option>
-                <option value="PERCENTAGE" {% if type_filter == 'PERCENTAGE' %}selected{% endif %}>Percentage</option>
-                <option value="FIXED" {% if type_filter == 'FIXED' %}selected{% endif %}>Fixed Amount</option>
+                    <option value="PERCENTAGE"
+                            {% if type_filter == 'PERCENTAGE' %}selected{% endif %}>Percentage</option>
+                    <option value="FIXED" {% if type_filter == 'FIXED' %}selected{% endif %}>Fixed Amount</option>
             </select>
         </div>
     </form>
@@ -111,7 +119,9 @@ Coupon Management | Her Choice
                             <a href="{% url 'edit_coupon' coupon.id %}" class="btn-action btn-edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
-                            <form method="POST" action="{% url 'delete_coupon' coupon.id %}" class="delete-form"
+                                    <form method="POST"
+                                          action="{% url 'delete_coupon' coupon.id %}"
+                                          class="delete-form"
                                 style="display:inline">
                                 {% csrf_token %}
                                 <button type="button" class="btn-action btn-delete">
@@ -163,7 +173,9 @@ Coupon Management | Her Choice
 {% block extra_js %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".delete-form").forEach(function (form) {
+
+    document.querySelectorAll(".delete-form").forEach(function (form) {
+
             form.querySelector(".btn-delete").addEventListener("click", function () {
                 Swal.fire({
                     title: "Are you sure?",

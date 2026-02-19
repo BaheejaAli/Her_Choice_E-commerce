@@ -295,6 +295,7 @@ def checkout(request):
         delivery_charge = Decimal('0')
     else:
         delivery_charge = Decimal(str(settings.DELIVERY_CHARGE))
+        
     grand_total = discounted_subtotal + delivery_charge + tax
     
 

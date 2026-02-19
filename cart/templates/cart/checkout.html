@@ -51,8 +51,8 @@
                 </div>
               </div>
               {% endfor %}
-              <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}" class="add-address-btn">+ Add new
-                address</a>
+                <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}"
+                   class="add-address-btn">+ Add new address</a>
             </div>
             <!-- PAYMENT METHOD -->
             <div class="section">
@@ -80,7 +80,8 @@
               <h2 class="section-title">Order Summary</h2>
               {% for item in cart_items %}
               <div class="order-item">
-                <img src="{{ item.variant.images.first.image.url }}" class="item-image"
+                    <img src="{{ item.variant.images.first.image.url }}"
+                         class="item-image"
                   alt="{{ item.variant.product.name }}">
                 <div class="item-details">
                   <div class="item-name">{{ item.variant.product.name }}</div>
@@ -151,8 +152,7 @@
                 </div>
                 {% endif %}
                 <!-- Hidden field for selected coupon -->
-                <input type="hidden" name="coupon_code" id="selected_coupon"
-                  value="{{ applied_coupon_code|default:'' }}">
+                  <input type="hidden" name="coupon_code" id="selected_coupon" value="{{ applied_coupon_code|default:'' }}">
                 {% if not applied_coupon_code %}
                 <button type="submit" name="apply_coupon" class="apply-coupon-btn">Apply Coupon</button>
                 {% else %}

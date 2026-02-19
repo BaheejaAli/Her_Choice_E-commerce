@@ -120,13 +120,12 @@ def cancel_order(request, order_id):
                     item_refund = order.calculate_item_refund(item)
                     total_refund_amount += item_refund
 
-            # Check if this cancellation makes the whole order cancelled
-            cancelled_items_count = all_items.filter(status="cancelled").count()
-            is_full_cancellation = (cancelled_items_count == total_items_count)
+            # Check if EVERYTHING is either returned or cancelled for full completion (including delivery refund)
+            finished_items_count = all_items.filter(Q(return_status='returned') | Q(status='cancelled')).count()
+            is_full_completion = (finished_items_count == total_items_count)
 
-            if can_refund and is_full_cancellation:
-                # If everything is now cancelled, ensure the final total matches order.total
-                # This naturally includes the delivery charge
+            if can_refund and is_full_completion:
+                # Ensure the final total matches order.total precisely
                 already_refunded = WalletTransaction.objects.filter(
                     wallet__user=order.user,
                     description__icontains=order.orderid,
@@ -134,10 +133,9 @@ def cancel_order(request, order_id):
                 ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
                 
                 remaining_to_refund = order.total - already_refunded
-                if remaining_to_refund > 0:
-                    # We override the loop's sum with the actual remaining balance
-                    # usually it will just be total_refund_amount + delivery_charge
-                    total_refund_amount = remaining_to_refund
+                # Only override if we actually cancelled something new in this request
+                if items_to_cancel.exists():
+                    total_refund_amount = max(remaining_to_refund, Decimal('0.00'))
 
             if total_refund_amount > 0:
                 wallet,_ = Wallet.objects.get_or_create(user=order.user)
@@ -151,14 +149,14 @@ def cancel_order(request, order_id):
                     description=f"Refund for cancelled items in Order {order.orderid}"
                 )
                 
-                if is_full_cancellation:
+                if is_full_completion:
                     order.payment_status = "refunded"
                 else:
                     order.payment_status = "partially_refunded"
 
-            if is_full_cancellation:
-                order.status = "cancelled"
-                messages.success(request, "Your entire order has been cancelled successfully.")
+            if is_full_completion:
+                order.status = "cancelled" if all_items.filter(status='cancelled').count() == total_items_count else order.status
+                messages.success(request, "Your order items have been cancelled successfully.")
             else:
                 order.status = "partially_cancelled"
                 messages.success(request, f"Successfully cancelled {items_to_cancel.count()} item(s).")

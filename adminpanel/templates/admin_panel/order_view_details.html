@@ -4,7 +4,7 @@
 Order Details | Her Choice Admin
 {% endblock title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/order_view_details.css' %}" />
+<link rel="stylesheet" href="{% static 'css/admin_panel/order_view_details.css' %}?v=1.1" />
 {% endblock extra_css %}
 {% block content %}
 
@@ -75,8 +75,8 @@ Order Details | Her Choice Admin
                             <td>₹ {{ item.total_price }}</td>
                             <td>
                                 {% if item.return_status != 'none' %}
-                                <span class="item-badge status-{{ item.return_status|lower }}">{{
-                                    item.get_return_status_display }}</span>
+                                <span class="item-badge status-{{ item.return_status|lower }}">
+                                    {{ item.get_return_status_display }}</span>
                                 {% if item.return_reason %}
                                 <div class="return-reason-text" style="font-size: 0.8rem;
                                                             color: #666;
@@ -85,8 +85,8 @@ Order Details | Her Choice Admin
                                 </div>
                                 {% endif %}
                                 {% else %}
-                                <span class="item-badge status-{{ item.status|lower }}">{{ item.get_status_display
-                                    }}</span>
+                                <span class="item-badge status-{{ item.status|lower }}">
+                                    {{ item.get_status_display }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -164,8 +164,8 @@ Order Details | Her Choice Admin
                     </div>
                     <div class="summary-row">
                         <span class="label">Payment Status</span>
-                        <span class="status-badge status-{{ order.payment_status|lower }}">{{
-                            order.get_payment_status_display }}</span>
+                        <span class="status-badge status-{{ order.payment_status|lower }}">
+                            {{ order.get_payment_status_display }}</span>
                     </div>
                     <div class="summary-row">
                         <span class="label">Order Status</span>
@@ -205,7 +205,7 @@ Order Details | Her Choice Admin
                         <select name="status" class="form-select">
                             {% for value, label in order_statuses %}
                             {% if value in allowed_statuses %}
-                            <option value="{{ value }}" {% if value==order.status %}selected{% endif %}>{{ label }}
+                            <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}
                             </option>
                             {% endif %}
                             {% endfor %}
