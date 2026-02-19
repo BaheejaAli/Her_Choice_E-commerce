@@ -9,7 +9,8 @@ urlpatterns = [
     path("checkout/", views.checkout, name="checkout"),
     path('payment-handler/', views.payment_handler, name='payment_handler'),
     path("order-success/<int:order_id>/", views.order_success, name="order_success"),
-    path("order-failure/", views.order_failure, name="order_failure"),
+    path("order-failure/<int:order_id>/", views.order_failure, name="order_failure"),
+    path("retry-payment/<int:order_id>/", views.retry_payment, name="retry_payment"),
 
 
 ]

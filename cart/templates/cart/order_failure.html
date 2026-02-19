@@ -1,48 +1,58 @@
 {% extends "user_section/base.html" %}
 {% load static %}
 {% block title %}
-    Payment Failed | Her Choice
+Payment Failed | Her Choice
 {% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/cart/order_failure.css' %}?v=1.0" />
+<link rel="stylesheet" href="{% static 'css/cart/order_failure.css' %}?v=2.0" />
 {% endblock extra_css %}
 {% block content %}
-    <div class="payment-failure-banner">
-        <div class="container">
-            <h1>Payment Failure</h1>
-        </div>
-    </div>
-    <div class="failure-content">
-        <div class="container">
-            <div class="failure-card">
-                <div class="failure-icon">
-                    <i class="fas fa-times-circle"></i>
+<div class="failure-content">
+    <div class="container">
+        <div class="failure-card">
+            <div class="failure-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+
+            <!-- Failure Message -->
+            <h2 class="failure-title">Payment Failed!</h2>
+            <p class="failure-message">
+                We couldn't process the payment for your order <strong>#{{ order.orderid }}</strong>.
+                Don't worry — your order has been saved and you can retry the payment anytime.
+            </p>
+
+            <!-- Order Info -->
+            <div class="order-info-box">
+                <div class="info-row">
+                    <span class="info-label">Order Number</span>
+                    <span class="info-value">#{{ order.orderid }}</span>
                 </div>
-                <h2 class="failure-title">Payment Failed</h2>
-                <p class="failure-message">We couldn't process your payment. Please check your card details and try again.</p>
-                <div class="error-details">
-                    <div class="error-header">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Error details</span>
-                    </div>
-                    <p class="error-text">
-                        Your card was declined. Please try another payment method or contact your bank for more information.
-                    </p>
+                <div class="info-row">
+                    <span class="info-label">Amount</span>
+                    <span class="info-value amount">₹ {{ order.total }}</span>
                 </div>
-                <div class="action-buttons">
-                    <a href="{% url 'checkout' %}" class="btn btn-outline">
-                        <i class="fas fa-arrow-left"></i> Back to Checkout
-                    </a>
-                    <a href="{% url 'checkout' %}" class="btn btn-primary">
-                        <i class="fas fa-redo"></i> Try Again
-                    </a>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="status-badge-failed">Payment Failed</span>
                 </div>
-                <div class="support-link">
-                    <span>Need help with your payment?</span>
-                    <a href="{% url 'contact' %}">Contact Support</a>
-                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'retry_payment' order.id %}" class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Retry Payment
+                </a>
+                <a href="{% url 'order_details' order.id %}" class="btn btn-outline">
+                    <i class="fas fa-file-alt"></i> View Order Details
+                </a>
+            </div>
+
+            <!-- Support -->
+            <div class="support-link">
+                <span>Having trouble?</span>
+                <a href="{% url 'contact' %}">Contact Support</a>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

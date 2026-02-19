@@ -1,101 +1,406 @@
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 40px auto;
+/* ================= WISHLIST PAGE ================= */
+
+/* ---------- Container ---------- */
+.wishlist-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
 }
 
-/* Header */
+/* ---------- Header ---------- */
 .wishlist-header {
-    padding: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 36px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #fff0f6 0%, #fce4ec 50%, #f8e8ff 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(233, 30, 99, 0.08);
 }
 
 .wishlist-title {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 16px;
 }
 
 .heart-icon {
-    width: 50px;
-    height: 50px;
-    background: #fce4ec;
-    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #ff1680, #e91e63);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #e91e63;
-    font-size: 24px;
+    color: #fff;
+    font-size: 22px;
+    box-shadow: 0 4px 14px rgba(233, 30, 99, 0.25);
 }
 
 .wishlist-title h1 {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0;
+    letter-spacing: -0.3px;
 }
 
 .wishlist-title p {
-    font-size: 14px;
-    color: #666;
+    font-size: 13px;
+    color: #888;
+    margin: 3px 0 0;
+    font-weight: 400;
 }
 
 .back-home {
     text-decoration: none;
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: all 0.25s ease;
+    font-weight: 500;
 }
 
-/* Grid */
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    /* Adjusted for product card width */
-    gap: 20px;
-    padding: 0 40px 40px;
-}
-
-/* Heart Remove Button */
-.wishlist-remove-heart {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+.back-home:hover {
+    color: #ff1680;
+    border-color: #ff1680;
     background: #fff;
-    border: none;
+}
+
+/* ---------- Products Grid ---------- */
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+    gap: 22px;
+}
+
+/* ---------- Wishlist Product Card ---------- */
+.wl-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.wl-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Image ---------- */
+.wl-card__img-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: #f8f8f8;
+}
+
+.wl-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    transition: transform 0.45s ease;
+}
+
+.wl-card:hover .wl-card__img-wrap img {
+    transform: scale(1.05);
+}
+
+.wl-card__no-img {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #e91e63;
-    /* Filled heart color */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 500;
+    background: #f5f5f5;
+}
+
+/* ---------- Remove Button ---------- */
+.wl-card__remove {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 16px;
     z-index: 10;
-    transition: transform 0.2s;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.wishlist-remove-heart:hover {
+.wl-card__remove:hover {
+    background: #ff1680;
+    color: #fff;
     transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 22, 128, 0.3);
 }
 
-/* Empty text */
-.empty-text {
-    padding: 40px;
-    font-size: 16px;
-    color: #666;
+/* ---------- Discount Overlay ---------- */
+.wl-card__discount-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #ff1680, #e91e63);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 6px;
+    z-index: 5;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3);
+}
+
+/* ---------- Out of Stock overlay ---------- */
+.wl-card__oos-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+/* ---------- Card Body ---------- */
+.wl-card__body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.wl-card__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.wl-card__name a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.wl-card__name a:hover {
+    color: #ff1680;
+}
+
+/* ---------- Price ---------- */
+.wl-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.wl-card__final-price {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.wl-card__orig-price {
+    font-size: 13px;
+    color: #aaa;
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+.wl-card__off {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff1680;
+}
+
+.wl-card__regular-price {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+/* ---------- Add to Cart Button ---------- */
+.wl-card__actions {
+    margin-top: auto;
+}
+
+.wl-card__btn {
+    width: 100%;
+    height: 42px;
+    border: 1.5px solid #ff1680;
+    border-radius: 10px;
+    background: #fff;
+    color: #ff1680;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+    letter-spacing: 0.2px;
+}
+
+.wl-card__btn:hover {
+    background: linear-gradient(135deg, #ff1680, #e91e63);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(255, 22, 128, 0.25);
+    transform: translateY(-1px);
+}
+
+.wl-card__btn:disabled {
+    border-color: #ddd;
+    color: #aaa;
+    background: #fafafa;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.wl-card__btn i {
+    font-size: 14px;
+}
+
+/* ---------- Empty State ---------- */
+.wl-empty {
     grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 30px;
     text-align: center;
 }
 
-/* Adjustments for Product Card reuse */
-.product-card {
-    height: 100%;
+.wl-empty__icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fff0f6, #fce4ec);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    color: #e91e63;
+    margin-bottom: 20px;
 }
 
-.product-img-container {
-    /* Match product_card.css but ensure relative positioning for the heart icon */
-    position: relative;
+.wl-empty__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 8px;
+}
+
+.wl-empty__text {
+    font-size: 14px;
+    color: #888;
+    margin: 0 0 24px;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.wl-empty__link {
+    text-decoration: none;
+    padding: 10px 28px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff1680, #e91e63);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(233, 30, 99, 0.25);
+}
+
+.wl-empty__link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.35);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .wishlist-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        padding: 22px 20px;
+    }
+
+    .wishlist-title {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    .wl-card__img-wrap {
+        height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wishlist-container {
+        padding: 16px 12px 40px;
+    }
+
+    .wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .wl-card__img-wrap {
+        height: 180px;
+    }
+
+    .wl-card__body {
+        padding: 10px 12px 14px;
+    }
+
+    .wl-card__name {
+        font-size: 13px;
+    }
+
+    .wl-card__final-price,
+    .wl-card__regular-price {
+        font-size: 15px;
+    }
 }

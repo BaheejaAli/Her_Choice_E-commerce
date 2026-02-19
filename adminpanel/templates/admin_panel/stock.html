@@ -32,18 +32,18 @@
                name="q"
                class="search-input"
                placeholder="Search products, brands, categories..."
-               value="{{ search_query }}" />
+               value="{{ query }}" />
         <button type="submit">
           <i class="fa fa-search"></i> Search
         </button>
-        {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+        {% if query or status %}<a href="?" class="clear-btn">Clear</a>{% endif %}
       </div>
       <div class="filter-right">
         <select name="stock_status" class="filter-select" onchange="this.form.submit()">
-        <option value="">All Stock Levels</option>
-        <option value="in_stock" {% if current_stock_filter == 'in_stock' %}selected{% endif %}>In Stock (>10)</option>
-        <option value="low_stock" {% if current_stock_filter == 'low_stock' %}selected{% endif %}>Low Stock (1-10)</option>
-        <option value="out_of_stock" {% if current_stock_filter == 'out_of_stock' %}selected{% endif %}>Out of Stock (0)</option>
+        <option value="all" {% if status == 'all' %}selected{% endif %}>All Stock Levels</option>
+        <option value="in_stock" {% if status == 'in_stock' %}selected{% endif %}>In Stock (>10)</option>
+        <option value="low_stock" {% if status == 'low_stock' %}selected{% endif %}>Low Stock (1-10)</option>
+        <option value="out_of_stock" {% if status == 'out_of_stock' %}selected{% endif %}>Out of Stock (0)</option>
     </select>
       </div>
     </form>
@@ -90,6 +90,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- PAGINATION -->
+        {% include "pagination.html" %}
     </div>
 </div>
 {% endblock content %}
@@ -101,30 +103,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = filterForm.querySelector('.search-input');
     const stockSelect = filterForm.querySelector('.filter-select');
 
-    // Master function to clean URL and submit
     function cleanAndSubmit(e) {
-        if (e) e.preventDefault(); // Stop default browser submit
+        if (e) e.preventDefault();
 
-        const params = new URLSearchParams();
+        // Get current URL parameters
+        const params = new URLSearchParams(window.location.search);
+
         const qValue = searchInput.value.trim();
         const stockValue = stockSelect.value;
 
-        // Only add parameters if they have a value
-        if (qValue) params.append('q', qValue);
-        if (stockValue) params.append('stock_status', stockValue);
+        // Update parameters
+        if (qValue) {
+            params.set('q', qValue);
+        } else {
+            params.delete('q');
+        }
 
-        const baseUrl = window.location.pathname;
-        const queryString = params.toString();
-        
-        // Final URL construction
-        window.location.href = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+        if (stockValue) {
+            params.set('stock_status', stockValue);
+        } else {
+            params.delete('stock_status');
+        }
+
+        // 🔥 Important: Reset to page 1 when filtering
+        params.delete('page');
+
+        // Update URL
+        window.location.search = params.toString();
     }
 
-    // Trigger on Dropdown change (instant)
     stockSelect.addEventListener('change', cleanAndSubmit);
-
-    // Trigger on Form Submit (Enter key or Search Button)
     filterForm.addEventListener('submit', cleanAndSubmit);
 });
 </script>
+
 {% endblock extra_js%}

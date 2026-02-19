@@ -54,11 +54,11 @@
                        name="q"
                        class="search-input"
                        placeholder="Search by coupon code "
-                       value="{{ search_query }}">
+                       value="{{ query }}">
                 <button type="submit">
                     <i class="fa fa-search"></i> Search
                 </button>
-                {% if search_query or status %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+                {% if query or status %}<a href="?" class="clear-btn">Clear</a>{% endif %}
             </div>
             <div class="filter-right">
                 <select name="status" id="statusFilter">

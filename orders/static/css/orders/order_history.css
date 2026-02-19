@@ -234,6 +234,11 @@
   color: #991b1b;
 }
 
+.status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .status-processing {
   background: #f3e8ff;
   color: #6b21a8;
@@ -463,40 +468,6 @@
 }
 
 /* ============================================
-   PAGINATION
-   ============================================ */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 30px;
-}
-
-.page-link {
-  padding: 10px 15px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 8px;
-  color: #6b7280;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.page-link:hover {
-  border-color: #e91e63;
-  color: #e91e63;
-}
-
-.page-link.active {
-  background: #e91e63;
-  color: white;
-  border-color: #e91e63;
-}
-
-/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
@@ -510,30 +481,6 @@
 
   .sort-select {
     width: 100%;
-  }
-
-  .order-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .order-header-left {
-    width: 100%;
-  }
-
-  .order-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .order-actions {
-    width: 100%;
-  }
-
-  .order-actions .btn {
-    flex: 1;
-    justify-content: center;
   }
 
   .filter-tabs {

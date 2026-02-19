@@ -337,6 +337,12 @@ def wishlist_view(request):
         "variant__color",
         "variant__size"
     )
+    
+    for item in wishlist_items:
+        pricing = item.variant.get_pricing_data()
+        item.variant.final_price = pricing["final_price"]
+        item.variant.discount_percentage = pricing["discount_percentage"]
+        item.variant.active_offer = pricing["active_offer"]
 
     context = {
         "wishlist": wishlist,

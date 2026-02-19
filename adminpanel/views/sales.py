@@ -23,7 +23,7 @@ def get_filtered_orders(request):
     date_range = request.GET.get('date_range','month')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    orders = Order.objects.exclude(status__in=['cancelled','failed'])
+    orders = Order.objects.exclude(status__in=['cancelled','failed']).order_by("-created_at")
 
     today = timezone.now().date()
     if date_range == 'today':

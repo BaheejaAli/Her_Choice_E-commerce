@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
 from orders.models import Order,OrderItem
 from django.db.models import Q
 from django.contrib import messages
@@ -9,6 +11,7 @@ from django.db import transaction
 from django.views.decorators.http import require_POST
 from decimal import Decimal
 from wallet.models import Wallet, WalletTransaction
+from django.core.paginator import Paginator
 
 # Create your views here.
 @login_required
@@ -32,7 +35,24 @@ def order_history(request):
         orders = orders.order_by("total")
     else:
         orders = orders.order_by("-created_at")
-    return render(request,"orders/order_history.html",{"orders":orders, "status":status, "query":query, "sort":sort})
+    
+    # Pagination
+    paginator = Paginator(orders, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Generate page range with ellipsis (same as admin pages)
+    page_range = paginator.get_elided_page_range(page_obj.number)
+    
+    return render(request,"orders/order_history.html",{
+        "orders":page_obj.object_list, 
+        "page_obj":page_obj,
+        "page_range":page_range,
+        "is_paginated":page_obj.has_other_pages(),
+        "status":status, 
+        "query":query, 
+        "sort":sort
+    })
 
 
 @login_required
@@ -45,10 +65,17 @@ def order_details(request,order_id):
     return render(request, "orders/order_details.html",context)
 
 @login_required
-def order_invoice(request,order_id):
-    order = get_object_or_404(Order.objects.prefetch_related("items__variant"), id= order_id, user=request.user)
+def download_invoice_pdf(request, order_id):
+    order = get_object_or_404(Order.objects.prefetch_related("items__variant"), id=order_id, user=request.user)
 
-    return render(request, "orders/order_invoice.html",{"order":order})
+    html_string = render_to_string("orders/order_invoice_pdf.html", {"order": order})
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f"attachment; filename=invoice_{order.orderid}.pdf"
+
+    HTML(string=html_string).write_pdf(response)
+
+    return response
 
 @login_required
 @require_POST

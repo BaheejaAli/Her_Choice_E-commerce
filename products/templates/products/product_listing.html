@@ -14,8 +14,8 @@
         </div>
 
         <form action="" method="GET"id="filter-form">
-            <input type="hidden" name="search" value="{{ search_query }}">
-            <input type="hidden" name="sort" value="{{ current_sort }}">
+            <input type="hidden" name="search" value="{{ query }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
 
             <h4>CATEGORIES <i class="fa-solid fa-magnifying-glass" style="color: #94969f; font-size: 14px;"></i></h4>
             <div class="category-list">
@@ -68,11 +68,11 @@
             <div class="sort-wrapper">
                 <label for="sort-select">Sort by:</label>
                 <select id="sort-select" name="sort" onchange="applySort(this.value)">
-                    <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Recommended</option>
-                    <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                    <option value="name_az" {% if current_sort == 'name_az' %}selected{% endif %}>Name: A - Z</option>
-                    <option value="name_za" {% if current_sort == 'name_za' %}selected{% endif %}>Name: Z - A</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Recommended</option>
+                    <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name_az" {% if sort == 'name_az' %}selected{% endif %}>Name: A - Z</option>
+                    <option value="name_za" {% if sort == 'name_za' %}selected{% endif %}>Name: Z - A</option>
                 </select>
             </div>
         </div>
@@ -83,11 +83,14 @@
                 {% include "products/product_card.html" %} 
             {% empty %}
                 <div class="no-results">
-                    <p>No results found for "<strong>{{ search_query }}</strong>".</p>
+                    <p>No results found for "<strong>{{ query }}</strong>".</p>
                     <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
                 </div>
             {% endfor %}
         </div>
+
+        <!-- PAGINATION -->
+        {% include "pagination.html" %}
     </main>
 </div>
 {% endblock %}

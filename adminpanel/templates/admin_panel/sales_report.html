@@ -2,7 +2,7 @@
 {% load static %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/sales_report.css' %}?v=1.1">
+          href="{% static 'css/admin_panel/sales_report.css' %}">
 {% endblock %}
 {% block content %}
     <div class="report-main-content">
@@ -65,7 +65,7 @@
             </div>
             <div class="metric-card">
                 <small>OVERALL DISCOUNT GIVEN</small>
-                <div class="metric-value" style="color: #d32f2f;">-₹ {{ total.total_discount|default:"0.00" }}</div>
+                <div class="metric-value" style="color: #d32f2f;">- ₹ {{ total.total_discount|default:"0.00" }}</div>
             </div>
         </div>
         <div class="table-wrapper">
@@ -75,7 +75,7 @@
                         <th>Order ID</th>
                         <th>Date</th>
                         <th>Customer</th>
-                        <th>Subtotal</th>
+                        {% comment %} <th>Total</th> {% endcomment %}
                         <th>Discount/Coupon</th>
                         <th>Final Amount</th>
                         <th>Status</th>
@@ -84,13 +84,13 @@
                 <tbody>
                     {% for order in page_obj %}
                         <tr>
-                            <td>#{{ order.id }}</td>
+                            <td># {{ order.id }}</td>
                             <td>{{ order.created_at|date:"Y-m-d" }}</td>
                             <td>{{ order.user.get_full_name }}</td>
-                            <td>₹ {{ order.subtotal }}</td>
+                            {% comment %} <td>₹ {{ order.total }}</td> {% endcomment %}
                             <td>
                                 {% if order.discount > 0 %}
-                                    <span class="discount-badge">-₹ {{ order.discount }}</span>
+                                    <span class="discount-badge">- ₹ {{ order.discount }}</span>
                                 {% else %}
                                     —
                                 {% endif %}

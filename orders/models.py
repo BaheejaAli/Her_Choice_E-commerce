@@ -73,6 +73,9 @@ class Order(models.Model):
     def save(self,*args, **kwargs):
         if not self.orderid:
             self.orderid= f"ORD-{uuid.uuid4().hex[:10].upper()}"
+        # Ensure payment_status has a value
+        if not self.payment_status:
+            self.payment_status = 'pending'
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -128,6 +131,7 @@ class OrderItem(models.Model):
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
+        ('failed', 'Failed'),
     ]
     RETURN_STATUS = [
         ('none', 'No Return'),

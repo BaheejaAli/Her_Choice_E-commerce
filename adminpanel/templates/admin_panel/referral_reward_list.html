@@ -48,6 +48,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- PAGINATION -->
+        {% include "pagination.html" %}
         {% else %}
         <div class="empty-state">No rewards configured.</div>
         {% endif %}

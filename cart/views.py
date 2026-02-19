@@ -11,7 +11,7 @@ from offer.models import Coupon
 from django.db import transaction
 import razorpay
 from django.conf import settings
-from .utils import create_order_instance, finalize_order
+from .utils import create_order_instance, create_order_items, finalize_order, complete_order_payment
 from decimal import Decimal
 from wallet.models import WalletTransaction
 from django.utils import timezone
@@ -48,10 +48,15 @@ def add_to_cart(request):
             cart=cart, variant=variant, defaults={"quantity": 1})
 
         if not created:
-            if cartItem.quantity >= min(variant.stock, 5):
+            max_allowed = min(variant.stock, 5)
+            if cartItem.quantity >= max_allowed:
+                if variant.stock < 5:
+                    message = f"Only {variant.stock} unit{'s' if variant.stock != 1 else ''} available in stock."
+                else:
+                    message = "Maximum 5 units allowed per item."
                 return JsonResponse({
                     "status": "error",
-                    "message": "Maximum quantity reached",
+                    "message": message,
                     "data": {
                         "available_stock": variant.stock
                     }
@@ -121,13 +126,18 @@ def update_cart_quantity(request):
         }, status=400)
 
     if action == "increase":
-        if cart_item.quantity < min(variant.stock, 5):
+        max_allowed = min(variant.stock, 5)
+        if cart_item.quantity < max_allowed:
             cart_item.quantity += 1
             cart_item.save()
         else:
+            if variant.stock < 5:
+                message = f"Only {variant.stock} unit{'s' if variant.stock != 1 else ''} available in stock."
+            else:
+                message = "Maximum 5 units allowed per item."
             return JsonResponse({
                 "status": "error",
-                "message": "Maximum 5 units allowed."
+                "message": message
             }, status=400)
 
     elif action == "decrease":
@@ -238,13 +248,8 @@ def checkout(request):
         subtotal += final_price * item.quantity
         total_discount += (variant.base_price - final_price) * item.quantity
 
-    if subtotal > 500:
-        delivery_charge = 0
-    else:
-        delivery_charge = 40 if subtotal > 0 else 0
-
     # ---------HANDLE COUPON-------------
-    coupon_discount = 0
+    coupon_discount = Decimal('0')
     applied_coupon = None
     # Apply coupon
     if request.method == "POST":
@@ -278,14 +283,18 @@ def checkout(request):
     if coupon_code:
         try:
             applied_coupon = Coupon.objects.get(code=coupon_code)
-            coupon_discount = applied_coupon.calculate_discount(subtotal)
+            coupon_discount = Decimal(str(applied_coupon.calculate_discount(subtotal)))
         except Coupon.DoesNotExist:
             request.session.pop("coupon_code", None)   
 
     # FINAL TOTAL CALCULATION
-    discounted_subtotal = max(subtotal - coupon_discount, 0)
-    tax_percentage = 5
-    tax = round((discounted_subtotal * tax_percentage) / 100, 2)
+    discounted_subtotal = max(subtotal - coupon_discount, Decimal('0'))
+    tax_percentage = Decimal('5')
+    tax = (discounted_subtotal * tax_percentage / Decimal('100')).quantize(Decimal('0.01'))
+    if discounted_subtotal > Decimal('500'):
+        delivery_charge = Decimal('0')
+    else:
+        delivery_charge = Decimal('40') 
     grand_total = discounted_subtotal + delivery_charge + tax
     
 
@@ -342,12 +351,15 @@ def checkout(request):
                 "currency": "INR",
                 "payment_capture": "1"
             })
+
+            # Create order WITH items upfront (no stock deduction yet)
             order = create_order_instance(request, selected_address, subtotal, total_discount,
                                           coupon_discount, tax, grand_total, delivery_charge, "razorpay")
-
             if applied_coupon:
                 order.coupon = applied_coupon
                 order.save()
+
+            create_order_items(order, cart_items)
 
             razorpay_context = {
                 "order": order,
@@ -369,7 +381,7 @@ def checkout(request):
     context = {
         "cart": cart,
         "cart_items": cart_items,
-        "subtotal": subtotal,
+        "total_mrp": total_mrp,
         "discount": total_discount,
         "coupon_discount": coupon_discount,
         "delivery_charge": delivery_charge,
@@ -400,28 +412,31 @@ def payment_handler(request):
                 'razorpay_payment_id': payment_id,
                 'razorpay_signature': signature
             })
-            
-            # if success, update the order
+
+            # Payment verified — deduct stock and finalize
             order = get_object_or_404(Order, id=order_internal_id)
             cart = get_object_or_404(Cart, user=order.user, is_active=True)
-            cart_items = cart.items.all()
-            
+
             with transaction.atomic():
                 order.payment_status = 'paid'
                 order.status = 'processing'
                 order.save()
-                finalize_order(order, cart_items, cart, order.coupon)
-            
+                complete_order_payment(order, order.coupon, cart)
+
+            # Clean up coupon session
+            request.session.pop('coupon_code', None)
+
             return redirect("order_success", order_id=order.id)
-            
+
         except Exception:
-            # Handle verification failure
+            # Payment verification failed — mark order as failed
             order = get_object_or_404(Order, id=order_internal_id)
             order.payment_status = 'failed'
             order.status = 'failed'
             order.save()
+            order.items.update(status='failed')
             return redirect("order_failure", order_id=order.id)
-            
+
     return redirect("checkout")
 
 @login_required
@@ -432,7 +447,51 @@ def order_success(request, order_id):
 @login_required
 def order_failure(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
+    # Mark the order as failed if it's still pending (e.g. user dismissed the Razorpay modal)
+    if order.payment_status in ('pending',) and order.payment_method == 'razorpay':
+        order.payment_status = 'failed'
+        order.status = 'failed'
+        order.save()
+        order.items.update(status='failed')
     return render(request, "cart/order_failure.html", {
         "order": order,
         "error_message": "Payment failed or was cancelled."
     })
+
+@login_required
+def retry_payment(request, order_id):
+    """Retry Razorpay payment for a failed order."""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Only allow retry for Razorpay orders with failed/pending payment
+    if order.payment_method != 'razorpay':
+        messages.error(request, "Retry is only available for online payments.")
+        return redirect("order_history")
+
+    if order.payment_status not in ('failed', 'pending'):
+        messages.error(request, "This order cannot be retried.")
+        return redirect("order_history")
+
+    # Check stock availability for all order items
+    for item in order.items.select_related('variant', 'variant__product'):
+        if item.variant.stock < item.quantity:
+            messages.error(
+                request,
+                f"{item.variant.product.name} does not have enough stock. Please place a new order."
+            )
+            return redirect("order_history")
+
+    # Create a new Razorpay order for the same internal order
+    razorpay_order = razorpay_client.order.create({
+        "amount": int(order.total * 100),
+        "currency": "INR",
+        "payment_capture": "1"
+    })
+
+    razorpay_context = {
+        "order": order,
+        "razorpay_order_id": razorpay_order['id'],
+        "razorpay_key": settings.RAZORPAY_KEY_ID,
+        "amount": int(order.total * 100),
+    }
+    return render(request, "cart/razorpay_checkout.html", razorpay_context)
