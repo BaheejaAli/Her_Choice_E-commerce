@@ -1,63 +1,55 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-  Category Management | Her Choice
+Category Management | Her Choice
 {% endblock title %}
 {% block page_title %}
-  Dashboard /
-  <a href="{% url 'category_list' %}" class="breadcrumb-link">Category Management</a> /
-  {% if object %}
-    Edit Category
-  {% else %}
-    Add Category
-  {% endif %}
+Dashboard /
+<a href="{% url 'category_list' %}" class="breadcrumb-link">Category Management</a> /
+{% if object %}
+Edit Category
+{% else %}
+Add Category
+{% endif %}
 {% endblock page_title %}
 {% block extra_css %}
-  <link rel="stylesheet"
-        href="{% static 'css/admin_panel/category_form.css' %}" />
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<link rel="stylesheet" href="{% static 'css/admin_panel/category_form.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
 {% endblock extra_css %}
 {% block content %}
-  <div class="category-management-wrapper">
-    <div class="form-card">
-      <h3 class="form-title">
-        {% if object %}
-          Edit Category
-        {% else %}
-          Add Category
-        {% endif %}
-      </h3>
-      <form method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-        {% comment %} {% if messages %}
-          <div class="messages-container">
-            {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-          </div>
-        {% endif %} {% endcomment %}
-        <!-- Category Name -->
-        <div class="form-group">
-          {{ form.name.label_tag }}
-          {{ form.name }}
-          {% for error in form.name.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
-        </div>
-        <!-- Status -->
-        <div class="form-group">
-          {{ form.is_active.label_tag }}
-          {{ form.is_active }}
-        </div>
-        <!-- Actions -->
-        <div class="form-actions">
-          <button type="submit" class="btn-primary">
-            {% if object %}
-              Update Category
-            {% else %}
-              Create Category
-            {% endif %}
-          </button>
-          <a href="{% url 'category_list' %}" class="btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
+<div class="category-management-wrapper">
+  <div class="form-card">
+    <h3 class="form-title">
+      {% if object %}
+      Edit Category
+      {% else %}
+      Add Category
+      {% endif %}
+    </h3>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {% for error in form.name.errors %}<small class="form-error">{{ error }}</small>{% endfor %}
+      </div>
+      <!-- Status -->
+      <div class="form-group">
+        {{ form.is_active.label_tag }}
+        {{ form.is_active }}
+      </div>
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          {% if object %}
+          Update Category
+          {% else %}
+          Create Category
+          {% endif %}
+        </button>
+        <a href="{% url 'category_list' %}" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
   </div>
+</div>
 {% endblock content %}

@@ -1,0 +1,151 @@
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+:root {
+  --primary-color: #b88a8a;
+  /* Muted Rose */
+  --primary-dark: #9e7575;
+  --secondary-color: #2d2d2d;
+  /* Soft Black */
+  --text-main: #333333;
+  --text-light: #717171;
+  --border-color: #e8e8e8;
+  --bg-light: #fdfdfd;
+  --status-paid: #8da891;
+  --status-pending: #d1b48c;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+.invoice-wrapper {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.invoice-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--text-main);
+}
+
+.btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* ============================================
+   INVOICE CONTAINER
+   ============================================ */
+.invoice-container {
+  background: #ffffff;
+  padding: 40px 50px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.invoice-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--primary-color);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+}
+
+.brand-tagline {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--primary-color);
+}
+
+
+/* ============================================
+   TABLES
+   ============================================ */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.items-table th {
+  text-align: left;
+  padding: 15px 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.items-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  body {
+    background-color: #ffffff;
+  }
+
+  .invoice-wrapper {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .invoice-container {
+    box-shadow: none;
+    padding: 40px 60px;
+  }
+
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

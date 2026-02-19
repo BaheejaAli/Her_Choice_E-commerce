@@ -25,23 +25,27 @@ from wallet.models import Wallet
 
 
 def homepage(request):
+    # Get IDs of products that have at least one active variant
+    # This prevents duplicates and ensures we only show available items
+    active_product_ids = ProductVariant.objects.filter(is_active=True).values_list('product_id', flat=True)
+
     new_arrivals = (
         Product.objects
-        .filter(is_active=True)
+        .filter(is_active=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
-        .order_by("-created_at")[:8]
+        .order_by("-created_at")[:16]
     )
 
     featured_products = (
         Product.objects
-        .filter(is_active=True, is_featured=True)
+        .filter(is_active=True, is_featured=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
-        .order_by("?")[:6]
+        .order_by("?")[:8]
     )
 
     trending_products = (
         Product.objects
-        .filter(is_active=True, is_most_demanded=True)
+        .filter(is_active=True, is_most_demanded=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
         .order_by("?")[:8]
     )

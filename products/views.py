@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from products.utils import prepare_products_for_display
+from user_section.models import WishlistItem
 
 
 # -------------------------
@@ -146,13 +147,25 @@ def product_detail_view(request, slug, sku=None):
     
     color_variants = (variants.order_by("color_id","id").distinct("color_id"))
     sizes = Size.objects.filter(productvariant__product = product, productvariant__color= selected_variant.color).distinct()
-    related_products = (Product.objects
-    .filter(category=product.category,is_active=True)
-    .exclude(id=product.id)
-    .prefetch_related("variants__images")
-    .order_by("-created_at")[:4]
+    # Show related products that have active variants
+    active_product_ids = ProductVariant.objects.filter(is_active=True).values_list('product_id', flat=True)
+    
+    related_products = (
+        Product.objects
+        .filter(category=product.category, is_active=True, id__in=active_product_ids)
+        .exclude(id=product.id)
+        .prefetch_related("variants__images")
+        .order_by("-created_at")[:4]
     )
+    prepare_products_for_display(related_products)
 
+
+    is_in_wishlist = False
+    if request.user.is_authenticated:
+        is_in_wishlist = WishlistItem.objects.filter(
+            wishlist__user=request.user, 
+            variant=selected_variant
+        ).exists()
 
     context = {
         "product": product,
@@ -160,7 +173,8 @@ def product_detail_view(request, slug, sku=None):
         "selected_variant": selected_variant,  
         "color_variants": color_variants,      
         "sizes": sizes,    
-        "related_products": related_products,                     
+        "related_products": related_products,
+        "is_in_wishlist": is_in_wishlist,                     
     }
 
     return render(request, "products/product_detail.html", context)

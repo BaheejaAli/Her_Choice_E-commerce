@@ -38,6 +38,11 @@ class OfferForm(forms.ModelForm):
                 self.add_error('category', "Please select at least one category.")
             cleaned_data['product'] = Product.objects.none()
 
+        start_at = cleaned_data.get('start_at')
+        end_at = cleaned_data.get('end_at')
+        if start_at and end_at and end_at < start_at:
+            self.add_error('end_at', 'Please select an end date that is on or after the start date.')
+
         return cleaned_data
     
 class CouponForm(forms.ModelForm):
@@ -113,20 +118,14 @@ class CouponForm(forms.ModelForm):
         valid_to = cleaned_data.get('valid_to')
         discount_percentage = cleaned_data.get('discount_percentage')
 
-        if valid_from and valid_to and valid_to <= valid_from:
-            raise forms.ValidationError(
-                'Valid To date must be after Valid From date.'
-            )
+        if valid_from and valid_to and valid_to < valid_from:
+            self.add_error('valid_to', 'Please select an end date that is on or after the start date.')
 
         if discount_percentage is not None:  
             if discount_percentage > 100 :
-                raise forms.ValidationError(
-                    'Percentage discount cannot exceed 100%.'
-                )
+                self.add_error('discount_percentage', 'Please provide a discount percentage between 1 and 100.')
             if discount_percentage <= 0:
-                raise forms.ValidationError(
-                    'Discount value must be greater than 0.'
-                )
+                self.add_error('discount_percentage', 'Please provide a discount percentage between 1 and 100.')
             
         return cleaned_data
     

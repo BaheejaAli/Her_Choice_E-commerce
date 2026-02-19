@@ -122,6 +122,20 @@ class Order(models.Model):
     def has_cancellable_items(self):
         return self.items.exclude(status__in=['cancelled', 'delivered']).exists()
     
+    def calculate_item_refund(self, item):
+        """Calculates the proportional refund for a single item, accounting for discounts and tax."""
+        if self.subtotal == 0:
+            return Decimal('0.00')
+        
+        # Proportional refund: (Item's Sales Price / Order's Total Sales Price) * (Amount paid for all items)
+        # Note: self.total includes tax and excludes coupon discounts
+        # We exclude delivery_charge for partial refunds
+        paid_for_items = self.total - self.delivery_charge
+        proportion = Decimal(str(item.total_price)) / Decimal(str(self.subtotal))
+        refund_amount = (proportion * paid_for_items).quantize(Decimal('0.01'))
+        
+        return refund_amount
+    
 
 
 

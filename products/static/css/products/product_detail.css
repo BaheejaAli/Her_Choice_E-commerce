@@ -78,7 +78,7 @@
 .thumb-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* ---------------- Info ---------------- */
@@ -125,12 +125,13 @@
 .variant-preview img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* ---------------- Size ---------------- */
 .size-section {
   margin-top: 26px;
+  text-decoration: none;
 }
 
 .size-options {
@@ -145,6 +146,7 @@
   background: #fff;
   cursor: pointer;
   font-size: 15px;
+  text-decoration: none;
 }
 
 .size-btn.selected {
@@ -199,7 +201,7 @@
 
 .action-btns {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   margin: 26px 0;
   width: 100%;
   align-items: stretch;
@@ -207,35 +209,75 @@
 
 /* form should behave like a flex item */
 .action-btns form {
-  flex: 1;
+  flex: 0 0 70%;
 }
 
-/* ADD TO CART – PRIMARY PINK */
+/* ADD TO CART – PREMIUM MUTED ROSE */
 .btn-add-cart {
   width: 100%;
-  height: 56px;
-  background: #ff005c;
+  height: 50px;
+  background: #B88A8A;
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all 0.25s ease;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
 }
 
 .btn-add-cart:hover {
-  background: #e60052;
-  transform: translateY(-1px);
+  background: #a57878;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(184, 138, 138, 0.3);
+}
+
+.btn-add-cart:active {
+  transform: translateY(0);
 }
 
 .btn-add-cart:disabled {
-  background: #ffc1d6;
+  background: #d8c2c2;
   cursor: not-allowed;
+}
+
+/* WISHLIST BUTTON - ELEGANT BORDERLESS */
+.btn-detail-wishlist {
+  width: 48px;
+  height: 50px;
+  background: transparent;
+  color: #2D2D2D;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-detail-wishlist:hover {
+  background: #fffafa;
+  border-color: #B88A8A;
+  color: #B88A8A;
+  transform: translateY(-2px);
+}
+
+.btn-detail-wishlist.active {
+  background: transparent;
+  border-color: #B88A8A;
+  color: #B88A8A;
+}
+
+.btn-detail-wishlist.active i {
+  font-weight: 900;
+  /* Solid heart */
 }
 
 

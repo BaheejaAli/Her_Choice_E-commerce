@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from orders.models import Order, OrderItem
-from django.db.models import Q,F,Count
+from django.db.models import Q, F, Count, Sum
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
@@ -83,31 +83,49 @@ def update_order_status(request, order_id):
 
                 # CANCELLATION LOGIC
                 elif new_status == 'cancelled':
-                    active_items = order.items.exclude(status='cancelled')
+                    all_items = order.items.all()
+                    total_items_count = all_items.count()
+                    items_to_cancel = all_items.exclude(status='cancelled')
                     total_refunded_now = Decimal('0')
+                    can_refund = order.payment_status in ['paid', 'partially_refunded']
 
-                    for item in active_items:
+                    for item in items_to_cancel:
                         item.status = 'cancelled'
                         item.cancelled_at = timezone.now()
                         item.save()
 
                         ProductVariant.objects.filter(id=item.variant.id).update(stock=F('stock') + item.quantity)
                         
-                        if order.payment_status in ['paid', 'partially_refunded']:
-                            item_price = Decimal(str(item.total_price))
-                            
-                            if item_price > 0:
-                                wallet, _ = Wallet.objects.get_or_create(user=order.user)
-                                wallet.add_funds(item_price)
+                        if can_refund:
+                            item_refund = order.calculate_item_refund(item)
+                            total_refunded_now += item_refund
 
-                                # Record Transaction
-                                WalletTransaction.objects.create(
-                                    wallet=wallet,
-                                    amount=item_price,
-                                    transaction_type='REFUND',
-                                    description=f"Refund for cancelled item: {item.variant.product.name} (Order: {order.orderid})"
-                                )
-                                total_refunded_now += item_price
+                    # Check for full cancellation to refund delivery charge
+                    cancelled_items_count = all_items.filter(status='cancelled').count()
+                    is_full_cancellation = (cancelled_items_count == total_items_count)
+                    
+                    if can_refund and is_full_cancellation:
+                        already_refunded = WalletTransaction.objects.filter(
+                            wallet__user=order.user,
+                            description__icontains=order.orderid,
+                            transaction_type="REFUND"
+                        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+                        
+                        remaining_to_refund = order.total - already_refunded
+                        if remaining_to_refund > 0:
+                            total_refunded_now = remaining_to_refund
+                    
+                    if total_refunded_now > 0:
+                        wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                        wallet.balance += total_refunded_now
+                        wallet.save()
+
+                        WalletTransaction.objects.create(
+                            wallet=wallet,
+                            amount=total_refunded_now,
+                            transaction_type='REFUND',
+                            description=f"Refund for cancelled items (Order: {order.orderid})"
+                        )
 
                     # 4. Sync Payment Status after cancellation
                     stats = order.items.aggregate(
@@ -127,8 +145,11 @@ def update_order_status(request, order_id):
 
                 # RETURN & REFUND LOGIC
                 elif new_status == 'returned':
-                    approved_items = order.items.filter(return_status='return_approved')
+                    all_items = order.items.all()
+                    total_items_count = all_items.count()
+                    approved_items = all_items.filter(return_status='return_approved')
                     total_refunded_now = Decimal('0')
+                    can_refund = order.payment_status in ['paid', 'partially_refunded']
 
                     for item in approved_items:
                         item.return_status = 'returned'
@@ -137,20 +158,37 @@ def update_order_status(request, order_id):
                         
                         # Restore Stock
                         ProductVariant.objects.filter(id=item.variant.id).update(stock=F('stock') + item.quantity)
-                        item_total = Decimal(str(item.total_price))
                         
-                        if order.payment_status in ['paid', 'partially_refunded'] and item_total > 0:
-                            wallet, _ = Wallet.objects.get_or_create(user=order.user)
-                            wallet.balance += item_total
-                            wallet.save()
+                        if can_refund:
+                            item_refund = order.calculate_item_refund(item)
+                            total_refunded_now += item_refund
+                    
+                    # Check if EVERYTHING is either returned or cancelled for full refund (including delivery)
+                    finished_items_count = all_items.filter(Q(return_status='returned') | Q(status='cancelled')).count()
+                    is_completely_done = (finished_items_count == total_items_count)
+                    
+                    if can_refund and is_completely_done:
+                        already_refunded = WalletTransaction.objects.filter(
+                            wallet__user=order.user,
+                            description__icontains=order.orderid,
+                            transaction_type="REFUND"
+                        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+                        
+                        remaining_to_refund = order.total - already_refunded
+                        if remaining_to_refund > 0:
+                            total_refunded_now = remaining_to_refund
 
-                            WalletTransaction.objects.create(
-                                wallet=wallet,
-                                amount=item_total,
-                                transaction_type='REFUND',
-                                description=f"Refund for: {item.variant.product.name}"
-                            )      
-                            total_refunded_now += item_total                     
+                    if total_refunded_now > 0:
+                        wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                        wallet.balance += total_refunded_now
+                        wallet.save()
+
+                        WalletTransaction.objects.create(
+                            wallet=wallet,
+                            amount=total_refunded_now,
+                            transaction_type='REFUND',
+                            description=f"Refund for returned/cancelled items (Order: {order.orderid})"
+                        )
 
                     # Recalculate Payment Status automatically
                     stats = order.items.aggregate(

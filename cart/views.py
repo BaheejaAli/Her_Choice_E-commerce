@@ -289,12 +289,12 @@ def checkout(request):
 
     # FINAL TOTAL CALCULATION
     discounted_subtotal = max(subtotal - coupon_discount, Decimal('0'))
-    tax_percentage = Decimal('5')
+    tax_percentage = Decimal(str(settings.TAX_PERCENTAGE))
     tax = (discounted_subtotal * tax_percentage / Decimal('100')).quantize(Decimal('0.01'))
-    if discounted_subtotal > Decimal('500'):
+    if discounted_subtotal > Decimal(str(settings.FREE_DELIVERY_THRESHOLD)):
         delivery_charge = Decimal('0')
     else:
-        delivery_charge = Decimal('40') 
+        delivery_charge = Decimal(str(settings.DELIVERY_CHARGE))
     grand_total = discounted_subtotal + delivery_charge + tax
     
 

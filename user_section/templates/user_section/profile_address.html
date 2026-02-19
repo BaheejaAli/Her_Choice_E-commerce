@@ -1,15 +1,12 @@
 {% extends 'user_section/profile_base.html' %}
 {% load static %}
-
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_address.css' %}?v=1.2" />
-  <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
+  <link rel="stylesheet"
+        href="{% static 'css/user_section/profile_address.css' %}?v=1.2" />
+  <link rel="stylesheet"
+        href="{% static 'css/user_section/profile_base.css' %}" />
 {% endblock %}
-
-{% block title %}
-  Her Choice | My Address
-{% endblock %}
-
+{% block title %}Her Choice | My Address{% endblock %}
 {% block profile_content %}
   <div class="main-container">
     <main class="content-area">
@@ -25,7 +22,6 @@
           </button>
         </a>
       </div>
-
       <section>
         <h2 class="section-title">My Address</h2>
         <div class="addresses-grid">
@@ -34,34 +30,43 @@
               <div class="address-header">
                 <div>
                   <div class="address-type">{{ address.get_address_type_display }}</div>
-                  {% if address.is_default %}
-                    <span class="default-badge">Default</span>
-                  {% endif %}
+                  {% if address.is_default %}<span class="default-badge">Default</span>{% endif %}
                 </div>
               </div>
               <br />
               <div class="address-name">{{ user.get_full_name }}</div>
               <div class="address-details">
-                {{ address.address_line_1 }}<br />
-                {{ address.address_line_2 }}<br />
+                {{ address.address_line_1 }}
+                <br />
+                {% if address.address_line_2 %}
+                  {{ address.address_line_2 }}
+                  <br />
+                {% endif %}
+                {{ address.city }}
+                {{ address.state }}
+                {{ address.pincode }}
+                <br>
                 {{ address.country }}
               </div>
-              <div class="address-phone">{{ user.phone }}</div>
+              <div class="address-phone">{% if user.phone %}{{ user.phone }}{% endif %}</div>
               <div class="address-actions">
-                <a href="{% url 'profile_edit_address' address.id %}" style="text-decoration: none;">
+                <a href="{% url 'profile_edit_address' address.id %}"
+                   style="text-decoration: none">
                   <button class="action-btn edit">
                     <i class="far fa-edit"></i>
                     Edit
                   </button>
                 </a>
-                <form action="{% url "profile_delete_address" address.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this address?');">
+                <form action="{% url "profile_delete_address" address.id %}"
+                      method="POST"
+                      style="display: inline"
+                      onsubmit="return confirm('Are you sure you want to delete this address?');">
                   {% csrf_token %}
-                <button class="action-btn delete">
-                  <i class="far fa-trash-alt"></i>
-                  Delete
-                </button> 
+                  <button class="action-btn delete">
+                    <i class="far fa-trash-alt"></i>
+                    Delete
+                  </button>
                 </form>
-               
               </div>
             </div>
           {% empty %}

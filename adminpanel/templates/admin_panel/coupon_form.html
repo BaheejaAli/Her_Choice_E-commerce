@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}
-    {% if is_edit %}
-        Edit Coupon
-    {% else %}
-        Create Coupon
-    {% endif %}
+{% if is_edit %}
+Edit Coupon
+{% else %}
+Create Coupon
+{% endif %}
 {% endblock %}
 
 {% block extra_css %}
@@ -23,9 +23,9 @@
         <span>/</span>
         <span>
             {% if is_edit %}
-                Edit Coupon
+            Edit Coupon
             {% else %}
-                Create Coupon
+            Create Coupon
             {% endif %}
         </span>
     </div>
@@ -34,9 +34,9 @@
     <div class="page-header">
         <h2>
             {% if is_edit %}
-                Edit Coupon
+            Edit Coupon
             {% else %}
-                Create Coupon
+            Create Coupon
             {% endif %}
         </h2>
     </div>
@@ -46,6 +46,12 @@
 
         <form method="POST">
             {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
 
             <!-- General Information -->
             <div class="section-title">General Information</div>
@@ -66,12 +72,14 @@
                 <div class="form-group">
                     <label>Max Discount Amount</label>
                     {{ form.max_discount_amount }}
+                    {{ form.max_discount_amount.errors }}
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Minimum Purchase Amount</label>
                 {{ form.minimum_amount }}
+                {{ form.minimum_amount.errors }}
             </div>
 
             <!-- Validity -->
@@ -81,11 +89,13 @@
                 <div class="form-group">
                     <label>Valid From *</label>
                     {{ form.valid_from }}
+                    {{ form.valid_from.errors }}
                 </div>
 
                 <div class="form-group">
                     <label>Valid To *</label>
                     {{ form.valid_to }}
+                    {{ form.valid_to.errors }}
                 </div>
             </div>
 
@@ -93,11 +103,13 @@
                 <div class="form-group">
                     <label>Total Usage Limit *</label>
                     {{ form.limit }}
+                    {{ form.limit.errors }}
                 </div>
 
                 <div class="form-group">
                     <label>Max Usage Per User *</label>
                     {{ form.max_usage_per_user }}
+                    {{ form.max_usage_per_user.errors }}
                 </div>
             </div>
 

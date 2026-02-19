@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from orders.models import Order,OrderItem
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction
@@ -57,7 +57,7 @@ def order_history(request):
 
 @login_required
 def order_details(request,order_id):
-    order = get_object_or_404(Order.objects.prefetch_related("items__variant"),
+    order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"),
                                id= order_id, user= request.user)
     context = {
         "order":order,   
@@ -66,7 +66,7 @@ def order_details(request,order_id):
 
 @login_required
 def download_invoice_pdf(request, order_id):
-    order = get_object_or_404(Order.objects.prefetch_related("items__variant"), id=order_id, user=request.user)
+    order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"), id=order_id, user=request.user)
 
     html_string = render_to_string("orders/order_invoice_pdf.html", {"order": order})
 
@@ -94,25 +94,50 @@ def cancel_order(request, order_id):
             return redirect("order_details", order_id=order.id)
 
         with transaction.atomic():
-            items_to_cancel = order.items.filter(id__in=selected_item_ids)
+            all_items = order.items.all()
+            total_items_count = all_items.count()
+            
+            # Use exclude to only get items that can actually be cancelled in this request
+            items_to_cancel = all_items.filter(id__in=selected_item_ids).exclude(status="cancelled")
+            
             total_refund_amount = Decimal('0.00')
+            can_refund = order.payment_status in ["paid", "partially_refunded"] and order.payment_method in ["razorpay", "wallet"]
 
             for item in items_to_cancel:
-                if item.status != "cancelled":
-                    # Update Inventory
-                    variant = item.variant
-                    variant.stock += item.quantity
-                    variant.save(update_fields=["stock"])
+                # Update Inventory
+                variant = item.variant
+                variant.stock += item.quantity
+                variant.save(update_fields=["stock"])
 
-                    # Update Item Status
-                    item.status = "cancelled"
-                    item.cancel_reason = cancel_reason 
-                    item.cancelled_at = timezone.now()
-                    item.save()
+                # Update Item Status
+                item.status = "cancelled"
+                item.cancel_reason = cancel_reason 
+                item.cancelled_at = timezone.now()
+                item.save()
 
-                if order.payment_status == "paid" and order.payment_method in ["razorpay", "wallet"]:            
-                    refund_amount = Decimal(str(item.total_price))
-                    total_refund_amount += refund_amount
+                if can_refund:
+                    # Proportionate refund
+                    item_refund = order.calculate_item_refund(item)
+                    total_refund_amount += item_refund
+
+            # Check if this cancellation makes the whole order cancelled
+            cancelled_items_count = all_items.filter(status="cancelled").count()
+            is_full_cancellation = (cancelled_items_count == total_items_count)
+
+            if can_refund and is_full_cancellation:
+                # If everything is now cancelled, ensure the final total matches order.total
+                # This naturally includes the delivery charge
+                already_refunded = WalletTransaction.objects.filter(
+                    wallet__user=order.user,
+                    description__icontains=order.orderid,
+                    transaction_type="REFUND"
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+                
+                remaining_to_refund = order.total - already_refunded
+                if remaining_to_refund > 0:
+                    # We override the loop's sum with the actual remaining balance
+                    # usually it will just be total_refund_amount + delivery_charge
+                    total_refund_amount = remaining_to_refund
 
             if total_refund_amount > 0:
                 wallet,_ = Wallet.objects.get_or_create(user=order.user)
@@ -125,19 +150,18 @@ def cancel_order(request, order_id):
                     transaction_type = "REFUND",
                     description=f"Refund for cancelled items in Order {order.orderid}"
                 )
-                order.payment_status = "partially_refunded"
-
-            total_items = order.items.count()
-            cancelled_items_count = order.items.filter(status="cancelled").count()
-
-            if total_items == cancelled_items_count:
-                order.status = "cancelled"
-                if order.payment_status == "partially_refunded":
+                
+                if is_full_cancellation:
                     order.payment_status = "refunded"
+                else:
+                    order.payment_status = "partially_refunded"
+
+            if is_full_cancellation:
+                order.status = "cancelled"
                 messages.success(request, "Your entire order has been cancelled successfully.")
             else:
                 order.status = "partially_cancelled"
-                messages.success(request, f"Successfully cancelled {len(selected_item_ids)} item(s).")
+                messages.success(request, f"Successfully cancelled {items_to_cancel.count()} item(s).")
             
             order.save(update_fields=["status", "payment_status", "updated_at"])          
         return redirect("order_details", order_id=order.id)

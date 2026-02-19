@@ -1,175 +1,160 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-  Product Management | Her Choice
+Product Management | Her Choice
 {% endblock title %}
 {% block extra_css %}
-  <link rel="stylesheet"
-        href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
+<link rel="stylesheet" href="{% static 'css/admin_panel/product_management.css' %}?v=1.2">
 {% endblock extra_css %}
 {% block content %}
-  <div class="product-management-wrapper">
-    <h2 class="admin-title">Products</h2>
-    {% if messages %}
-      <div class="messages-container">
-        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-      </div>
-    {% endif %}
-    <!-- CSRF TOKEN FOR AJAX -->
-    <form id="csrf-form">
-      {% csrf_token %}
-    </form>
-    <!-- HEADER -->
-    <div class="page-header-section">
-      <div class="header-content"></div>
-      <a href="{% url 'product_add' %}" class="btn-add-new-product">
-        <i class="fas fa-plus"></i>
-        <span>Add New Product</span>
-      </a>
-    </div>
-    <!-- SEARCH & FILTER -->
-    <form method="get" class="search-filter-form" id="filterForm">
-      <div class="filter-left">
-        <input type="text"
-               name="q"
-               class="search-input"
-               placeholder="Search products, brands, categories..."
-               value="{{ search_query }}" />
-        <button type="submit">
-          <i class="fa fa-search"></i> Search
-        </button>
-        {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
-      </div>
-      <div class="filter-right">
-        <select name="status" onchange="this.form.submit()">
-          <option value="">All</option>
-          <option value="active"
-                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
-          <option value="inactive"
-                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
-        </select>
-      </div>
-    </form>
-    <!-- TABLE -->
-    <div class="table-card">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Product</th>
-            <th>Brand</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for product in products %}
-            <tr>
-              <td>{{ product.id }}</td>
-              <td>
-                <div class="product-cell">
-                  <div class="product-info">
-                    <h6 class="product-name">{{ product.name }}</h6>
-                    <span class="variant-count">{{ product.variants.count }} variants</span>
-                  </div>
-                </div>
-              </td>
-              <td>{{ product.brand.name }}</td>
-              <td>{{ product.category.name }}</td>
-              <td>
-                <button class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                        data-url="{% url 'toggle_product_status' product.id %}"
-                        onclick="toggleProductStatus(this)">{{ product.is_active|yesno:"Active,Inactive" }}</button>
-              </td>
-              <td class="action-buttons">
-                <a href="{% url 'product_edit' product.id %}" class="action-btn">
-                  <i class="fa-solid fa-pen"></i>
-                </a>
-                <a href="javascript:void(0)"
-                   class="action-btn"
-                   onclick="toggleVariants({{ product.id }})">
-                  <i class="fa-solid fa-chevron-down"></i>
-                </a>
-              </td>
-            </tr>
-            <!-- VARIANT DROPDOWN ROW -->
-            <tr id="variants-{{ product.id }}"
-                class="variant-row"
-                style="display:none">
-              <td colspan="6">
-                <div class="variant-dropdown">
-                  <div class="variant-header">
-                    <strong>Variants</strong>
-                    <a href="{% url 'product_variant_add' product.id %}"
-                       class="btn-add-variant">+ Add Variant</a>
-                  </div>
-                  {% if product.variants.exists %}
-                    <table class="variant-table">
-                      <thead>
-                        <tr>
-                          <th>Size</th>
-                          <th>Color</th>
-                          <th>Price</th>
-                          <th>Stock</th>
-                          <th>Status</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for variant in product.variants.all %}
-                          <tr>
-                            <td>{{ variant.size.name }}</td>
-                            <td>{{ variant.color.name }}</td>
-                            <td>
-                              {% with pricing=variant.get_pricing_data %}
-                                {% if pricing.discount_percentage > 0 %}
-                                  <small style="text-decoration: line-through; color: #888;">₹ {{ variant.base_price }}</small>
-                                  <br>
-                                  <strong class="text-success">₹ {{ pricing.final_price }}</strong>
-                                  <span class="badge bg-info" style="font-size: 0.7rem;">{{ pricing.discount_percentage }}% OFF</span>
-                                {% else %}
-                                  <strong>₹{{ variant.base_price }}</strong>
-                                {% endif %}
-                              {% endwith %}
-                            </td>
-                            <td>{{ variant.stock }}</td>
-                            <td>
-                              <button class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                                      data-url="{% url 'toggle_variant_status' variant.id %}"
-                                      onclick="toggleVariantStatus(this)">
-                                {{ variant.is_active|yesno:"Active,Inactive" }}
-                              </button>
-                            </td>
-                            <td>
-                              <a href="{% url 'product_variant_edit' variant.id %}">
-                                <i class="fa-solid fa-pen"></i>
-                              </a>
-                            </td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  {% else %}
-                    <p class="empty-text">No variants added yet</p>
-                  {% endif %}
-                </div>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="6" class="empty-text">No products found</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <!-- PAGINATION -->
-      {% include "pagination.html" %}
-    </div>
+<div class="product-management-wrapper">
+  <h2 class="admin-title">Products</h2>
+
+  <!-- CSRF TOKEN FOR AJAX -->
+  <form id="csrf-form">
+    {% csrf_token %}
+  </form>
+  <!-- HEADER -->
+  <div class="page-header-section">
+    <div class="header-content"></div>
+    <a href="{% url 'product_add' %}" class="btn-add-new-product">
+      <i class="fas fa-plus"></i>
+      <span>Add New Product</span>
+    </a>
   </div>
+  <!-- SEARCH & FILTER -->
+  <form method="get" class="search-filter-form" id="filterForm">
+    <div class="filter-left">
+      <input type="text" name="q" class="search-input" placeholder="Search products, brands, categories..."
+        value="{{ search_query }}" />
+      <button type="submit">
+        <i class="fa fa-search"></i> Search
+      </button>
+      {% if search_query or current_status_filter %}<a href="?" class="clear-btn">Clear</a>{% endif %}
+    </div>
+    <div class="filter-right">
+      <select name="status" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+      </select>
+    </div>
+  </form>
+  <!-- TABLE -->
+  <div class="table-card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Brand</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>{{ product.id }}</td>
+          <td>
+            <div class="product-cell">
+              <div class="product-info">
+                <h6 class="product-name">{{ product.name }}</h6>
+                <span class="variant-count">{{ product.variants.count }} variants</span>
+              </div>
+            </div>
+          </td>
+          <td>{{ product.brand.name }}</td>
+          <td>{{ product.category.name }}</td>
+          <td>
+            <button class="btn status-btn {% if product.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+              data-url="{% url 'toggle_product_status' product.id %}" onclick="toggleProductStatus(this)">{{ product.is_active|yesno:"Active,Inactive" }}</button>
+          </td>
+          <td class="action-buttons">
+            <a href="{% url 'product_edit' product.id %}" class="action-btn">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <a href="javascript:void(0)" class="action-btn" onclick="toggleVariants({{ product.id }})">
+              <i class="fa-solid fa-chevron-down"></i>
+            </a>
+          </td>
+        </tr>
+        <!-- VARIANT DROPDOWN ROW -->
+        <tr id="variants-{{ product.id }}" class="variant-row" style="display:none">
+          <td colspan="6">
+            <div class="variant-dropdown">
+              <div class="variant-header">
+                <strong>Variants</strong>
+                <a href="{% url 'product_variant_add' product.id %}" class="btn-add-variant">+ Add Variant</a>
+              </div>
+              {% if product.variants.exists %}
+              <table class="variant-table">
+                <thead>
+                  <tr>
+                    <th>Size</th>
+                    <th>Color</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for variant in product.variants.all %}
+                  <tr>
+                    <td>{{ variant.size.name }}</td>
+                    <td>{{ variant.color.name }}</td>
+                    <td>
+                      {% with pricing=variant.get_pricing_data %}
+                      {% if pricing.discount_percentage > 0 %}
+                      <small style="text-decoration: line-through; color: #888;">₹ {{ variant.base_price }}</small>
+                      <br>
+                      <strong class="text-success">₹ {{ pricing.final_price }}</strong>
+                      <span class="badge bg-info" style="font-size: 0.7rem;">{{ pricing.discount_percentage }}%
+                        OFF</span>
+                      {% else %}
+                      <strong>₹{{ variant.base_price }}</strong>
+                      {% endif %}
+                      {% endwith %}
+                    </td>
+                    <td>{{ variant.stock }}</td>
+                    <td>
+                      <button
+                        class="btn status-btn {% if variant.is_active %}btn-success{% else %}btn-secondary{% endif %}"
+                        data-url="{% url 'toggle_variant_status' variant.id %}" onclick="toggleVariantStatus(this)">
+                        {{ variant.is_active|yesno:"Active,Inactive" }}
+                      </button>
+                    </td>
+                    <td>
+                      <a href="{% url 'product_variant_edit' variant.id %}">
+                        <i class="fa-solid fa-pen"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% else %}
+              <p class="empty-text">No variants added yet</p>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="empty-text">No products found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <!-- PAGINATION -->
+    {% include "pagination.html" %}
+  </div>
+</div>
 {% endblock content %}
 {% block extra_js %}
-  <script>
+<script>
   function toggleProductStatus(btn) {
     const url = btn.dataset.url;
     const csrftoken =
@@ -183,68 +168,68 @@
         'X-CSRFToken': csrftoken
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        btn.textContent = data.is_active ? 'Active' : 'Inactive';
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          btn.textContent = data.is_active ? 'Active' : 'Inactive';
 
-        btn.classList.toggle('btn-success', data.is_active);
-        btn.classList.toggle('btn-secondary', !data.is_active);
-      }
-    })
-    .catch(() => alert('Something went wrong'))
-    .finally(() => {
-      btn.disabled = false;
-    });
+          btn.classList.toggle('btn-success', data.is_active);
+          btn.classList.toggle('btn-secondary', !data.is_active);
+        }
+      })
+      .catch(() => alert('Something went wrong'))
+      .finally(() => {
+        btn.disabled = false;
+      });
   }
 
 
-function toggleVariantStatus(btn) {
-  const url = btn.dataset.url;
-  const csrftoken =
-    document.querySelector('#csrf-form input[name=csrfmiddlewaretoken]').value;
+  function toggleVariantStatus(btn) {
+    const url = btn.dataset.url;
+    const csrftoken =
+      document.querySelector('#csrf-form input[name=csrfmiddlewaretoken]').value;
 
-  btn.disabled = true;
+    btn.disabled = true;
 
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': csrftoken
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      btn.textContent = data.is_active ? 'Active' : 'Inactive';
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          btn.textContent = data.is_active ? 'Active' : 'Inactive';
 
-      btn.classList.toggle('btn-success', data.is_active);
-      btn.classList.toggle('btn-secondary', !data.is_active);
+          btn.classList.toggle('btn-success', data.is_active);
+          btn.classList.toggle('btn-secondary', !data.is_active);
+        } else {
+          alert(data.message || 'Action not allowed');
+        }
+      })
+      .catch(() => alert('Something went wrong'))
+      .finally(() => {
+        btn.disabled = false;
+      });
+  }
+
+  {% comment %} for showing the variants in dropdown{% endcomment %}
+  function toggleVariants(productId) {
+    const currentRow = document.getElementById(`variants-${productId}`);
+
+
+    document.querySelectorAll('.variant-row').forEach(row => {
+      if (row !== currentRow) {
+        row.style.display = 'none';
+      }
+    });
+
+    if (currentRow.style.display === 'table-row') {
+      currentRow.style.display = 'none';
     } else {
-      alert(data.message || 'Action not allowed');
+      currentRow.style.display = 'table-row';
     }
-  })
-  .catch(() => alert('Something went wrong'))
-  .finally(() => {
-    btn.disabled = false;
-  });
-}
-
-{% comment %} for showing the variants in dropdown{% endcomment %}
-function toggleVariants(productId) {
-  const currentRow = document.getElementById(`variants-${productId}`);
-
- 
-  document.querySelectorAll('.variant-row').forEach(row => {
-    if (row !== currentRow) {
-      row.style.display = 'none';
-    }
-  });
-
-  if (currentRow.style.display === 'table-row') {
-    currentRow.style.display = 'none';
-  } else {
-    currentRow.style.display = 'table-row';
-  } 
-}
-  </script>
+  }
+</script>
 {% endblock extra_js %}

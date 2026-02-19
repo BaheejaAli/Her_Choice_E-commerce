@@ -28,6 +28,18 @@ class Offer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def clean(self):
+        if self.end_at and self.start_at and self.end_at < self.start_at:
+            raise ValidationError({
+                'end_at': "Please select an end date that is on or after the start date."
+            })
+
+    def save(self, *args, **kwargs):
+        if self.end_at:
+            self.end_at = self.end_at.replace(hour=23, minute=59, second=59, microsecond=999999)
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     class Meta:
         ordering = ['-created_at']
 
@@ -131,14 +143,20 @@ class Coupon(models.Model):
         
 
     def clean(self):
+        errors = {}
         if not (1 <= self.discount_percentage <= 100):
-            raise ValidationError("Discount must be between 1 and 100 percent.")
-        if self.valid_to and self.valid_from and self.valid_to <= self.valid_from:
-            raise ValidationError("End date (valid_to) must be after start date (valid_from).")
-
+            errors['discount_percentage'] = "Please provide a discount percentage between 1 and 100."
+        if self.valid_to and self.valid_from and self.valid_to < self.valid_from:
+            errors['valid_to'] = "Please select an end date that is on or after the start date."
+        
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         self.code = self.code.upper()
+        if self.valid_to:
+            self.valid_to = self.valid_to.replace(hour=23, minute=59, second=59, microsecond=999999)
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def is_valid(self, cart_total, user):

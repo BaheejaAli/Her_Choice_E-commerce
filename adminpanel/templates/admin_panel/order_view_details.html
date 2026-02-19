@@ -7,11 +7,7 @@ Order Details | Her Choice Admin
 <link rel="stylesheet" href="{% static 'css/admin_panel/order_view_details.css' %}" />
 {% endblock extra_css %}
 {% block content %}
-{% if messages %}
-<div class="messages-container">
-    {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-</div>
-{% endif %}
+
 <div class="order-detail-wrapper">
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs">

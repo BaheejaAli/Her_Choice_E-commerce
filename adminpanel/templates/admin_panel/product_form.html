@@ -2,154 +2,150 @@
 {% load static %}
 
 {% block title %}
-  {% if is_edit %}Edit Product {% else %}Add Product {% endif %} | Her Choice
+{% if is_edit %}Edit Product {% else %}Add Product {% endif %} | Her Choice
 {% endblock %}
 
 {% block page_title %}
-  {% if is_edit %}Edit Product {% else %}Add Product {% endif %}
+{% if is_edit %}Edit Product {% else %}Add Product {% endif %}
 {% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}" />
-  {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}" />
+{% comment %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"> {% endcomment %}
 {% endblock %}
 
 {% block content %}
-  <div class="product-form-wrapper">
-    
-    {% if messages %}
-      {% for message in messages %}
-        <div class="custom-alert alert-{{ message.tags }}">{{ message }}</div>
+<div class="product-form-wrapper">
+
+  <form method="POST" enctype="multipart/form-data" novalidate class="elegant-form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="custom-alert alert-danger">
+      {% for error in form.non_field_errors %}
+      <p class="mb-0"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
       {% endfor %}
+    </div>
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data" novalidate class="elegant-form">
-      {% csrf_token %}
-
-      {% if form.non_field_errors %}
-        <div class="custom-alert alert-danger">
-          {% for error in form.non_field_errors %}
-            <p class="mb-0"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-      <div class="form-main-card">
-        <div class="form-section">
-          <h5 class="section-title">General Information</h5>
-          <div class="input-grid" >
-            <div class="input-field-group narrow-full-width">
-              <label>Product Name</label>
-              {{ form.name }} 
-              {% if form.name.errors %}
-                <span class="error-text">{{ form.name.errors.0 }}</span>
-              {% endif %}
-            </div>
-
-            <div class="input-field-group">
-              <label>Category</label>
-              {{ form.category }}
-              {% if form.category.errors %}
-                <span class="error-text">{{ form.category.errors.0 }}</span>
-              {% endif %}
-            </div>
-
-            <div class="input-field-group">
-              <label>Brand</label>
-              {{ form.brand }}
-              {% if form.brand.errors %}
-                <span class="error-text">{{ form.brand.errors.0 }}</span>
-              {% endif %}
-            </div>
-
-            <div class="input-field-group narrow-full-width">
-              <label>Description</label>
-              {{ form.description }}
-              {% if form.description.errors %}
-                <span class="error-text">{{ form.description.errors.0 }}</span>
-              {% endif %}
-            </div>
-
-            <div class="input-field-group narrow-full-width">
-            <label>Material</label>
-            {{ form.material }}
-            {% if form.material.errors %}
-              <span class="error-text">{{ form.material.errors.0 }}</span>
+    <div class="form-main-card">
+      <div class="form-section">
+        <h5 class="section-title">General Information</h5>
+        <div class="input-grid">
+          <div class="input-field-group narrow-full-width">
+            <label>Product Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <span class="error-text">{{ form.name.errors.0 }}</span>
             {% endif %}
           </div>
 
+          <div class="input-field-group">
+            <label>Category</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+            <span class="error-text">{{ form.category.errors.0 }}</span>
+            {% endif %}
           </div>
-        </div>
 
-     
-
-
-        <!-- ================= VISIBILITY & FLAGS ================= -->
-        <div class="form-section mt-4">
-          <h5 class="section-title">Visibility & Promotion</h5>
-          <div class="input-grid">
-
-            <div class="input-field-group">
-              <label>Status</label>
-              {{ form.is_active }}
-              {% if form.is_active.errors %}
-                <span class="error-text">{{ form.is_active.errors.0 }}</span>
-              {% endif %}
-            </div>
-
-            <div class="checkbox-group-wrapper">
-              <label class="d-block mb-2">Promotional Flags</label>
-              <div class="checkbox-flex">
-                <label class="custom-checkbox">{{ form.is_featured }} Featured</label>
-                <label class="custom-checkbox">{{ form.is_selective }} Selective</label>
-                <label class="custom-checkbox">{{ form.is_most_demanded }} Most Demanded</label>
-              </div>
-            </div>
+          <div class="input-field-group">
+            <label>Brand</label>
+            {{ form.brand }}
+            {% if form.brand.errors %}
+            <span class="error-text">{{ form.brand.errors.0 }}</span>
+            {% endif %}
           </div>
-        </div> 
-        {% comment %} <div class="form-section mt-4">
-  <h5 class="section-title">Visibility & Promotion</h5>
 
-  <div class="visibility-inline-row">
+          <div class="input-field-group narrow-full-width">
+            <label>Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <span class="error-text">{{ form.description.errors.0 }}</span>
+            {% endif %}
+          </div>
 
-    <div class="visibility-status-inline">
-      <label>Status</label>
-      {{ form.is_active }}
-    </div>
+          <div class="input-field-group narrow-full-width">
+            <label>Material</label>
+            {{ form.material }}
+            {% if form.material.errors %}
+            <span class="error-text">{{ form.material.errors.0 }}</span>
+            {% endif %}
+          </div>
 
-    <div class="visibility-checkboxes-inline">
-      <label class="custom-checkbox">
-        {{ form.is_featured }} Featured
-      </label>
-
-      <label class="custom-checkbox">
-        {{ form.is_selective }} Selective
-      </label>
-
-      <label class="custom-checkbox">
-        {{ form.is_most_demanded }} Most Demanded
-      </label>
-    </div>
-
-  </div>
-</div> {% endcomment %}
-
-        <br>
-        
-        <div class="form-actions">
-          <a href="{% url 'product_list' %}" class="btn-cancel" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
-          <button type="submit" class="btn-save">Add Product</button>
         </div>
       </div>
-    </form>
-  </div>
+
+
+
+
+      <!-- ================= VISIBILITY & FLAGS ================= -->
+      <div class="form-section mt-4">
+        <h5 class="section-title">Visibility & Promotion</h5>
+        <div class="input-grid">
+
+          <div class="input-field-group">
+            <label>Status</label>
+            {{ form.is_active }}
+            {% if form.is_active.errors %}
+            <span class="error-text">{{ form.is_active.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="checkbox-group-wrapper">
+            <label class="d-block mb-2">Promotional Flags</label>
+            <div class="checkbox-flex">
+              <label class="custom-checkbox">{{ form.is_featured }} Featured</label>
+              <label class="custom-checkbox">{{ form.is_selective }} Selective</label>
+              <label class="custom-checkbox">{{ form.is_most_demanded }} Most Demanded</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% comment %} <div class="form-section mt-4">
+        <h5 class="section-title">Visibility & Promotion</h5>
+
+        <div class="visibility-inline-row">
+
+          <div class="visibility-status-inline">
+            <label>Status</label>
+            {{ form.is_active }}
+          </div>
+
+          <div class="visibility-checkboxes-inline">
+            <label class="custom-checkbox">
+              {{ form.is_featured }} Featured
+            </label>
+
+            <label class="custom-checkbox">
+              {{ form.is_selective }} Selective
+            </label>
+
+            <label class="custom-checkbox">
+              {{ form.is_most_demanded }} Most Demanded
+            </label>
+          </div>
+
+        </div>
+      </div> {% endcomment %}
+
+      <br>
+
+      <div class="form-actions">
+        <a href="{% url 'product_list' %}" class="btn-cancel"
+          style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
+        <button type="submit" class="btn-save">Add Product</button>
+      </div>
+    </div>
+  </form>
+</div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     let cropper = null;
     let currentFileInput = null;
     let currentPreviewElement = null;
@@ -159,64 +155,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const cropSaveBtn = document.getElementById('cropSave');
 
     function closeModal() {
-        cropModal.style.display = 'none';
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
+      cropModal.style.display = 'none';
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
     }
 
-    document.addEventListener('change', function(e) {
-        if (e.target.type === 'file' && e.target.name.includes('image')) {
-            const file = e.target.files[0];
-            if (file) {
-                currentFileInput = e.target;
-                const card = currentFileInput.closest('.image-upload-card');
-                currentPreviewElement = card ? card.querySelector('.preview-thumb') : null;
+    document.addEventListener('change', function (e) {
+      if (e.target.type === 'file' && e.target.name.includes('image')) {
+        const file = e.target.files[0];
+        if (file) {
+          currentFileInput = e.target;
+          const card = currentFileInput.closest('.image-upload-card');
+          currentPreviewElement = card ? card.querySelector('.preview-thumb') : null;
 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    cropImage.src = event.target.result;
-                    cropModal.style.display = 'flex';
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(cropImage, {
-                        aspectRatio: NaN,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            cropImage.src = event.target.result;
+            cropModal.style.display = 'flex';
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImage, {
+              aspectRatio: NaN,
+              viewMode: 1,
+              autoCropArea: 1,
+            });
+          };
+          reader.readAsDataURL(file);
         }
+      }
     });
 
-    cropSaveBtn.addEventListener('click', function(e) {
-        if (!cropper) return;
-        const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
-        canvas.toBlob((blob) => {
-            if (blob && currentFileInput) {
-                const fileName = currentFileInput.files[0].name;
-                const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(croppedFile);
-                currentFileInput.files = dataTransfer.files;
+    cropSaveBtn.addEventListener('click', function (e) {
+      if (!cropper) return;
+      const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
+      canvas.toBlob((blob) => {
+        if (blob && currentFileInput) {
+          const fileName = currentFileInput.files[0].name;
+          const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(croppedFile);
+          currentFileInput.files = dataTransfer.files;
 
-                if (currentPreviewElement) {
-                    currentPreviewElement.src = URL.createObjectURL(blob);
-                } else {
-                    const card = currentFileInput.closest('.image-upload-card');
-                    const uploadIcon = card.querySelector('.upload-icon');
-                    if (uploadIcon) {
-                        uploadIcon.innerHTML = `<img src="${URL.createObjectURL(blob)}" class="preview-thumb">`;
-                    }
-                }
+          if (currentPreviewElement) {
+            currentPreviewElement.src = URL.createObjectURL(blob);
+          } else {
+            const card = currentFileInput.closest('.image-upload-card');
+            const uploadIcon = card.querySelector('.upload-icon');
+            if (uploadIcon) {
+              uploadIcon.innerHTML = `<img src="${URL.createObjectURL(blob)}" class="preview-thumb">`;
             }
-            closeModal();
-        }, 'image/jpeg', 0.9);
+          }
+        }
+        closeModal();
+      }, 'image/jpeg', 0.9);
     });
 
     document.getElementById('cropCancel').onclick = closeModal;
     document.getElementById('cropClose').onclick = closeModal;
-});
+  });
 </script>
 {% endblock %}
