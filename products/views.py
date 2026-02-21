@@ -17,7 +17,7 @@ from user_section.models import WishlistItem
 def product_listing(request):
     queryset = (
         Product.objects
-        .filter(is_active=True, variants__is_active=True)
+        .filter(is_active=True, variants__is_active=True, variants__stock__gt=0 )
         .select_related('category', 'brand')
         .prefetch_related('variants__images')
         .distinct()
@@ -90,6 +90,13 @@ def product_listing(request):
             product_count=Count('products', filter=Q(products__is_active=True))
         ).order_by('-product_count')
     
+    wishlist_variant_ids = set()
+    if request.user.is_authenticated:
+        wishlist_variant_ids = set(
+            WishlistItem.objects.filter(wishlist__user=request.user)
+            .values_list('variant_id', flat=True)
+        )
+
     context = {
         "products": page_obj,                   
         "page_obj": page_obj,
@@ -108,6 +115,7 @@ def product_listing(request):
 
         "brands": brands,
         "selected_brands": selected_brands,
+        "wishlist_variant_ids": wishlist_variant_ids,
     }
     return render(request, "products/product_listing.html", context)
 

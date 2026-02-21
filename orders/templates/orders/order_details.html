@@ -175,6 +175,7 @@ Order Details | Her Choice
         <div class="section-card">
             <h3 class="section-title">Delivery Address</h3>
             <div class="address-content">
+                {% if order.address %}
                 <h4 class="address-name">{{ order.address.user.get_full_name }}</h4>
                 <p class="address-line">
                     <i class="fas fa-map-marker-alt"></i>
@@ -194,11 +195,18 @@ Order Details | Her Choice
                     <i class="fas fa-phone"></i>
                     <span>{{ order.address.user.phone|default:"Not available" }}</span>
                 </p>
+                {% else %}
+                <p class="address-line">
+                    <i class="fas fa-exclamation-circle text-muted"></i>
+                    <span class="text-muted">Delivery address information is no longer available.</span>
+                </p>
+                {% endif %}
             </div>
         </div>
         <div class="section-card">
             <h3 class="section-title">Billing Address</h3>
             <div class="address-content">
+                {% if order.billing_address %}
                 <h4 class="address-name">{{ order.billing_address.user.get_full_name }}</h4>
                 <p class="address-line">
                     <i class="fas fa-file-invoice"></i>
@@ -209,16 +217,22 @@ Order Details | Her Choice
                         {{ order.billing_address.address_line_2 }}
                         <br>
                         {% endif %}
-                        {{ order.billing_address.city }}, {{ order.billing_address.state }} {{
-                        order.billing_address.pincode }}
+                        {{ order.billing_address.city }}, {{ order.billing_address.state }}
+                        {{ order.billing_address.pincode }}
                         <br>
                         {{ order.billing_address.country }}
                     </span>
                 </p>
                 <p class="address-phone">
                     <i class="fas fa-phone"></i>
-                    <span>{{ order.billing_address.user.phone|default:"Not available" }}</span>
+                    <span>{{ order.user.phone|default:"Not available" }}</span>
                 </p>
+                {% else %}
+                <p class="address-line">
+                    <i class="fas fa-exclamation-circle text-muted"></i>
+                    <span class="text-muted">Billing address information is no longer available.</span>
+                </p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -240,6 +254,12 @@ Order Details | Her Choice
             <div class="summary-row">
                 <span>Tax (Estimated)</span><span>₹{{ order.tax }}</span>
             </div>
+            {% if order.coupon_discount > 0 %}
+            <div class="summary-row discount">
+                <span>Coupon Discount</span>
+                <span>- ₹ {{ order.coupon_discount }}</span>
+            </div>
+            {% endif %}
             <div class="summary-row total-row">
                 <span>Total</span><span>₹{{ order.total }}</span>
             </div>

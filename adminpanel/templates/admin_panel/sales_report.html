@@ -1,136 +1,135 @@
 {% extends 'admin_panel/admin_base.html' %}
 {% load static %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/admin_panel/sales_report.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_panel/sales_report.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="report-main-content">
-        <div class="report-header">
-            <div>
-                <h1>Sales Report</h1>
-                <p>Analysis for {{ start_date }} to {{ end_date }}</p>
-            </div>
-            <div class="header-right" style="display: flex; gap: 10px;">
-                <a href="{% url 'export_pdf' %}?{{ request.GET.urlencode }}"
-                   class="btn btn-primary">Download PDF</a>
-                <a href="{% url 'export_excel' %}?{{ request.GET.urlencode }}"
-                   class="btn">Download Excel</a>
-            </div>
+<div class="report-main-content">
+    <div class="report-header">
+        <div>
+            <h1>Sales Report</h1>
+            <p>Analysis for {{ start_date }} to {{ end_date }}</p>
         </div>
-        <div class="filter-section">
-            <form method="GET" action="{% url 'sales_report' %}">
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label>Date Range</label>
-                        <select name="date_range">
-                            <option value="custom"
-                                    {% if request.GET.date_range == 'custom' %}selected{% endif %}>
-                                Custom Range
-                            </option>
-                            <option value="today"
-                                    {% if request.GET.date_range == 'today' %}selected{% endif %}>Today</option>
-                            <option value="week"
-                                    {% if request.GET.date_range == 'week' %}selected{% endif %}>This Week</option>
-                            <option value="month"
-                                    {% if request.GET.date_range == 'month' %}selected{% endif %}>This Month</option>
-                            <option value="year"
-                                    {% if request.GET.date_range == 'year' %}selected{% endif %}>This Year</option>
-                        </select>
+        <div class="header-right" style="display: flex; gap: 10px;">
+            <a href="{% url 'export_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-primary">Download PDF</a>
+            <a href="{% url 'export_excel' %}?{{ request.GET.urlencode }}" class="btn">Download Excel</a>
+        </div>
+    </div>
+    <div class="filter-section">
+        <form method="GET" action="{% url 'sales_report' %}">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <select name="date_range">
+                        <option value="custom" {% if request.GET.date_range == 'custom' %}selected{% endif %}>
+                            Custom Range
+                        </option>
+                        <option value="today" {% if request.GET.date_range == 'today' %}selected{% endif %}>Today</option>
+                        <option value="week" {% if request.GET.date_range == 'week' %}selected{% endif %}>This Week
+                        </option>
+                        <option value="month" {% if request.GET.date_range == 'month' %}selected{% endif %}>This Month
+                        </option>
+                        <option value="year" {% if request.GET.date_range == 'year' %}selected{% endif %}>This Year
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group" id="custom-date-fields">
+                    <div>
+                        <label>Start Date</label>
+                        <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
                     </div>
-                    <div class="filter-group" id="custom-date-fields">
-                        <div>
-                            <label>Start Date</label>
-                            <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
-                        </div>
-                        <div>
-                            <label>End Date</label>
-                            <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
-                        </div>
-                    </div>
-                    <div class="filter-group" style="display: flex; align-items: flex-end;">
-                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <div>
+                        <label>End Date</label>
+                        <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
                     </div>
                 </div>
-            </form>
-        </div>
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <small>OVERALL SALES COUNT</small>
-                <div class="metric-value">{{ total.sales_count }}</div>
+                <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
             </div>
-            <div class="metric-card">
-                <small>OVERALL NET SALES</small>
-                <div class="metric-value">₹ {{ total.total_order_amount|default:"0.00" }}</div>
-            </div>
-            <div class="metric-card">
-                <small>OVERALL DISCOUNT GIVEN</small>
-                <div class="metric-value" style="color: #d32f2f;">- ₹ {{ total.total_discount|default:"0.00" }}</div>
-            </div>
-        </div>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
-                        <th>Customer</th>
-                        {% comment %} <th>Total</th> {% endcomment %}
-                        <th>Discount/Coupon</th>
-                        <th>Final Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in page_obj %}
-                        <tr>
-                            <td># {{ order.id }}</td>
-                            <td>{{ order.created_at|date:"Y-m-d" }}</td>
-                            <td>{{ order.user.get_full_name }}</td>
-                            {% comment %} <td>₹ {{ order.total }}</td> {% endcomment %}
-                            <td>
-                                {% if order.discount > 0 %}
-                                    <span class="discount-badge">- ₹ {{ order.discount }}</span>
-                                {% else %}
-                                    —
-                                {% endif %}
-                            </td>
-                            <td>
-                                <strong>₹  {{ order.total }}</strong>
-                            </td>
-                            <td>{{ order.status }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7" style="text-align: center;">No orders found for this period.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% include "pagination.html" %}
+        </form>
     </div>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <small>OVERALL SALES COUNT</small>
+            <div class="metric-value">{{ total.sales_count }}</div>
+        </div>
+        <div class="metric-card">
+            <small>OVERALL SALES AMOUNT</small>
+            <div class="metric-value">₹ {{ total.overall_sales|default:"0.00" }}</div>
+        </div>
+        <div class="metric-card">
+            <small>OVERALL DISCOUNT</small>
+            <div class="metric-value" style="color: #d32f2f;">- ₹ {{ total.total_discount|default:"0.00" }}</div>
+        </div>
+        <div class="metric-card">
+            <small>OVERALL FINAL SALES</small>
+            <div class="metric-value" style="color: #2e7d32;">₹ {{ total.total_order_amount|default:"0.00" }}</div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    {% comment %} <th>Total</th> {% endcomment %}
+                    <th>Discount/Coupon</th>
+                    <th>Final Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in page_obj %}
+                <tr>
+                    <td># {{ order.id }}</td>
+                    <td>{{ order.created_at|date:"Y-m-d" }}</td>
+                    <td>{{ order.user.get_full_name }}</td>
+                    {% comment %} <td>₹ {{ order.total }}</td> {% endcomment %}
+                    <td>
+                        {% if order.discount > 0 %}
+                        <span class="discount-badge">- ₹ {{ order.discount }}</span>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>₹ {{ order.total }}</strong>
+                    </td>
+                    <td>{{ order.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">No orders found for this period.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "pagination.html" %}
+</div>
 {% endblock %}
 {% block extra_js %}
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const rangeSelect = document.querySelector("select[name='date_range']");
-    const customFields = document.getElementById("custom-date-fields");
+    document.addEventListener("DOMContentLoaded", function () {
+        const rangeSelect = document.querySelector("select[name='date_range']");
+        const customFields = document.getElementById("custom-date-fields");
 
-    function toggleCustomFields() {
-        if (rangeSelect.value === "custom") {
-            customFields.style.display = "flex";
-        } else {
-            customFields.style.display = "none";
+        function toggleCustomFields() {
+            if (rangeSelect.value === "custom") {
+                customFields.style.display = "flex";
+            } else {
+                customFields.style.display = "none";
+            }
         }
-    }
 
-    // Run on page load
-    toggleCustomFields();
+        // Run on page load
+        toggleCustomFields();
 
-    // Run when dropdown changes
-    rangeSelect.addEventListener("change", toggleCustomFields);
-});
+        // Run when dropdown changes
+        rangeSelect.addEventListener("change", toggleCustomFields);
+    });
 </script>
 
 {% endblock %}

@@ -51,8 +51,8 @@
                 </div>
               </div>
               {% endfor %}
-                <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}"
-                   class="add-address-btn">+ Add new address</a>
+              <a href="{% url 'profile_add_address' %}?next={% url 'checkout' %}" class="add-address-btn">+ Add new
+                address</a>
             </div>
             <!-- PAYMENT METHOD -->
             <div class="section">
@@ -80,8 +80,7 @@
               <h2 class="section-title">Order Summary</h2>
               {% for item in cart_items %}
               <div class="order-item">
-                    <img src="{{ item.variant.images.first.image.url }}"
-                         class="item-image"
+                <img src="{{ item.variant.images.first.image.url }}" class="item-image"
                   alt="{{ item.variant.product.name }}">
                 <div class="item-details">
                   <div class="item-name">{{ item.variant.product.name }}</div>
@@ -90,13 +89,28 @@
                     Color: {{ item.variant.color.name }}
                   </div>
                   <div class="item-color">Qty: {{ item.quantity }}</div>
-                  <div class="item-price">₹ {{ item.sub_total }}</div>
+                  <div class="item-price">
+                    {% if item.discount_percentage > 0 %}
+                    <span class="offer-price">
+                      ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
+                    </span>
+                    <del class="old-price">
+                      ₹ <span id="item-base-subtotal-{{ item.id }}">{{ item.base_sub_total }}</span>
+                    </del>
+                    <div class="discount-badge" style="color: green; font-size: 0.8rem;">{{ item.discount_percentage }}%
+                      OFF</div>
+                    {% else %}
+                    <span class="regular-price">
+                      ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
+                    </span>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
               {% endfor %}
               <div class="price-breakup">
                 <div class="summary-row">
-                  <span>Total</span>
+                  <span>Amount</span>
                   <span>₹ {{ total_mrp }}</span>
                 </div>
                 {% if discount > 0 %}
@@ -105,13 +119,19 @@
                   <span>- ₹ {{ discount }}</span>
                 </div>
                 {% endif %}
+                <hr>
+                <div class="summary-row">
+                  <span>Subtotal</span>
+                  <span>₹ {{ subtotal }}</span>
+                </div>
+
                 <div class="summary-row">
                   <span>Delivery</span>
                   <span>
                     {% if delivery_charge == 0 %}
                     Free
                     {% else %}
-                    ₹{{ delivery_charge }}
+                    ₹ {{ delivery_charge }}
                     {% endif %}
                   </span>
                 </div>
@@ -130,7 +150,7 @@
                 <hr>
                 <div class="summary-row total">
                   <span>Total Payable</span>
-                  <span>₹{{ grand_total }}</span>
+                  <span>₹ {{ grand_total }}</span>
                 </div>
               </div>
               <!-- COUPON CODE SECTION -->
@@ -139,22 +159,25 @@
                 {% if available_coupons %}
                 <div class="available-coupons">
                   {% for coupon in available_coupons %}
-                  <div class="coupon-card {% if applied_coupon_code == coupon.code %}active-coupon{% endif %}"
-                    data-code="{{ coupon.code }}">
-                    <strong>{{ coupon.code }}</strong> —
-                    {% if coupon.discount_type == "percentage" %}
-                    {{ coupon.discount_value }}% OFF
-                    {% else %}
-                    ₹{{ coupon.discount_value }} OFF
-                    {% endif %}
+                  <div
+                    class="coupon-card {% if applied_coupon_code == coupon.code %}active-coupon{% endif %} {% if not coupon.is_applicable %}disabled{% endif %}"
+                    data-code="{{ coupon.code }}" data-applicable="{{ coupon.is_applicable|yesno:'true,false' }}">
+                    <div class="coupon-main">
+                      <strong>{{ coupon.code }}</strong> — {{ coupon.discount_percentage }}% OFF
+                    </div>
+                    <div class="coupon-msg {% if not coupon.is_applicable %}error-msg{% else %}success-msg{% endif %}"
+                      style="font-size: 0.8rem; margin-top: 4px;">
+                      {{ coupon.eligibility_message }}
+                    </div>
                   </div>
                   {% endfor %}
                 </div>
                 {% endif %}
                 <!-- Hidden field for selected coupon -->
-                  <input type="hidden" name="coupon_code" id="selected_coupon" value="{{ applied_coupon_code|default:'' }}">
+                <input type="hidden" name="coupon_code" id="selected_coupon"
+                  value="{{ applied_coupon_code|default:'' }}">
                 {% if not applied_coupon_code %}
-                <button type="submit" name="apply_coupon" class="apply-coupon-btn">Apply Coupon</button>
+                <button type="submit" name="apply_coupon" class="apply-coupon-btn" disabled>Apply Coupon</button>
                 {% else %}
                 <div class="applied-coupon">
                   Applied: <strong>{{ applied_coupon_code }}</strong>
@@ -192,6 +215,9 @@
 
   couponCards.forEach(card => {
     card.addEventListener('click', () => {
+      if (card.dataset.applicable === 'false') {
+        return; // Don't allow selecting non-applicable coupons
+      }
 
       // Remove highlight from all
       couponCards.forEach(c => c.classList.remove('selected'));
@@ -201,6 +227,12 @@
 
       // Set hidden input value
       selectedCouponInput.value = card.dataset.code;
+
+      // Enable apply button
+      const applyBtn = document.querySelector('button[name="apply_coupon"]');
+      if (applyBtn) {
+        applyBtn.disabled = false;
+      }
     });
   });
 </script>

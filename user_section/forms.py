@@ -54,4 +54,13 @@ class UserAddressForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'placeholder': 'Enter country'}),
             'address_type': forms.RadioSelect(),
         }
+
+    def clean_pincode(self):
+        pincode = self.cleaned_data.get('pincode')
+        if pincode:
+            if not pincode.isdigit():
+                raise ValidationError("Pincode must contain only digits.")
+            if len(pincode) != 6:
+                raise ValidationError("Pincode must be exactly 6 digits.")
+        return pincode
         

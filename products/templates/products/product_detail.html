@@ -86,7 +86,7 @@
       </div>
       <p class="tax-info">Inclusive of all taxes</p>
       <!-- STOCK -->
-      <div class="stock-status">
+      <div class="stock-status" style="color: red;">
         {% if selected_variant.stock <= 0 %} <span class="out-of-stock-msg">Out of Stock</span>
           {% elif selected_variant.stock < 10 %} <span class="low-stock-msg">Only {{ selected_variant.stock }}
             left!</span>
@@ -155,7 +155,7 @@
       .then(res => res.json())
       .then(data => {
 
-        if (data.success) {
+        if (data.status === "success") {
 
           Toast.fire({
             icon: "success",

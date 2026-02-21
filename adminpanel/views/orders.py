@@ -117,8 +117,7 @@ def update_order_status(request, order_id):
                     
                     if total_refunded_now > 0:
                         wallet, _ = Wallet.objects.get_or_create(user=order.user)
-                        wallet.balance += total_refunded_now
-                        wallet.save()
+                        Wallet.objects.filter(id=wallet.id).update(balance=F('balance') + total_refunded_now)
 
                         WalletTransaction.objects.create(
                             wallet=wallet,
@@ -180,8 +179,7 @@ def update_order_status(request, order_id):
 
                     if total_refunded_now > 0:
                         wallet, _ = Wallet.objects.get_or_create(user=order.user)
-                        wallet.balance += total_refunded_now
-                        wallet.save()
+                        Wallet.objects.filter(id=wallet.id).update(balance=F('balance') + total_refunded_now)
 
                         WalletTransaction.objects.create(
                             wallet=wallet,

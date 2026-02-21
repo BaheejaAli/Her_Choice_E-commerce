@@ -6,11 +6,6 @@
 {% block content %}
   <div class="cart-page">
     <div class="container">
-      {% comment %} {% if messages %}
-        <div class="messages-container">
-          {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-        </div>
-      {% endif %} {% endcomment %}
       <!-- MAIN GRID -->
       <div class="main-content">
         <!-- PAGE TITLE -->
@@ -85,9 +80,28 @@
         <!-- RIGHT COLUMN : ORDER SUMMARY -->
         <div class="order-summary">
           <div class="summary-title">Order Summary</div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹ {{ cart.get_total_price|default:"0" }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery</span>
+            <span id="delivery-charge">
+              {% if delivery_charge == 0 %}
+                Free
+              {% else %}
+                ₹ {{ delivery_charge }}
+              {% endif %}
+            </span>
+          </div>
+          <div class="summary-row">
+            <span>Tax (5%)</span>
+            <span id="tax">₹ {{ tax|default:"0" }}</span>
+          </div>
+          <hr>
           <div class="summary-row total">
             <span>Total</span>
-            <span id="total">₹ {{ cart.get_total_price }}</span>
+            <span id="total">₹ {{ grand_total|default:"0" }}</span>
           </div>
           <a href="{% url 'checkout' %}">
             <button class="checkout-btn">Proceed to Checkout</button>
@@ -102,48 +116,57 @@
 {% endblock %}
 {% block extra_js %}
   <script>
-    /* ================= UPDATE QUANTITY ================= */
-    function updateQuantity(itemId, action) {
-      fetch("{% url 'update_cart_quantity' %}", {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': '{{ csrf_token }}',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `item_id=${itemId}&action=${action}`
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === 'success') {
-            // Update quantity
-            document.getElementById(`qty-${itemId}`).innerText = data.data.quantity
-    
-            // Update item subtotal
-            document.getElementById(`item-subtotal-${itemId}`).innerText = data.data.item_subtotal
+  /* ================= UPDATE QUANTITY ================= */
+  function updateQuantity(itemId, action) {
+    fetch("{% url 'update_cart_quantity' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `item_id=${itemId}&action=${action}`
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 'success') {
+          // Update quantity
+          document.getElementById(`qty-${itemId}`).innerText = data.data.quantity
 
-            // 3. Update item base price 
-            const basePriceElem = document.getElementById(`item-base-subtotal-${itemId}`);
-            if (basePriceElem && data.data.item_base_subtotal) {
-                basePriceElem.innerText = data.data.item_base_subtotal;
-            }
-    
-            // Update cart total
-            document.getElementById('total').innerText = '₹ ' + data.data.cart_total
+          // Update item subtotal
+          document.getElementById(`item-subtotal-${itemId}`).innerText = data.data.item_subtotal
+
+          // 3. Update item base price 
+          const basePriceElem = document.getElementById(`item-base-subtotal-${itemId}`);
+          if (basePriceElem && data.data.item_base_subtotal) {
+            basePriceElem.innerText = data.data.item_base_subtotal;
+          }
+
+          // Update summary fields
+          document.getElementById('subtotal').innerText = '₹ ' + data.data.subtotal;
+          document.getElementById('tax').innerText = '₹ ' + data.data.tax;
+          document.getElementById('total').innerText = '₹ ' + data.data.grand_total;
+
+          const deliveryElem = document.getElementById('delivery-charge');
+          if (data.data.delivery_charge === 0) {
+            deliveryElem.innerText = 'Free';
           } else {
-            Swal.fire({
+            deliveryElem.innerText = '₹ ' + data.data.delivery_charge;
+          }
+        } else {
+          Swal.fire({
             icon: 'error',
             title: 'Oops!',
             text: data.message
           })
-          }
-        })
-         .catch(() => {
+        }
+      })
+      .catch(() => {
         Swal.fire('Error', 'Something went wrong!', 'error')
       })
-    }
+  }
 
-    /* ================= DELETE ITEM ================= */
-    function removeItem(itemId) {
+  /* ================= DELETE ITEM ================= */
+  function removeItem(itemId) {
     Swal.fire({
       title: 'Remove item?',
       text: 'Do you want to remove this product from your cart?',
@@ -179,9 +202,17 @@
           )
           if (item) item.remove()
 
-          // Update cart total
-          document.getElementById('total').innerText =
-            '₹ ' + data.data.cart_total
+          // Update summary
+          document.getElementById('subtotal').innerText = '₹ ' + data.data.subtotal;
+          document.getElementById('tax').innerText = '₹ ' + data.data.tax;
+          document.getElementById('total').innerText = '₹ ' + data.data.grand_total;
+
+          const deliveryElem = document.getElementById('delivery-charge');
+          if (data.data.delivery_charge === 0) {
+            deliveryElem.innerText = 'Free';
+          } else {
+            deliveryElem.innerText = '₹ ' + data.data.delivery_charge;
+          }
 
           // Empty cart handling
           if (document.querySelectorAll('.cart-item').length === 0) {

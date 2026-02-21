@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/products/product_listing.css' %}?v=1.1" />
-  <link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.2" />
+<link rel="stylesheet" href="{% static 'css/products/product_listing.css' %}?v=1.1" />
+<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.2" />
 {% endblock %}
 
 {% block content %}
@@ -13,20 +13,19 @@
             <span>Her Choice Fashion Store </span>
         </div>
 
-        <form action="" method="GET"id="filter-form">
+        <form action="" method="GET" id="filter-form">
             <input type="hidden" name="search" value="{{ query }}">
             <input type="hidden" name="sort" value="{{ sort }}">
 
             <h4>CATEGORIES <i class="fa-solid fa-magnifying-glass" style="color: #94969f; font-size: 14px;"></i></h4>
             <div class="category-list">
-                {% for category in categories %} 
-                    <label class="category-item">
-                        <input type="checkbox" name="category" value="{{ category.id }}"
-                        {% if category.id|stringformat:"s" in selected_categories %} checked {% endif %}
-                        onchange="this.form.submit()">
-                        <span class="category-name">{{ category.name }}</span>
-                        <span class="count">({{ category.product_count }})</span>
-                    </label>
+                {% for category in categories %}
+                <label class="category-item">
+                    <input type="checkbox" name="category" value="{{ category.id }}" 
+                    {% if category.id|stringformat:"s" in selected_categories %} checked {% endif %} onchange="this.form.submit()">
+                    <span class="category-name">{{ category.name }}</span>
+                    <span class="count">({{ category.product_count }})</span>
+                </label>
                 {% endfor %}
             </div>
 
@@ -35,19 +34,18 @@
             <h4>BRANDS <i class="fa-solid fa-magnifying-glass" style="color: #94969f; font-size: 14px;"></i></h4>
             <div class="brand-list" style="max-height: 200px; overflow-y: auto;">
                 {% for brand in brands %}
-                    <label class="category-item">
-                        <input type="checkbox" name="brand" value="{{ brand.id }}" 
-                        {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %}
-                        onchange="this.form.submit()">
-                        <span class="category-name">{{ brand.name }}</span>
-                        <span class="count">({{ brand.product_count }})</span>
-                    </label>
+                <label class="category-item">
+                    <input type="checkbox" name="brand" value="{{ brand.id }}"
+                     {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %} onchange="this.form.submit()">
+                    <span class="category-name">{{ brand.name }}</span>
+                    <span class="count">({{ brand.product_count }})</span>
+                </label>
                 {% endfor %}
             </div>
 
             {% comment %} {% if categories.count > 8 %}
             <span class="more-link">+ {{ categories.count|add:"-8" }} more</span>
-        {% endif %} {% endcomment %}
+            {% endif %} {% endcomment %}
 
             <hr class="filter-divider">
             <h4>Price Range</h4>
@@ -64,13 +62,14 @@
 
     <!-- Sort based on -->
     <main class="product-results">
-       <div class="sort-bar">
+        <div class="sort-bar">
             <div class="sort-wrapper">
                 <label for="sort-select">Sort by:</label>
                 <select id="sort-select" name="sort" onchange="applySort(this.value)">
                     <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Recommended</option>
                     <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low
+                    </option>
                     <option value="name_az" {% if sort == 'name_az' %}selected{% endif %}>Name: A - Z</option>
                     <option value="name_za" {% if sort == 'name_za' %}selected{% endif %}>Name: Z - A</option>
                 </select>
@@ -80,12 +79,12 @@
         <!-- Product listing -->
         <div class="listing-product-grid">
             {% for product in products %}
-                {% include "products/product_card.html" %} 
+            {% include "products/product_card.html" %}
             {% empty %}
-                <div class="no-results">
-                    <p>No results found for "<strong>{{ query }}</strong>".</p>
-                    <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
-                </div>
+            <div class="no-results">
+                <p>No results found for "<strong>{{ query }}</strong>".</p>
+                <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
+            </div>
             {% endfor %}
         </div>
 
@@ -97,110 +96,119 @@
 
 {% block extra_js %}
 <script>
-    
+
     function applySort(sortValue) {
         // Create a URLSearchParams object from the current window location
         const urlParams = new URLSearchParams(window.location.search);
-        
+
         // Set the 'sort' parameter to the selected value
         urlParams.set('sort', sortValue);
-        
+
         // Reload the page with the updated parameters
         window.location.search = urlParams.toString();
     }
 
-function getCSRFToken() {
-    let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-    if (!token) token = getCookie('csrftoken');
-    return token;
-}
+    function getCSRFToken() {
+        let token = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        if (!token) token = getCookie('csrftoken');
+        return token;
+    }
 
-/* =========================
-   Wishlist
-========================= */
-function addToWishlist(variantId) {
-    fetch("{% url 'add_to_wishlist' %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCSRFToken(),
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `variant_id=${variantId}`
-    })
-    .then(res => res.json())
-    .then(data => {
-        Toast.fire({
-            icon: data.status === "success" ? "success" : "warning",
-            title: data.message
-        });
-    })
-    .catch(() => {
-        Toast.fire({
-            icon: "error",
-            title: "Please login to use wishlist"
-        });
-    });
-}
+    /* =========================
+       Wishlist
+    ========================= */
+    function addToWishlist(variantId, button) {
+        fetch("{% url 'add_to_wishlist' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `variant_id=${variantId}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                Toast.fire({
+                    icon: data.status === "success" ? "success" : "warning",
+                    title: data.message
+                });
+                if (data.status === "success" && button) {
+                    const icon = button.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                        icon.style.color = "#ff3366";
+                    }
+                    button.classList.add('active');
+                }
+            })
+            .catch(() => {
+                Toast.fire({
+                    icon: "error",
+                    title: "Please login to use wishlist"
+                });
+            });
+    }
 
-/* =========================
-   Quick Add to Cart
-========================= */
-function quickAddToCart(button, variantId) {
-    const formData = new FormData();
-    formData.append('variant_id', variantId);
+    /* =========================
+       Quick Add to Cart
+    ========================= */
+    function quickAddToCart(button, variantId) {
+        const formData = new FormData();
+        formData.append('variant_id', variantId);
 
-    fetch("{% url 'add_to_cart' %}", {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken(),
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-    })
-    .then(res => res.json().then(data => ({ ok: res.ok, data })))
-    .then(({ ok, data }) => {
+        fetch("{% url 'add_to_cart' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
 
-        Toast.fire({
-            icon: ok ? "success" : "warning",
-            title: data.message || "Action failed"
-        });
+                Toast.fire({
+                    icon: ok ? "success" : "warning",
+                    title: data.message || "Action failed"
+                });
 
-        if (ok) {
-            const originalText = button.innerText;
-            button.innerText = "Added ✓";
-            button.disabled = true;
+                if (ok) {
+                    const originalText = button.innerText;
+                    button.innerText = "Added ✓";
+                    button.disabled = true;
 
-            setTimeout(() => {
-                button.innerText = originalText;
-                button.disabled = false;
-            }, 2000);
+                    setTimeout(() => {
+                        button.innerText = originalText;
+                        button.disabled = false;
+                    }, 2000);
 
-            if (data.data?.cart_count) {
-                const badge = document.querySelector('.cart-count-badge');
-                if (badge) badge.innerText = data.data.cart_count;
+                    if (data.data?.cart_count) {
+                        const badge = document.querySelector('.cart-count-badge');
+                        if (badge) badge.innerText = data.data.cart_count;
+                    }
+                }
+            })
+            .catch(() => {
+                Toast.fire({
+                    icon: "error",
+                    title: "Network error. Please refresh."
+                });
+            });
+    }
+
+    /* =========================
+       Cookie helper
+    ========================= */
+    function getCookie(name) {
+        let cookieValue = null;
+        document.cookie.split(';').forEach(cookie => {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             }
-        }
-    })
-    .catch(() => {
-        Toast.fire({
-            icon: "error",
-            title: "Network error. Please refresh."
         });
-    });
-}
-
-/* =========================
-   Cookie helper
-========================= */
-function getCookie(name) {
-    let cookieValue = null;
-    document.cookie.split(';').forEach(cookie => {
-        cookie = cookie.trim();
-        if (cookie.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        }
-    });
-    return cookieValue;
-}
+        return cookieValue;
+    }
 </script>
 {% endblock extra_js %}

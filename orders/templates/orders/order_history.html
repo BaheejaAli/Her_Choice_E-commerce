@@ -102,19 +102,6 @@ Order History | Her Choice
                 <a href="{% url "order_details" order.id %}" class="btn btn-primary">
                     <i class="fas fa-eye"></i> View Details
                 </a>
-                {% comment %} {% if order.status == 'delivered' %}
-                <button class="btn btn-outline">
-                    <i class="fas fa-redo"></i> Buy Again
-                </button>
-                {% endif %} {% endcomment %}
-                {% if order.status == "pending" or order.status == "processing" %}
-                <form method="post" action="{% url 'cancel_order' order.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-danger">
-                        <i class="fas fa-times"></i> Cancel Order
-                    </button>
-                </form>
-                {% endif %}
             </div>
         </div>
     </div>

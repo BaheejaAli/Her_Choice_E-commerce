@@ -54,5 +54,21 @@ class WishlistItem(models.Model):
                                     name = 'unique_wishlist_variant')
         ]
 
+class Contact(models.Model):
+    INQUIRY_TYPES = (
+        ('order', 'Order Inquiry'),
+        ('product', 'Product Question'),
+        ('shipping', 'Shipping & Returns'),
+        ('technical', 'Technical Support'),
+        ('other', 'Other'),
+    )
+    name = models.CharField( max_length=150)
+    email = models.EmailField()
+    inquiry_type = models.CharField( max_length=20, choices=INQUIRY_TYPES)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.name} - {self.inquiry_type}"
 

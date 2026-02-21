@@ -1,69 +1,57 @@
 {% load static %}
-
 {% with v=product.display_variant %}
 <div class="product-card">
   <div class="product-img-container">
     <a href="{% url 'product_detail' product.slug %}">
       {% if product.display_image %}
-        <img src="{{ product.display_image.url }}"
-             alt="{{ product.name }}"
-             class="product-image">
+      <img src="{{ product.display_image.url }}" alt="{{ product.name }}" class="product-image">
       {% else %}
-        <div class="no-image-box">No Image</div>
+      <div class="no-image-box">No Image</div>
       {% endif %}
     </a>
-    
     {% if v and v.discount_percentage > 0 %}
-      <div class="discount-badge-overlay">
-        {{ v.discount_percentage }}% OFF
-      </div>
+    <div class="discount-badge-overlay">{{ v.discount_percentage }}% OFF</div>
     {% endif %}
   </div>
-
   <div class="product-info">
-
     <p class="product-name">
-      <a href="{% url 'product_detail' product.slug %}">
-        {{ product.name }}
-      </a>
+      <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
     </p>
-
     <div class="price">
       {% if v %}
-        <span class="sales-price">₹{{ v.final_price }}</span>
-        
-        {% if v.discount_percentage > 0 %}
-          <del class="old-price" style="color: #999; font-size: 0.9em; margin-left: 5px;">
-             ₹{{ v.base_price }}
-          </del>
-        {% endif %}
+      <span class="sales-price">₹{{ v.final_price }}</span>
+      {% if v.discount_percentage > 0 %}
+      <del class="old-price" style="color: #999;
+                        font-size: 0.9em;
+                        margin-left: 5px">
+        ₹{{ v.base_price }}
+      </del>
+      {% endif %}
       {% endif %}
     </div>
-
     {% if v and v.is_active and product.is_active %}
-      {% if v.stock > 0 %}
-        <div class="button-group">
-          <button type="button" class="btn-add" onclick="quickAddToCart(this, {{ v.id }})">
-            Add to Cart
-          </button>
-          <button type="button"
-                    class="btn-wishlist"
-                    onclick="addToWishlist({{ v.id }})">
-              <i class="far fa-heart"></i>
-            </button>
-        </div>
-      {% else %}
-        <div class="status-tag out-of-stock">
-          <i class="fas fa-exclamation-triangle"></i> Out of Stock
-        </div>
-      {% endif %}
+    {% if v.stock > 0 %}
+    <div class="button-group">
+      <button type="button" class="btn-add" onclick="quickAddToCart(this, {{ v.id }})">Add to Cart</button>
+      <button type="button" class="btn-wishlist {% if v.id in wishlist_variant_ids %}active{% endif %}"
+        onclick="addToWishlist({{ v.id }}, this)">
+        {% if v.id in wishlist_variant_ids %}
+        <i class="fa-solid fa-heart" style="color: #ff3366;"></i>
+        {% else %}
+        <i class="fa-regular fa-heart"></i>
+        {% endif %}
+      </button>
+    </div>
     {% else %}
-        <div class="status-tag unavailable">
-            <i class="fas fa-ban"></i> Currently Unavailable
-        </div>
+    <div class="status-tag out-of-stock">
+      <i class="fas fa-exclamation-triangle"></i> Out of Stock
+    </div>
     {% endif %}
-
+    {% else %}
+    <div class="status-tag unavailable">
+      <i class="fas fa-ban"></i> Currently Unavailable
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endwith %}
-

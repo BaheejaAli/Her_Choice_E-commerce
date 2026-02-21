@@ -1,4 +1,5 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models import F
 from django.conf import settings
 from decimal import Decimal
 
@@ -9,18 +10,20 @@ class Wallet(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def add_funds(self,amount):
-        if amount>0:
-            self.balance += Decimal(str(amount))
-            self.save()
+    @transaction.atomic
+    def add_funds(self, amount):
+        if amount > 0:
+            self.balance = F('balance') + Decimal(str(amount))
+            self.save(update_fields=['balance'])
             return True
         return False
     
+    @transaction.atomic
     def deduct_funds(self, amount):
         amount = Decimal(str(amount))
-        if 0 < amount <= self.balance:
-            self.balance -= amount
-            self.save()
+        updated = Wallet.objects.filter(id=self.id, balance__gte=amount).update(balance=F('balance') - amount)
+        if updated:
+            self.refresh_from_db()
             return True
         return False
 

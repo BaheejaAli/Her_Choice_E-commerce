@@ -2,8 +2,6 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from products.models import Product, ProductVariant
 from accounts.forms import ProfilePicForm
-from brandsandcategories.models import Category
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import UserProfileUpdateForm, UserAddressForm
 from django.shortcuts import get_object_or_404
@@ -18,10 +16,12 @@ from django.utils import timezone
 from accounts.models import CustomUser
 from .models import Wishlist, WishlistItem
 from django.db import transaction
-from .models import UserAddress
+from .models import UserAddress, Contact
 from products.utils import prepare_products_for_display
 from offer.models import Referral 
 from wallet.models import Wallet
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def homepage(request):
@@ -53,6 +53,13 @@ def homepage(request):
     prepare_products_for_display(featured_products)
     prepare_products_for_display(trending_products)
 
+    wishlist_variant_ids = set()
+    if request.user.is_authenticated:
+        wishlist_variant_ids = set(
+            WishlistItem.objects.filter(wishlist__user=request.user)
+            .values_list('variant_id', flat=True)
+        )
+
     return render(
         request,
         "user_section/homepage.html",
@@ -60,15 +67,42 @@ def homepage(request):
             "new_arrivals": new_arrivals,
             "featured_products": featured_products,
             "trending_products": trending_products,
+            "wishlist_variant_ids": wishlist_variant_ids,
         }
     )
    
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"
 
-class ContactPageView(TemplateView):
-    template_name = "user_section/contact.html"
+@login_required
+def contact_page(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        inquiry_type = request.POST.get("inquiry_type")
+        message_text = request.POST.get("message")
 
+        if not all([name, email, inquiry_type, message_text]):
+            messages.error(request, "Please fill all required fields.")
+            return redirect("contact")
+        
+        Contact.objects.create(
+            name=name,
+            email=email,
+            inquiry_type=inquiry_type,
+            message=message_text
+        )
+        messages.success(request, "Your message has been sent successfully! We will contact you soon.")
+        send_mail(
+            subject=f"New Contact Message - {inquiry_type}",
+            message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message_text}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["youradminemail@gmail.com"],
+            fail_silently=True,
+        )
+        return redirect("contact")
+
+    return render(request, "user_section/contact.html")
 
 @login_required
 def profile_info(request):

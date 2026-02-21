@@ -62,6 +62,8 @@ def sales_report(request):
         total_order_amount = Sum('total'),
         total_discount=Sum('discount')
     )
+    # overall_sales = total_order_amount + total_discount
+    total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
 
     paginator = Paginator(orders, 10)
     page_number = request.GET.get("page")
@@ -88,6 +90,7 @@ def export_pdf(request):
         total_order_amount=Sum('total'),
         total_discount=Sum('discount')
     )
+    total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
 
     html_string = render_to_string("admin_panel/sales_report_pdf.html", {
         "orders": orders,

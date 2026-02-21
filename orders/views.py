@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from decimal import Decimal
 from wallet.models import Wallet, WalletTransaction
 from django.core.paginator import Paginator
+from django.db.models import F
 
 # Create your views here.
 @login_required
@@ -104,10 +105,9 @@ def cancel_order(request, order_id):
             can_refund = order.payment_status in ["paid", "partially_refunded"] and order.payment_method in ["razorpay", "wallet"]
 
             for item in items_to_cancel:
-                # Update Inventory
-                variant = item.variant
-                variant.stock += item.quantity
-                variant.save(update_fields=["stock"])
+                # Update Inventory Atomically
+                from products.models import ProductVariant
+                ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + item.quantity)
 
                 # Update Item Status
                 item.status = "cancelled"
@@ -132,15 +132,16 @@ def cancel_order(request, order_id):
                     transaction_type="REFUND"
                 ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
                 
-                remaining_to_refund = order.total - already_refunded
+                max_refundable_amount = order.total - order.delivery_charge
+                remaining_to_refund = max_refundable_amount - already_refunded
+              
                 # Only override if we actually cancelled something new in this request
                 if items_to_cancel.exists():
                     total_refund_amount = max(remaining_to_refund, Decimal('0.00'))
 
             if total_refund_amount > 0:
-                wallet,_ = Wallet.objects.get_or_create(user=order.user)
-                wallet.balance += total_refund_amount
-                wallet.save()
+                wallet, _ = Wallet.objects.get_or_create(user=order.user)
+                Wallet.objects.filter(id=wallet.id).update(balance=F('balance') + total_refund_amount)
 
                 WalletTransaction.objects.create(
                     wallet = wallet,

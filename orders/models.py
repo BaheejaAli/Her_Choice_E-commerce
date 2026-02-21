@@ -54,8 +54,8 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
-    address = models.ForeignKey(UserAddress, on_delete=models.CASCADE)
-    billing_address = models.ForeignKey(UserAddress, on_delete=models.CASCADE, related_name="billing_orders", null=True, blank=True)
+    address = models.ForeignKey(UserAddress, on_delete=models.SET_NULL, null=True, blank=True)
+    billing_address = models.ForeignKey(UserAddress, on_delete=models.SET_NULL, related_name="billing_orders", null=True, blank=True)
     orderid = models.CharField(max_length=20, unique=True, blank=True, null=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -69,6 +69,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     coupon = models.ForeignKey('offer.Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     # autogenerate the order id
     def save(self,*args, **kwargs):

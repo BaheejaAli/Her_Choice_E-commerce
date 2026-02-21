@@ -523,26 +523,39 @@
         <div class="address-block">
           <h4>Billing Information</h4>
           <div class="address-content">
-            <p class="customer-name">{{ order.user.get_full_name }}</p>
-            <p>{{ order.address.address_line_1 }}</p>
-            {% if order.address.address_line_2 %}<p>{{ order.address.address_line_2 }}</p>{% endif %}
-            <p>{{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode }}</p>
-            <p>{{ order.address.country }}</p>
-            <p>Phone: {{ order.user.phone }}</p>
+            {% if order.billing_address %}
+            <p class="customer-name">{{ order.billing_address.user.get_full_name }}</p>
+            <p>{{ order.billing_address.address_line_1 }}</p>
+            {% if order.billing_address.address_line_2 %}<p>{{ order.billing_address.address_line_2 }}</p>{% endif %}
+            <p>{{ order.billing_address.city }}, {{ order.billing_address.state }} {{ order.billing_address.pincode }}
+            </p>
+            <p>{{ order.billing_address.country }}</p>
+            <p>Phone: {{ order.billing_address.user.phone|default:order.user.phone }}</p>
             <p>Email: {{ order.user.email }}</p>
+            {% else %}
+            <p class="customer-name">{{ order.user.get_full_name }}</p>
+            <p><i>Address information no longer available</i></p>
+            <p>Email: {{ order.user.email }}</p>
+            {% endif %}
           </div>
         </div>
 
         <div class="address-block">
           <h4>Shipping Destination</h4>
           <div class="address-content">
-            <p class="customer-name">{{ order.user.get_full_name }}</p>
+            {% if order.address %}
+            <p class="customer-name">{{ order.address.user.get_full_name }}</p>
             <p>{{ order.address.address_line_1 }}</p>
             {% if order.address.address_line_2 %}<p>{{ order.address.address_line_2 }}</p>{% endif %}
-            <p>{{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode}}</p>
+            <p>{{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode }}</p>
             <p>{{ order.address.country }}</p>
-            <p>Phone: {{ order.user.phone }}</p>
+            <p>Phone: {{ order.address.user.phone|default:order.user.phone }}</p>
             <p>Email: {{ order.user.email }}</p>
+            {% else %}
+            <p class="customer-name">{{ order.user.get_full_name }}</p>
+            <p><i>Address information no longer available</i></p>
+            <p>Email: {{ order.user.email }}</p>
+            {% endif %}
           </div>
         </div>
       </section>
@@ -589,11 +602,27 @@
             <td class="label">Subtotal</td>
             <td class="value">₹ {{ order.effective_subtotal }}</td>
           </tr>
-        
+
           <tr>
             <td class="label">Tax Estimation</td>
             <td class="value">₹ {{ order.effective_tax|default:"0.00" }}</td>
           </tr>
+          <tr>
+            <td class="label">Delivery Charge</td>
+            <td class="value">
+              {% if order.delivery_charge == 0 %}
+              Free
+              {% else %}
+              ₹ {{ order.delivery_charge }}
+              {% endif %}
+            </td>
+          </tr>
+          {% if order.coupon_discount > 0 %}
+          <tr>
+            <td class="label">Coupon Discount</td>
+            <td class="value" style="color: #8da891;">- ₹ {{ order.coupon_discount }}</td>
+          </tr>
+          {% endif %}
           <tr class="total-row">
             <td class="label">Grand Total</td>
             <td class="value">₹ {{ order.effective_total }}</td>

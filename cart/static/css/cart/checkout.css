@@ -406,6 +406,7 @@ a {
 .available-coupons {
   margin-bottom: 15px;
 }
+
 .coupon-card {
   border: 1px dashed #ccc;
   padding: 10px;
@@ -458,4 +459,24 @@ a {
   .apply-coupon-btn {
     width: 100%;
   }
+}
+
+/* Coupon Eligibility Feedback */
+.coupon-card.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: #fcfcfc;
+  border: 1px solid #ddd;
+}
+
+.coupon-card.disabled:hover {
+  background-color: #fcfcfc;
+}
+
+.coupon-msg.error-msg {
+  color: #d93025;
+}
+
+.coupon-msg.success-msg {
+  color: #188038;
 }
