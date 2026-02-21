@@ -88,7 +88,10 @@
     copyText.select();
     copyText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(copyText.value);
-    alert("Referral code copied!");
+    Toast.fire({
+      icon: 'success',
+      title: 'Referral code copied!'
+    });
   }
 </script>
 {% endblock %}

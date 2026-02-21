@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .toast-message {
   position: fixed;
   top: 20px;
@@ -288,7 +294,7 @@ body {
 
 .menu li a {
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   color: #333;
 }
@@ -304,10 +310,39 @@ body {
   gap: 18px;
 }
 
+.icons form {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
 .icon-btn {
-  font-size: 18px;
+  font-size: 20px;
   color: #333;
   text-decoration: none;
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.count-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff1680;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 2px solid white;
+  z-index: 10;
 }
 
 .icon-btn:hover {
@@ -333,6 +368,7 @@ body {
 .user-name {
   font-weight: bold;
   color: #333;
+  font-size: 16px;
 }
 
 .btn-profile {
@@ -343,7 +379,7 @@ body {
 .logout-btn {
   background: none;
   border: none;
-  font-size: 15px;
+  font-size: 16px;
   cursor: pointer;
   color: #333;
 }

@@ -5,7 +5,7 @@ Order Details | Her Choice
 {% endblock title %}
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/orders/order_details.css' %}?v=1.4" />
+<link rel="stylesheet" href="{% static 'css/orders/order_details.css' %}?v=1.1" />
 {% endblock extra_css %}
 {% block profile_content %}
 <div class="page-header">
@@ -233,6 +233,21 @@ Order Details | Her Choice
                     <span class="text-muted">Billing address information is no longer available.</span>
                 </p>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="section-card">
+        <h3 class="section-title">Payment Details</h3>
+        <div class="summary-list">
+            <div class="summary-row">
+                <span>Payment Method</span>
+                <span>{{ order.get_payment_method_display }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Payment Status</span>
+                <span class="badge payment-status-{{ order.payment_status }}">
+                    {{ order.get_payment_status_display }}
+                </span>
             </div>
         </div>
     </div>

@@ -68,6 +68,34 @@ a {
   text-decoration: none;
 }
 
+.address-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.address-type.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 50px;
+  background: #f0f0f0;
+  color: #555;
+}
+
+.default-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 50px;
+  background: #e6f7ee;
+  color: #0f5132;
+}
+
 .address-text {
   font-size: 13px;
   color: #666;

@@ -133,6 +133,11 @@
                     title: data.message
                 });
                 if (data.status === "success" && button) {
+                    // Update navbar
+                    if (typeof updateNavbarCounts === "function") {
+                        updateNavbarCounts(data.data);
+                    }
+
                     const icon = button.querySelector('i');
                     if (icon) {
                         icon.classList.remove('fa-regular');
@@ -174,6 +179,11 @@
                 });
 
                 if (ok) {
+                    // Update navbar
+                    if (typeof updateNavbarCounts === "function") {
+                        updateNavbarCounts(data.data);
+                    }
+
                     const originalText = button.innerText;
                     button.innerText = "Added ✓";
                     button.disabled = true;

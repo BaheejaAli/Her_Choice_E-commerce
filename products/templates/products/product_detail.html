@@ -86,13 +86,14 @@
       </div>
       <p class="tax-info">Inclusive of all taxes</p>
       <!-- STOCK -->
-      <div class="stock-status" style="color: red;">
-        {% if selected_variant.stock <= 0 %} <span class="out-of-stock-msg">Out of Stock</span>
-          {% elif selected_variant.stock < 10 %} <span class="low-stock-msg">Only {{ selected_variant.stock }}
-            left!</span>
-            {% else %}
-            <span class="in-stock-msg">In Stock</span>
-            {% endif %}
+      <div class="stock-status" id="stock-status-container">
+        {% with avail=selected_variant.get_availability_data %}
+        <div id="stock-status-display" class="status-{{ avail.status }}"
+          data-original-html='<i class="{{ avail.icon }}"></i> {{ avail.label }}'
+          data-original-color="{{ avail.color }}" style="color: {{ avail.color }}; font-weight: 600;">
+          <i class="{{ avail.icon }}"></i> {{ avail.label }}
+        </div>
+        {% endwith %}
       </div>
       <!-- ACTION BUTTONS -->
       <div class="action-btns">
@@ -100,7 +101,18 @@
         <form class="add-to-cart-form">
           {% csrf_token %}
           <input type="hidden" name="variant_id" value="{{ selected_variant.id }}">
-          <button type="button" class="btn-add-cart" onclick="addToCart(this)">
+
+          <div class="qty-selection">
+            <span>Qty:</span>
+            <div class="quantity-selector">
+              <button type="button" class="qty-btn" id="minus-btn">−</button>
+              <input type="number" name="quantity" id="qty-input" class="qty-input" value="1" min="1"
+                max="{{ selected_variant.stock }}">
+              <button type="button" class="qty-btn" id="plus-btn">+</button>
+            </div>
+          </div>
+
+          <button type="button" class="btn-add-cart" id="add-to-cart-btn" onclick="addToCart(this)">
             <i class="fas fa-shopping-bag"></i> Add to Cart
           </button>
         </form>
@@ -109,7 +121,14 @@
           <i class="{% if is_in_wishlist %}fas{% else %}far{% endif %} fa-heart"></i>
         </button>
         {% else %}
-        <button class="btn-disabled" disabled>OUT OF STOCK</button>
+        <button class="btn-disabled" disabled>
+          {% if not selected_variant.is_active or not product.is_active or not product.category.is_active or not
+          product.brand.is_active %}
+          UNAVAILABLE
+          {% else %}
+          OUT OF STOCK
+          {% endif %}
+        </button>
         {% endif %}
       </div>
       <hr class="divider">
@@ -139,7 +158,52 @@
     return document.querySelector('[name=csrfmiddlewaretoken]').value;
   }
 
-  //add to cart
+  /* ================= QUANTITY VALIDATION ================= */
+  const qtyInput = document.getElementById('qty-input');
+  const minusBtn = document.getElementById('minus-btn');
+  const plusBtn = document.getElementById('plus-btn');
+  const addToCartBtn = document.getElementById('add-to-cart-btn');
+  const stockDisplay = document.getElementById('stock-status-display');
+  const maxStock = parseInt(qtyInput ? qtyInput.max : 0);
+
+  function validateQuantity() {
+    if (!qtyInput || !stockDisplay) return;
+    const val = parseInt(qtyInput.value);
+
+    if (val > maxStock) {
+      stockDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Only ${maxStock} left`;
+      stockDisplay.style.color = '#fd7e14';
+      addToCartBtn.disabled = true;
+      addToCartBtn.style.opacity = '0.7';
+    } else if (val < 1) {
+      qtyInput.value = 1;
+      validateQuantity();
+    } else {
+      // Restore original status
+      stockDisplay.innerHTML = stockDisplay.dataset.originalHtml;
+      stockDisplay.style.color = stockDisplay.dataset.originalColor;
+      addToCartBtn.disabled = false;
+      addToCartBtn.style.opacity = '1';
+    }
+  }
+
+  if (qtyInput) {
+    qtyInput.addEventListener('input', validateQuantity);
+
+    minusBtn.addEventListener('click', () => {
+      if (parseInt(qtyInput.value) > 1) {
+        qtyInput.value = parseInt(qtyInput.value) - 1;
+        validateQuantity();
+      }
+    });
+
+    plusBtn.addEventListener('click', () => {
+      qtyInput.value = parseInt(qtyInput.value) + 1;
+      validateQuantity();
+    });
+  }
+
+  /* ================= ADD TO CART ================= */
   function addToCart(button) {
     const form = button.closest("form");
     const formData = new FormData(form);
@@ -154,9 +218,7 @@
     })
       .then(res => res.json())
       .then(data => {
-
         if (data.status === "success") {
-
           Toast.fire({
             icon: "success",
             title: "Added to cart"
@@ -170,7 +232,13 @@
           setTimeout(() => {
             button.innerHTML = originalText;
             button.disabled = false;
+            validateQuantity(); // Re-validate in case stock status changed (though unlikely without reload)
           }, 1800);
+
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
 
         } else {
           Swal.fire({
@@ -201,14 +269,18 @@
     })
       .then(res => res.json())
       .then(data => {
-
         Toast.fire({
           icon: data.status === "success" ? "success" : "info",
           title: data.message
         });
 
         if (data.status === "success") {
-          const btn = document.querySelector(".btn-wishlist");
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
+          const btn = document.querySelector(".btn-detail-wishlist");
           if (btn) {
             btn.classList.add("active");
             const icon = btn.querySelector("i");
@@ -227,7 +299,6 @@
       });
   }
 
-
   function changeImage(el, imgUrl) {
     const mainImg = document.getElementById("product-img");
     mainImg.src = imgUrl;
@@ -244,7 +315,6 @@
   const productImg = document.getElementById('product-img');
 
   if (zoomContainer && productImg) {
-
     zoomContainer.addEventListener('mousemove', function (e) {
       const rect = zoomContainer.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -261,7 +331,5 @@
       zoomContainer.style.cursor = 'default';
     });
   }
-
 </script>
-
 {% endblock %}

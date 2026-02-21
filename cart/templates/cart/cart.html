@@ -1,121 +1,139 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/cart/cart.css' %}?v=1.3" />
+<link rel="stylesheet" href="{% static 'css/cart/cart.css' %}?v=1.3" />
 {% endblock %}
 {% block content %}
-  <div class="cart-page">
-    <div class="container">
-      <!-- MAIN GRID -->
-      <div class="main-content">
-        <!-- PAGE TITLE -->
-        <h1>Shopping Cart</h1>
-        <!-- LEFT COLUMN : CART ITEMS -->
-        <div class="cart-items">
-          {% if cart_items %}
-            {% for item in cart_items %}
-              <div class="cart-item" data-item-id="{{ item.id }}">
-                <img src="{{ item.variant.images.first.image.url }}"
-                     alt="{{ item.variant.product.name }}"
-                     class="item-image" />
-                <div class="item-details">
-                  <div class="item-name">{{ item.variant.product.name }}</div>
-                  <div class="item-specs">
-                    {% if item.variant.size %}Size: {{ item.variant.size.name }} |{% endif %}
-                    Color: {{ item.variant.color.name }}
-                  </div>
-                  {% if not item.variant.is_active or not item.variant.product.is_active or not item.variant.product.category.is_active or not item.variant.product.brand.is_active %}
-                    <div class="stock-status unavailable">
-                      <i class="fa-solid fa-ban"></i> Unavailable
-                    </div>
-                  {% elif item.variant.stock <= 0 %}
-                    <div class="stock-status out-of-stock">
-                      <i class="fa-solid fa-circle-xmark"></i> Out of Stock
-                    </div>
-                  {% else %}
-                    <div class="stock-status in-stock">
-                      <i class="fa-solid fa-circle-check"></i> In Stock
-                    </div>
-                  {% endif %}
-                  <div class="item-price">
-                    {% if item.discount_percentage > 0 %}
-                      <span class="offer-price">
-                        ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
-                      </span>
-                      <del class="old-price">
-                        ₹ <span id="item-base-subtotal-{{ item.id }}">{{ item.base_sub_total }}</span>
-                      </del>
-                      <div class="discount-badge" style="color: green; font-size: 0.8rem;">{{ item.discount_percentage }}% OFF</div>
-                    {% else %}
-                      <span class="regular-price">
-                        ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
-                      </span>
-                    {% endif %}
-                  </div>
-                </div>
-                <div class="item-actions">
-                  <div class="quantity-control">
-                    {% if item.variant.stock <= 0 or not item.variant.is_active %}
-                      <button class="quantity-btn" disabled>−</button>
-                      <span class="quantity">{{ item.quantity }}</span>
-                      <button class="quantity-btn" disabled>+</button>
-                    {% else %}
-                      <button class="quantity-btn"
-                              onclick="updateQuantity({{ item.id }}, 'decrease')">−</button>
-                      <span class="quantity" id="qty-{{ item.id }}">{{ item.quantity }}</span>
-                      <button class="quantity-btn"
-                              onclick="updateQuantity({{ item.id }}, 'increase')">+</button>
-                    {% endif %}
-                  </div>
-                </div>
-                <button class="delete-btn" onclick="removeItem({{ item.id }})">
-                  <i class="far fa-trash-alt"></i>
-                </button>
+<div class="cart-page">
+  <div class="container">
+    <!-- MAIN GRID -->
+    <div class="main-content">
+      <!-- PAGE TITLE -->
+      <h1>Shopping Cart</h1>
+      <!-- LEFT COLUMN : CART ITEMS -->
+      <div class="cart-items">
+        {% if cart_items %}
+        {% for item in cart_items %}
+        <div class="cart-item" data-item-id="{{ item.id }}">
+          <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}"
+            class="item-image" />
+          <div class="item-details">
+            <div class="item-name">{{ item.variant.product.name }}</div>
+            <div class="item-specs">
+              {% if item.variant.size %}Size: {{ item.variant.size.name }} |{% endif %}
+              Color: {{ item.variant.color.name }}
+            </div>
+            <div class="stock-status-container" id="stock-status-{{ item.id }}">
+              {% if not item.variant.is_active or not item.variant.product.is_active or not item.variant.product.category.is_active or not item.variant.product.brand.is_active %}
+              <div class="stock-status unavailable">
+                <i class="fa-solid fa-ban"></i> Unavailable
               </div>
-            {% endfor %}
-          {% else %}
-            <p>Your cart is empty.</p>
-          {% endif %}
-        </div>
-        <!-- RIGHT COLUMN : ORDER SUMMARY -->
-        <div class="order-summary">
-          <div class="summary-title">Order Summary</div>
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="subtotal">₹ {{ cart.get_total_price|default:"0" }}</span>
+              {% elif item.variant.stock <= 0 %} <div class="stock-status out-of-stock"
+                style="color: #dc3545; font-weight: 600;">
+                <i class="fa-solid fa-circle-xmark"></i> Out of Stock
+            </div>
+            {% elif item.quantity > item.variant.stock %}
+            <div class="stock-status low-stock" style="color: #fd7e14; font-weight: 600;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Only {{ item.variant.stock }} left
+            </div>
+            {% else %}
+            <div class="stock-status in-stock">
+              <i class="fa-solid fa-circle-check"></i> In Stock
+            </div>
+            {% endif %}
           </div>
-          <div class="summary-row">
-            <span>Delivery</span>
-            <span id="delivery-charge">
-              {% if delivery_charge == 0 %}
-                Free
-              {% else %}
-                ₹ {{ delivery_charge }}
-              {% endif %}
+          <div class="item-price">
+            {% if item.discount_percentage > 0 %}
+            <span class="offer-price">
+              ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
             </span>
+            <del class="old-price">
+              ₹ <span id="item-base-subtotal-{{ item.id }}">{{ item.base_sub_total }}</span>
+            </del>
+            <div class="discount-badge" style="color: green; font-size: 0.8rem;">{{ item.discount_percentage }}% OFF
+            </div>
+            {% else %}
+            <span class="regular-price">
+              ₹ <span id="item-subtotal-{{ item.id }}">{{ item.sub_total }}</span>
+            </span>
+            {% endif %}
           </div>
-          <div class="summary-row">
-            <span>Tax (5%)</span>
-            <span id="tax">₹ {{ tax|default:"0" }}</span>
-          </div>
-          <hr>
-          <div class="summary-row total">
-            <span>Total</span>
-            <span id="total">₹ {{ grand_total|default:"0" }}</span>
-          </div>
-          <a href="{% url 'checkout' %}">
-            <button class="checkout-btn">Proceed to Checkout</button>
-          </a>
-          <a href="{% url 'product_listing' %}">
-            <button class="continue-btn">Continue Shopping</button>
-          </a>
         </div>
+        <div class="item-actions">
+          <div class="quantity-control">
+            {% if item.variant.stock <= 0 or not item.variant.is_active %} <button class="quantity-btn" disabled>
+              −</button>
+              <span class="quantity">{{ item.quantity }}</span>
+              <button class="quantity-btn" disabled>+</button>
+              {% else %}
+              <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'decrease')">−</button>
+              <span class="quantity" id="qty-{{ item.id }}">{{ item.quantity }}</span>
+              <button class="quantity-btn" onclick="updateQuantity({{ item.id }}, 'increase')">+</button>
+              {% endif %}
+          </div>
+        </div>
+        <button class="delete-btn" onclick="removeItem({{ item.id }})">
+          <i class="far fa-trash-alt"></i>
+        </button>
       </div>
+      {% endfor %}
+      {% else %}
+      <p>Your cart is empty.</p>
+      {% endif %}
+    </div>
+    <!-- RIGHT COLUMN : ORDER SUMMARY -->
+    <div class="order-summary">
+      <div class="summary-title">Order Summary</div>
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subtotal">₹ {{ cart.get_total_price|default:"0" }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Delivery</span>
+        <span id="delivery-charge">
+          {% if delivery_charge == 0 %}
+          Free
+          {% else %}
+          ₹ {{ delivery_charge }}
+          {% endif %}
+        </span>
+      </div>
+      <div class="summary-row">
+        <span>Tax (5%)</span>
+        <span id="tax">₹ {{ tax|default:"0" }}</span>
+      </div>
+      <hr>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="total">₹ {{ grand_total|default:"0" }}</span>
+      </div>
+      {% if cart_items %}
+      {% if any_out_of_stock %}
+      <div class="stock-warning" style="color: #dc3545; font-size: 0.85rem; margin-bottom: 10px; font-weight: 500;">
+        Some items are unavailable or out of stock. Please remove them to proceed.
+      </div>
+      <button class="checkout-btn" disabled style="background-color: #ccc; cursor: not-allowed;">Proceed to
+        Checkout</button>
+      {% else %}
+      <a href="{% url 'checkout' %}">
+        <button class="checkout-btn">Proceed to Checkout</button>
+      </a>
+      {% endif %}
+      {% else %}
+      <button class="checkout-btn" disabled style="background-color: #ccc; cursor: not-allowed;">Proceed to
+        Checkout</button>
+      {% endif %}
+
+      <a href="{% url 'product_listing' %}">
+        <button class="continue-btn">Continue Shopping</button>
+      </a>
     </div>
   </div>
+</div>
+</div>
 {% endblock %}
 {% block extra_js %}
-  <script>
+<script>
   /* ================= UPDATE QUANTITY ================= */
   function updateQuantity(itemId, action) {
     fetch("{% url 'update_cart_quantity' %}", {
@@ -141,6 +159,11 @@
             basePriceElem.innerText = data.data.item_base_subtotal;
           }
 
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
           // Update summary fields
           document.getElementById('subtotal').innerText = '₹ ' + data.data.subtotal;
           document.getElementById('tax').innerText = '₹ ' + data.data.tax;
@@ -151,6 +174,25 @@
             deliveryElem.innerText = 'Free';
           } else {
             deliveryElem.innerText = '₹ ' + data.data.delivery_charge;
+          }
+
+          // Update Proceed to Checkout button
+          updateCheckoutButton(data.data.any_out_of_stock);
+
+          // Update item stock status message
+          const stockContainer = document.getElementById(`stock-status-${itemId}`);
+          if (stockContainer) {
+            let statusHtml = '';
+            if (!data.data.item_is_active) {
+              statusHtml = `<div class="stock-status unavailable"><i class="fa-solid fa-ban"></i> Unavailable</div>`;
+            } else if (data.data.item_stock <= 0) {
+              statusHtml = `<div class="stock-status out-of-stock" style="color: #dc3545; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</div>`;
+            } else if (data.data.quantity > data.data.item_stock) {
+              statusHtml = `<div class="stock-status low-stock" style="color: #fd7e14; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Only ${data.data.item_stock} left</div>`;
+            } else {
+              statusHtml = `<div class="stock-status in-stock"><i class="fa-solid fa-circle-check"></i> In Stock</div>`;
+            }
+            stockContainer.innerHTML = statusHtml;
           }
         } else {
           Swal.fire({
@@ -214,10 +256,20 @@
             deliveryElem.innerText = '₹ ' + data.data.delivery_charge;
           }
 
+          // Update Proceed to Checkout button
+          updateCheckoutButton(data.data.any_out_of_stock);
+
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
           // Empty cart handling
           if (document.querySelectorAll('.cart-item').length === 0) {
-            document.querySelector('.cart-items').innerHTML =
-              '<p>Your cart is empty.</p>'
+            const itemsContainer = document.querySelector('.cart-items');
+            if (itemsContainer) {
+              itemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            }
           }
 
           // Success alert
@@ -237,5 +289,54 @@
         Swal.fire('Error', 'Something went wrong!', 'error')
       })
   }
-  </script>
+
+  function updateCheckoutButton(anyOutOfStock) {
+    const summaryCol = document.querySelector('.order-summary');
+    if (!summaryCol) return;
+
+    let warningDiv = summaryCol.querySelector('.stock-warning');
+    let checkoutBtn = summaryCol.querySelector('.checkout-btn:not(.continue-btn)');
+    let checkoutLink = summaryCol.querySelector('a[href*="checkout"]');
+
+    if (anyOutOfStock) {
+      if (!warningDiv) {
+        warningDiv = document.createElement('div');
+        warningDiv.className = 'stock-warning';
+        warningDiv.style.cssText = 'color: #dc3545; font-size: 0.85rem; margin-bottom: 10px; font-weight: 500;';
+        warningDiv.textContent = 'Some items are unavailable or out of stock. Please remove them to proceed.';
+        if (checkoutBtn) {
+          checkoutBtn.parentNode.insertBefore(warningDiv, checkoutBtn);
+        } else if (checkoutLink) {
+          checkoutLink.parentNode.insertBefore(warningDiv, checkoutLink);
+        }
+      }
+
+      if (checkoutLink) {
+        // Replace link with disabled button if it's currently a link
+        const btn = document.createElement('button');
+        btn.className = 'checkout-btn';
+        btn.disabled = true;
+        btn.style.cssText = 'background-color: #ccc; cursor: not-allowed;';
+        btn.textContent = 'Proceed to Checkout';
+        checkoutLink.parentNode.replaceChild(btn, checkoutLink);
+      } else if (checkoutBtn) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.backgroundColor = '#ccc';
+        checkoutBtn.style.cursor = 'not-allowed';
+      }
+    } else {
+      if (warningDiv) warningDiv.remove();
+      if (checkoutBtn && checkoutBtn.disabled) {
+        // Replace disabled button with link
+        const link = document.createElement('a');
+        link.href = "{% url 'checkout' %}";
+        const newBtn = document.createElement('button');
+        newBtn.className = 'checkout-btn';
+        newBtn.textContent = 'Proceed to Checkout';
+        link.appendChild(newBtn);
+        checkoutBtn.parentNode.replaceChild(link, checkoutBtn);
+      }
+    }
+  }
+</script>
 {% endblock %}

@@ -11,13 +11,23 @@
       <h1 class="page-title">Your Order</h1>
       <form method="POST">
         {% csrf_token %}
-        {% comment %} {% if messages %}
+        {% if messages %}
         <div class="messages">
           {% for message in messages %}
           <div class="alert {{ message.tags }}">{{ message }}</div>
           {% endfor %}
         </div>
-        {% endif %} {% endcomment %}
+        {% endif %}
+
+        {% if any_out_of_stock %}
+        <div class="stock-error-alert"
+          style="background-color: #fceceb; color: #842029; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #f5c6cb; border-left: 5px solid #dc3545;">
+          <i class="fa-solid fa-triangle-exclamation"></i> <strong>Stock Warning:</strong> Some items in your order are
+          unavailable or have limited stock. Please <a href="{% url 'cart' %}"
+            style="color: #842029; text-decoration: underline; font-weight: bold;">return to
+            cart</a> to adjust your quantities before placing the order.
+        </div>
+        {% endif %}
         <!-- Address ID controlled by JS -->
         <input type="hidden" name="address_id" id="selected_address_id"
           value="{% if default_address %}{{ default_address.id }}{% endif %}" />
@@ -35,7 +45,12 @@
                   <a href="{% url 'profile_edit_address' address.id %}?next={% url 'checkout' %}"
                     class="edit-link">Change</a>
                 </div>
-                <div class="address-type">{{ address.address_type }}</div>
+                <div class="address-badges">
+                  <div class="address-type badge">{{ address.address_type|title }}</div>
+                  {% if address.is_default %}
+                  <div class="default-badge">Default</div>
+                  {% endif %}
+                </div>
                 <div class="address-text">
                   {{ address.address_line_1 }}
                   <br>
@@ -89,6 +104,18 @@
                     Color: {{ item.variant.color.name }}
                   </div>
                   <div class="item-color">Qty: {{ item.quantity }}</div>
+                  <div class="stock-status-small">
+                    {% if not item.variant.is_active or not item.variant.product.is_active or not item.variant.product.category.is_active or not item.variant.product.brand.is_active %}
+                    <span style="color: #dc3545; font-size: 0.8rem; font-weight: 500;">Unavailable</span>
+                    {% elif item.variant.stock <= 0 %} <span
+                      style="color: #dc3545; font-size: 0.8rem; font-weight: 500;">Out of Stock</span>
+                      {% elif item.quantity > item.variant.stock %}
+                      <span style="color: #fd7e14; font-size: 0.8rem; font-weight: 500;">Only {{ item.variant.stock }}
+                        left</span>
+                      {% else %}
+                      <span style="color: #28a745; font-size: 0.8rem;">In Stock</span>
+                      {% endif %}
+                  </div>
                   <div class="item-price">
                     {% if item.discount_percentage > 0 %}
                     <span class="offer-price">
@@ -188,7 +215,13 @@
             </div>
           </div>
         </div>
+        {% if any_out_of_stock %}
+        <button type="button" class="complete-payment-btn" disabled
+          style="background-color: #d8d8d8; color: #777; cursor: not-allowed; border: 1px solid #ccc;">Please fix stock
+          issues to proceed</button>
+        {% else %}
         <button type="submit" name="place_order" class="complete-payment-btn">Place your order</button>
+        {% endif %}
         <p class="terms">By placing the order, you agree to our terms & conditions</p>
       </form>
     </div>

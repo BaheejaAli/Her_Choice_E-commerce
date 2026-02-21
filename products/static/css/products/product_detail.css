@@ -209,7 +209,66 @@
 
 /* form should behave like a flex item */
 .action-btns form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   flex: 0 0 70%;
+}
+
+.qty-selection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.qty-selection span {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.qty-btn {
+  background: #f8f8f8;
+  border: none;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.qty-btn:hover {
+  background: #eee;
+}
+
+.qty-input {
+  width: 45px;
+  height: 35px;
+  border: none;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+}
+
+#qty-error {
+  font-size: 13px;
+  margin-top: -5px;
+  color: #dc3545;
+  font-weight: 500;
 }
 
 /* ADD TO CART – PREMIUM MUTED ROSE */
@@ -332,7 +391,7 @@
   }
 
   .btn-add-cart,
-  .btn-wishlist {
+  .btn-detail-wishlist {
     width: 100%;
   }
 }

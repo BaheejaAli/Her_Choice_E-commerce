@@ -96,10 +96,17 @@ Home | Her Choice
           title: data.message
         });
         if (data.status === "success") {
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
           const icon = button.querySelector('i');
-          icon.classList.remove('fa-regular');
-          icon.classList.add('fa-solid');
-          icon.style.color = "#ff3366";
+          if (icon) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+            icon.style.color = "#ff3366";
+          }
           button.classList.add('active');
         }
       })
@@ -143,6 +150,11 @@ Home | Her Choice
         });
 
         if (ok) {
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
           const originalText = button.innerText;
           button.innerText = "Added ✓";
           button.disabled = true;
@@ -151,12 +163,6 @@ Home | Her Choice
             button.innerText = originalText;
             button.disabled = false;
           }, 1800);
-
-          // Update cart badge
-          if (data.data?.cart_count) {
-            const badge = document.querySelector(".cart-count-badge");
-            if (badge) badge.innerText = data.data.cart_count;
-          }
         }
       })
       .catch(() => {

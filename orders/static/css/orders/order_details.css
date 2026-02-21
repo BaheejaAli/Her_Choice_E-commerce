@@ -307,6 +307,42 @@ body {
   gap: 20px;
 }
 
+/* Payment Status Badges */
+.badge.payment-status-pending {
+  background: #fff8e1 !important;
+  color: #b78103 !important;
+  border: 1px solid #ffecb3 !important;
+  border-radius: 50px !important;
+}
+
+.badge.payment-status-paid {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border: 1px solid #c8e6c9 !important;
+  border-radius: 50px !important;
+}
+
+.badge.payment-status-failed {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  border: 1px solid #ffcdd2 !important;
+  border-radius: 50px !important;
+}
+
+.badge.payment-status-refunded {
+  background: #f5f5f5 !important;
+  color: #616161 !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 50px !important;
+}
+
+.badge.payment-status-partially-refunded {
+  background: #e3f2fd !important;
+  color: #1565c0 !important;
+  border: 1px solid #bbdefb !important;
+  border-radius: 50px !important;
+}
+
 .address-content {
   display: flex;
   flex-direction: column;

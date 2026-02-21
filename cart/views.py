@@ -17,6 +17,18 @@ from wallet.models import WalletTransaction
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
+def check_any_out_of_stock(cart_items):
+    """Checks if any item in the provided list is out of stock or unavailable."""
+    return any(
+        not item.variant.is_active or 
+        not item.variant.product.is_active or 
+        not item.variant.product.category.is_active or 
+        not item.variant.product.brand.is_active or
+        item.variant.stock <= 0 or 
+        item.quantity > item.variant.stock 
+        for item in cart_items
+    )
+
 @require_POST
 @login_required
 def add_to_cart(request):
@@ -51,7 +63,10 @@ def add_to_cart(request):
             max_allowed = min(variant.stock, 5)
             if cartItem.quantity >= max_allowed:
                 if variant.stock < 5:
-                    message = f"Only {variant.stock} unit{'s' if variant.stock != 1 else ''} available in stock."
+                    if variant.stock == 1:
+                        message = "You already have the only available unit in your cart."
+                    else:
+                        message = f"You already have all {variant.stock} available units in your cart."
                 else:
                     message = "Maximum 5 units allowed per item."
                 return JsonResponse({
@@ -101,12 +116,16 @@ def cart(request):
     subtotal = cart.get_total_price if cart else Decimal('0')
     summary = calculate_checkout_summary(subtotal, Decimal('0'))
     
+    any_out_of_stock = check_any_out_of_stock(cart_items)
+    print(any_out_of_stock)
+    
     context = {
         "cart": cart,
         "cart_items": cart_items,
         "delivery_charge": summary["delivery_charge"],
         "tax": summary["tax"],
         "grand_total": summary["grand_total"],
+        "any_out_of_stock": any_out_of_stock,
     }
     return render(request, "cart/cart.html", context)
 
@@ -138,7 +157,10 @@ def update_cart_quantity(request):
             cart_item.save()
         else:
             if variant.stock < 5:
-                message = f"Only {variant.stock} unit{'s' if variant.stock != 1 else ''} available in stock."
+                if variant.stock == 1:
+                    message = "Only 1 unit is available, which is already in your cart."
+                else:
+                    message = f"Only {variant.stock} units are available, and you've already added them all."
             else:
                 message = "Maximum 5 units allowed per item."
             return JsonResponse({
@@ -160,6 +182,8 @@ def update_cart_quantity(request):
     subtotal = cart_item.cart.get_total_price
     summary = calculate_checkout_summary(subtotal, Decimal('0'))
 
+    any_out_of_stock = check_any_out_of_stock(cart_item.cart.items.all())
+
     return JsonResponse({
         "status": "success",
         "message": "Quantity updated",
@@ -171,6 +195,15 @@ def update_cart_quantity(request):
             "delivery_charge": float(summary["delivery_charge"]),
             "tax": float(summary["tax"]),
             "grand_total": float(summary["grand_total"]),
+            "cart_count": cart_item.cart.total_items,
+            "any_out_of_stock": any_out_of_stock,
+            "item_stock": cart_item.variant.stock,
+            "item_is_active": (
+                cart_item.variant.is_active and 
+                cart_item.variant.product.is_active and 
+                cart_item.variant.product.category.is_active and 
+                cart_item.variant.product.brand.is_active
+            )
         }
     })
 
@@ -206,6 +239,8 @@ def remove_cart_item(request):
             "delivery_charge": float(summary["delivery_charge"]),
             "tax": float(summary["tax"]),
             "grand_total": float(summary["grand_total"]),
+            "cart_count": cart.total_items,
+            "any_out_of_stock": check_any_out_of_stock(cart.items.all()),
         }
     })
 
@@ -236,8 +271,8 @@ def validate_cart_items(request, cart_items):
             return None, f"{variant.product.name} is out of stock"
 
         if item.quantity > variant.stock:
-            item.quantity = variant.stock
-            item.save(update_fields=["quantity"])
+            # Don't silently save, let the UI handle the "Only X left" warning
+            pass
 
         pricing = variant.get_pricing_data()
         final_price = pricing["final_price"]
@@ -285,6 +320,8 @@ def process_coupon_action(request, subtotal):
             applied_coupon = Coupon.objects.get(code=coupon_code, is_active=True)
             is_valid, message = applied_coupon.is_valid(subtotal, request.user)
             if is_valid:
+                # We calculate the discount based on the subtotal (items price)
+                # But it will be deducted from the grand total in calculate_checkout_summary
                 coupon_discount = Decimal(str(applied_coupon.calculate_discount(subtotal)))
             else:
                 request.session.pop("coupon_code", None)
@@ -297,18 +334,18 @@ def process_coupon_action(request, subtotal):
 
 
 def calculate_checkout_summary(subtotal, coupon_discount):
-    """Calculates tax, delivery, and grand total."""
-    discounted_subtotal = max(subtotal - coupon_discount, Decimal('0'))
-   
+    """Calculates tax, delivery, and grand total. Coupon is deducted from the final total."""
     tax_percentage = Decimal(str(settings.TAX_PERCENTAGE))
-    tax = (discounted_subtotal * tax_percentage / Decimal('100')).quantize(Decimal('0.01'))
-    
-    if discounted_subtotal > Decimal(str(settings.FREE_DELIVERY_THRESHOLD)):
+    tax = (subtotal * tax_percentage / Decimal('100')).quantize(Decimal('0.01'))
+   
+    if subtotal <= 0 or subtotal >= Decimal(str(settings.FREE_DELIVERY_THRESHOLD)):
         delivery_charge = Decimal('0')
     else:
         delivery_charge = Decimal(str(settings.DELIVERY_CHARGE))
         
-    grand_total = discounted_subtotal + delivery_charge + tax
+    # Deduct coupon from the total of (subtotal + delivery + tax)
+    pre_coupon_total = subtotal + delivery_charge + tax
+    grand_total = max(pre_coupon_total - coupon_discount, Decimal('0'))
     
     return {
         "tax": tax,
@@ -459,6 +496,7 @@ def checkout(request):
         "default_address": default_address,
         "available_coupons": available_coupons,
         "applied_coupon_code": request.session.get("coupon_code"),
+        "any_out_of_stock": check_any_out_of_stock(cart_items),
     }
     return render(request, "cart/checkout.html", context)
 

@@ -418,7 +418,10 @@ def add_to_wishlist(request):
     
     return JsonResponse({
         "status": "success",
-        "message": "Added to wishlist"
+        "message": "Added to wishlist",
+        "data": {
+            "wishlist_count": wishlist.items.count()
+        }
     })
         
 @login_required
@@ -429,8 +432,11 @@ def remove_from_wishlist(request):
     item = get_object_or_404(WishlistItem, id = item_id, wishlist=wishlist)
     item.delete()
     return JsonResponse({
-        "status":"success",
-        "message":"Removed from wishlist"
+        "status": "success",
+        "message": "Removed from wishlist",
+        "data": {
+            "wishlist_count": wishlist.items.count()
+        }
     })
 
 

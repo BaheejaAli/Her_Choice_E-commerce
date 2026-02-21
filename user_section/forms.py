@@ -55,8 +55,40 @@ class UserAddressForm(forms.ModelForm):
             'address_type': forms.RadioSelect(),
         }
 
+    def clean_address_line_1(self):
+        address = self.cleaned_data.get('address_line_1', '').strip()
+        if not address:
+            raise ValidationError("Address line 1 cannot be empty.")
+        if len(address) < 5:
+            raise ValidationError("Address must be at least 5 characters long.")
+        return address
+
+    def clean_city(self):
+        city = self.cleaned_data.get('city', '').strip()
+        if not city:
+            raise ValidationError("City cannot be empty.")
+        if not all(x.isalpha() or x.isspace() for x in city):
+            raise ValidationError("City should only contain letters and spaces.")
+        return city
+
+    def clean_state(self):
+        state = self.cleaned_data.get('state', '').strip()
+        if not state:
+            raise ValidationError("State cannot be empty.")
+        if not all(x.isalpha() or x.isspace() for x in state):
+            raise ValidationError("State should only contain letters and spaces.")
+        return state
+
+    def clean_country(self):
+        country = self.cleaned_data.get('country', '').strip()
+        if not country:
+            raise ValidationError("Country cannot be empty.")
+        if not all(x.isalpha() or x.isspace() for x in country):
+            raise ValidationError("Country should only contain letters and spaces.")
+        return country
+
     def clean_pincode(self):
-        pincode = self.cleaned_data.get('pincode')
+        pincode = self.cleaned_data.get('pincode', '').strip()
         if pincode:
             if not pincode.isdigit():
                 raise ValidationError("Pincode must contain only digits.")
