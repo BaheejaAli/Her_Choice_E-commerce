@@ -37,23 +37,24 @@ def create_order_items(order, cart_items):
 @transaction.atomic
 def finalize_order(order, cart_items, cart, applied_coupon):
     """Handles stock reduction and cart deactivation after payment confirmation."""
+    from products.models import ProductVariant
+    
     for item in cart_items:
+        # Lock the variant row to prevent race conditions
+        variant = ProductVariant.objects.select_for_update().get(id=item.variant.id)
+        
+        if variant.stock < item.quantity:
+            raise ValueError(f"Not enough stock for {variant.product.name}")
+            
+        variant.stock -= item.quantity
+        variant.save()
+        
         OrderItem.objects.create(
             order=order,
-            variant=item.variant,
+            variant=variant,
             quantity=item.quantity,
-            price=item.variant.get_pricing_data()["final_price"]
+            price=variant.get_pricing_data()["final_price"]
         )
-        
-        # Use database-level filter to ensure stock doesn't go negative
-        from products.models import ProductVariant
-        updated = ProductVariant.objects.filter(
-            id=item.variant.id, 
-            stock__gte=item.quantity
-        ).update(stock=F("stock") - item.quantity)
-        
-        if not updated:
-            raise ValueError(f"Not enough stock for {item.variant.product.name}")
     
     if applied_coupon:
         # Enforce global coupon limit
@@ -85,16 +86,17 @@ def finalize_order(order, cart_items, cart, applied_coupon):
 @transaction.atomic
 def complete_order_payment(order, applied_coupon, cart):
     """Deducts stock, applies coupon, and deactivates cart after successful payment."""
+    from products.models import ProductVariant
+    
     for item in order.items.select_related('variant'):
-        # Use database-level filter to ensure stock doesn't go negative
-        from products.models import ProductVariant
-        updated = ProductVariant.objects.filter(
-            id=item.variant.id, 
-            stock__gte=item.quantity
-        ).update(stock=F("stock") - item.quantity)
+        # Lock the variant row to prevent race conditions
+        variant = ProductVariant.objects.select_for_update().get(id=item.variant.id)
         
-        if not updated:
-            raise ValueError(f"Not enough stock for {item.variant.product.name}")
+        if variant.stock < item.quantity:
+             raise ValueError(f"Not enough stock for {variant.product.name}")
+             
+        variant.stock -= item.quantity
+        variant.save()
     
     if applied_coupon:
         # Enforce global coupon limit

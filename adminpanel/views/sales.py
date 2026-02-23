@@ -80,11 +80,11 @@ def get_filtered_orders(request):
 def sales_report(request):
     orders, start_date, end_date = get_filtered_orders(request)
     total = orders.aggregate(
-    sales_count=Count('id'),
-    gross_sales=Sum('subtotal'),
-    total_order_amount=Sum('total'),
-    total_item_discount=Sum('discount'),
-    total_coupon_discount=Sum('coupon_discount'),
+        sales_count=Count('id'),
+        gross_sales=Sum('total'),
+        total_order_amount=Sum('total'),
+        total_item_discount=Sum('discount'),
+        total_coupon_discount=Sum('coupon_discount'),
     )
 
     total['total_item_discount'] = total['total_item_discount'] or 0

@@ -423,7 +423,7 @@ def checkout(request):
     if error_message:
         messages.error(request, error_message)
         return redirect("cart")
-
+    
     subtotal = pricing_data["subtotal"]
     total_discount = pricing_data["total_discount"]
     total_mrp = pricing_data["total_mrp"]
