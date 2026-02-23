@@ -134,7 +134,7 @@ class Order(models.Model):
         return refund_amount
     
     @property
-    def coupon_discount(self):
+    def calculated_coupon_discount(self):
         # total = subtotal - coupon_discount + tax + delivery
         # coupon_discount = subtotal + tax + delivery - total
         return max(self.subtotal + self.tax + self.delivery_charge - self.total, Decimal('0.00'))

@@ -102,7 +102,7 @@
           {% csrf_token %}
           <input type="hidden" name="variant_id" value="{{ selected_variant.id }}">
 
-          <div class="qty-selection">
+          {% comment %} <div class="qty-selection">
             <span>Qty:</span>
             <div class="quantity-selector">
               <button type="button" class="qty-btn" id="minus-btn">−</button>
@@ -110,7 +110,7 @@
                 max="{{ selected_variant.stock }}">
               <button type="button" class="qty-btn" id="plus-btn">+</button>
             </div>
-          </div>
+          </div> {% endcomment %}
 
           <button type="button" class="btn-add-cart" id="add-to-cart-btn" onclick="addToCart(this)">
             <i class="fas fa-shopping-bag"></i> Add to Cart
@@ -122,8 +122,7 @@
         </button>
         {% else %}
         <button class="btn-disabled" disabled>
-          {% if not selected_variant.is_active or not product.is_active or not product.category.is_active or not
-          product.brand.is_active %}
+          {% if not selected_variant.is_active or not product.is_active or not product.category.is_active or not product.brand.is_active %}
           UNAVAILABLE
           {% else %}
           OUT OF STOCK

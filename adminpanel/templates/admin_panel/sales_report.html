@@ -52,21 +52,33 @@
     <div class="metrics-grid">
         <div class="metric-card">
             <small>OVERALL SALES COUNT</small>
-            <div class="metric-value">{{ total.sales_count }}</div>
+            <div class="metric-value">
+                {{ total.sales_count|default:"0" }}
+            </div>
         </div>
+
         <div class="metric-card">
-            <small>OVERALL SALES AMOUNT</small>
-            <div class="metric-value">₹ {{ total.overall_sales|default:"0.00" }}</div>
+            <small>GROSS SALES</small>
+            <div class="metric-value">
+                ₹ {{ total.gross_sales|default:"0.00" }}
+            </div>
         </div>
+
         <div class="metric-card">
             <small>OVERALL DISCOUNT</small>
-            <div class="metric-value" style="color: #d32f2f;">- ₹ {{ total.total_discount|default:"0.00" }}</div>
+            <div class="metric-value" style="color: #d32f2f;">
+                - ₹ {{ total.total_discount|default:"0.00" }}
+            </div>
         </div>
+
         <div class="metric-card">
             <small>OVERALL FINAL SALES</small>
-            <div class="metric-value" style="color: #2e7d32;">₹ {{ total.total_order_amount|default:"0.00" }}</div>
+            <div class="metric-value" style="color: #2e7d32;">
+                ₹ {{ total.total_order_amount|default:"0.00" }}
+            </div>
         </div>
     </div>
+  
     <div class="table-wrapper">
         <table>
             <thead>
@@ -88,12 +100,17 @@
                     <td>{{ order.user.get_full_name }}</td>
                     {% comment %} <td>₹ {{ order.total }}</td> {% endcomment %}
                     <td>
-                        {% if order.discount > 0 %}
-                        <span class="discount-badge">- ₹ {{ order.discount }}</span>
-                        {% else %}
-                        —
-                        {% endif %}
+                        {% with total_item_discount=order.discount|add:order.coupon_discount %}
+                            {% if total_item_discount > 0 %}
+                                <span class="discount-badge">
+                                    - ₹ {{ total_item_discount }}
+                                </span>
+                            {% else %}
+                                —
+                            {% endif %}
+                        {% endwith %}
                     </td>
+                 
                     <td>
                         <strong>₹ {{ order.total }}</strong>
                     </td>

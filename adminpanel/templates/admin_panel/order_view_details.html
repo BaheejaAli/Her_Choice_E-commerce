@@ -178,19 +178,31 @@ Order Details | Her Choice Admin
                     <div class="divider"></div>
                     <div class="summary-row">
                         <span class="label">Subtotal</span>
-                        <span class="value">₹ {{ order.subtotal }}</span>
+                        <span class="value">₹ {{ order.effective_subtotal }}</span>
                     </div>
                     <div class="summary-row">
                         <span class="label">Tax</span>
-                        <span class="value">₹ {{ order.tax }}</span>
+                        <span class="value">₹ {{ order.effective_tax }}</span>
                     </div>
                     <div class="summary-row">
                         <span class="label">Shipping</span>
                         <span class="value">₹ {{ order.delivery_charge }}</span>
                     </div>
+                    {% if order.coupon_discount > 0 %}
+                    <div class="summary-row" style="color: #28a745;">
+                        <span class="label">Coupon Discount</span>
+                        <span class="value">- ₹ {{ order.effective_discount }}</span>
+                    </div>
+                    {% endif %}
+                    {% if order.removed_subtotal > 0 %}
+                    <div class="summary-row" style="color: #dc3545;">
+                        <span class="label">Cancelled/Returned</span>
+                        <span class="value">- ₹ {{ order.removed_subtotal }}</span>
+                    </div>
+                    {% endif %}
                     <div class="summary-row total-row">
-                        <span class="label">Total</span>
-                        <span class="value">₹ {{ order.total }}</span>
+                        <span class="label">Effective Total</span>
+                        <span class="value">₹ {{ order.effective_total }}</span>
                     </div>
                 </div>
             </div>

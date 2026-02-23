@@ -86,11 +86,13 @@
                 <td>{{ order.user.get_full_name }}</td>
                 <td class="text-right">₹ {{ order.subtotal }}</td>
                 <td class="text-right">
-                    {% if order.discount > 0 %}
-                    -₹ {{ order.discount }}
+                    {% with total_item_discount=order.discount|add:order.coupon_discount %}
+                    {% if total_item_discount > 0 %}
+                    -₹ {{ total_item_discount }}
                     {% else %}
                     —
                     {% endif %}
+                    {% endwith %}
                 </td>
                 <td class="text-right">
                     <strong>₹ {{ order.total }}</strong>

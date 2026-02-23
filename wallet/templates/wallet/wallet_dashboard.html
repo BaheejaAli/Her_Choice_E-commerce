@@ -12,14 +12,6 @@
     <!-- Balance Card -->
     <div class="wallet-card">
         <div class="wallet-card-left">
-            {% if active_reward %}
-                <div class="referral-section">
-                    <h3>Refer and earn ₹{{ active_reward.referrer_amount }}!</h3>
-                    <p>
-                        Your code: <strong>{{ user_referral.referral_code }}</strong>
-                    </p>
-                </div>
-            {% endif %}
             <p class="wallet-label">Available Balance</p>
             <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
             <a href="{% url 'add_money' %}" class="wallet-btn">+ Add Money</a>

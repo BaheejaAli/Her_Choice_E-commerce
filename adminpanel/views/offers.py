@@ -17,7 +17,7 @@ def is_admin(user):
 @user_passes_test(is_admin)
 @never_cache
 def offer_management(request):
-    offer_type = request.GET.get('type')
+    offer_type = request.GET.get('type','all')
     offers = Offer.objects.prefetch_related('product','category')
     if offer_type in ['product','category']:
         offers = offers.filter(offer_type=offer_type)

@@ -14,10 +14,10 @@ Order History | Her Choice
     <p class="subtitle">Track, return, or buy things again</p>
 </div>
 {% if messages %}
-      <div class="messages-container">
-        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-      </div>
-    {% endif %}
+<div class="messages-container">
+    {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+</div>
+{% endif %}
 <!-- Filter Tabs -->
 <div class="filter-tabs">
     <a href="{% url "order_history" %}" class="filter-tab {% if not status %}active{% endif %}">All Orders</a>
@@ -55,7 +55,7 @@ Order History | Her Choice
                 <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
             </div>
             <div class="order-header-right">
-                <span class="order-total">₹{{ order.total }}</span>
+                <span class="order-total">₹{{ order.effective_total }}</span>
             </div>
         </div>
         <div class="order-body">
@@ -64,7 +64,8 @@ Order History | Her Choice
                 <div class="order-item">
                     <div class="item-image">
                         {% if item.variant.images.first %}
-                        <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}" width="" height="">
+                        <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}"
+                            width="" height="">
                         {% else %}
                         <div class="no-image">
                             <i class="fas fa-image"></i>
@@ -74,7 +75,8 @@ Order History | Her Choice
                     <div class="item-details">
                         <h4 class="item-name">{{ item.variant.product.name }}</h4>
                         <p class="item-meta">
-                            {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{ item.quantity }}
+                            {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{
+                            item.quantity }}
                         </p>
                         <p class="item-price">₹{{ item.price }}</p>
                     </div>

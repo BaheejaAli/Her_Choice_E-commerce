@@ -14,6 +14,8 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.cache import never_cache
+from django.contrib import messages
+
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -46,9 +48,29 @@ def get_filtered_orders(request):
         orders = orders.filter(created_at__year=today.year)
 
     elif date_range == 'custom' and start_date and end_date:
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-        orders = orders.filter(created_at__date__range=[start_date, end_date])
+        try:
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+            
+            if start_date_obj > end_date_obj:
+                messages.error(request, "Start date cannot be after end date.")
+                # Fallback to current month if validation fails
+                start_date = today.replace(day=1)
+                end_date = today
+                orders = orders.filter(created_at__date__gte=start_date)
+            elif start_date_obj > today or end_date_obj > today:
+                messages.error(request, "Dates cannot be in the future.")
+                start_date = today.replace(day=1)
+                end_date = today
+                orders = orders.filter(created_at__date__gte=start_date)
+            else:
+                start_date, end_date = start_date_obj, end_date_obj
+                orders = orders.filter(created_at__date__range=[start_date, end_date])
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            start_date = today.replace(day=1)
+            end_date = today
+            orders = orders.filter(created_at__date__gte=start_date)
 
     return orders, start_date, end_date
 
@@ -58,12 +80,35 @@ def get_filtered_orders(request):
 def sales_report(request):
     orders, start_date, end_date = get_filtered_orders(request)
     total = orders.aggregate(
-        sales_count = Count('id'),
-        total_order_amount = Sum('total'),
-        total_discount=Sum('discount')
+    sales_count=Count('id'),
+    gross_sales=Sum('subtotal'),
+    total_order_amount=Sum('total'),
+    total_item_discount=Sum('discount'),
+    total_coupon_discount=Sum('coupon_discount'),
     )
-    # overall_sales = total_order_amount + total_discount
-    total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
+
+    total['total_item_discount'] = total['total_item_discount'] or 0
+    total['total_coupon_discount'] = total['total_coupon_discount'] or 0
+
+    total['total_discount'] = (
+        total['total_item_discount'] + total['total_coupon_discount']
+    )
+
+    total['gross_sales'] = total['gross_sales'] or 0
+    total['total_order_amount'] = total['total_order_amount'] or 0
+
+
+
+
+    # total = orders.aggregate(
+    #     sales_count = Count('id'),
+    #     total_order_amount = Sum('total'),
+    #     total_discount=Sum('discount'),
+    #     total_coupon_discount=Sum('coupon_discount')
+    # )
+    # # overall_sales = total_order_amount + total_discount + total_coupon_discount
+    # total['total_discount'] = (total['total_discount'] or 0) + (total['total_coupon_discount'] or 0)
+    # total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
 
     paginator = Paginator(orders, 10)
     page_number = request.GET.get("page")
@@ -88,8 +133,10 @@ def export_pdf(request):
     total = orders.aggregate(
         sales_count=Count('id'),
         total_order_amount=Sum('total'),
-        total_discount=Sum('discount')
+        total_discount=Sum('discount'),
+        total_coupon_discount=Sum('coupon_discount')
     )
+    total['total_discount'] = (total['total_discount'] or 0) + (total['total_coupon_discount'] or 0)
     total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
 
     html_string = render_to_string("admin_panel/sales_report_pdf.html", {
@@ -118,7 +165,7 @@ def export_excel(request):
     sheet = workbook.active
     sheet.title = "Sales Report"
 
-    headers = ["Order ID", "Customer", "Total", "Discount", "Status", "Date"]
+    headers = ["Order ID", "Customer", "Total", "Discount", "Coupon", "Status", "Date"]
 
     for col_num, header in enumerate(headers, 1):
         cell = sheet.cell(row=1, column=col_num)
@@ -131,8 +178,9 @@ def export_excel(request):
         sheet.cell(row=row_num, column=2).value = order.user.get_full_name if order.user else "Guest"
         sheet.cell(row=row_num, column=3).value = float(order.total)
         sheet.cell(row=row_num, column=4).value = float(order.discount or 0)
-        sheet.cell(row=row_num, column=5).value = order.status
-        sheet.cell(row=row_num, column=6).value = order.created_at.strftime("%Y-%m-%d")
+        sheet.cell(row=row_num, column=5).value = float(order.coupon_discount or 0)
+        sheet.cell(row=row_num, column=6).value = order.status
+        sheet.cell(row=row_num, column=7).value = order.created_at.strftime("%Y-%m-%d")
 
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

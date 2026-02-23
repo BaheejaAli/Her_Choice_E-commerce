@@ -33,7 +33,7 @@ Offer Management | Her Choice
     </div>
     <div class="filter-section mb-4">
         <div class="offer-tabs btn-group">
-            <a href="#" class="btn btn-outline-primary {% if not request.GET.type %}active{% endif %}">All Offers</a>
+            <a href="?type=all" class="btn btn-outline-primary {% if not request.GET.type %}active{% endif %}">All Offers</a>
             <a href="?type=product"
                 class="btn btn-outline-primary {% if request.GET.type == 'product' %}active{% endif %}">
                 Product Offers

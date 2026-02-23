@@ -18,7 +18,7 @@ from .models import Wishlist, WishlistItem
 from django.db import transaction
 from .models import UserAddress, Contact
 from products.utils import prepare_products_for_display
-from offer.models import Referral 
+from offer.models import Referral, ReferralReward
 from wallet.models import Wallet
 from django.core.mail import send_mail
 from django.conf import settings
@@ -110,11 +110,13 @@ def profile_info(request):
     addresses = user.addresses.all().order_by('-is_default')
     referral, _ = Referral.objects.get_or_create(user=user)
     wallet, _ = Wallet.objects.get_or_create(user=user)
+    reward = ReferralReward.objects.filter(is_active=True).first()
     context = {
         'user': user,
         'addresses': addresses,
         'referral': referral,
         'wallet': wallet,
+        'reward':reward
     }
     return render(request, "user_section/profile.html", context)
 

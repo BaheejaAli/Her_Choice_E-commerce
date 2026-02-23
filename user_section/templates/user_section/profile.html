@@ -4,6 +4,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/user_section/profile.css' %}" />
 <link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
+<link rel="stylesheet" href="{% static 'css/wallet/wallet_dashboard.css' %}?v=1.1" />
 {% endblock %}
 {% block profile_content %}
 <div class="main-container">
@@ -52,28 +53,33 @@
     </div>
     <section class="section">
       <h2 class="section-title">Referral Information</h2>
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Your Referral Code</label>
-          <div style="display:flex; gap:10px;">
-            <input type="text" value="{{ referral.referral_code }}" readonly id="refCode" />
-            <button onclick="copyReferral()" class="edit-button">Copy</button>
-          </div>
+
+      <div class="wallet-card">
+        <div class="wallet-card-left">
+          <p class="wallet-label">Your Referral Code</p>
+          <h1 class="wallet-amount" id="refCodeText">{{ referral.referral_code }}</h1>
+          <button onclick="copyReferral()" class="wallet-btn">
+            <i class="fas fa-copy"></i> Copy Code
+          </button>
+          <input type="hidden" value="{{ referral.referral_code }}" id="refCode" />
         </div>
       </div>
+
       <div class="form-row">
         <div class="form-group">
           <label>Total Referrals Used</label>
           <input type="text" value="{{ referral.used_count }}" readonly />
         </div>
+        {% if reward %}
         <div class="form-group">
-          <label>Referral Status</label>
-          {% if user.has_used_referral %}
-          <input type="text" value="Referral Applied" readonly />
-          {% else %}
-          <input type="text" value="Not Applied Yet" readonly />
-          {% endif %}
+          <label>Current Reward</label>
+          <div style="background: #fff5f8; padding: 10px; border-radius: 8px; border: 1px dashed #ff2f7d;">
+            <p style="margin: 0; color: #d4145a; font-weight: 600;">
+              🎁 Refer and earn ₹ {{ reward.referrer_amount }} !
+            </p>
+          </div>
         </div>
+        {% endif %}
       </div>
 
     </section>
@@ -84,13 +90,14 @@
 {{ block.super }}
 <script>
   function copyReferral() {
-    var copyText = document.getElementById("refCode");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(copyText.value);
-    Toast.fire({
-      icon: 'success',
-      title: 'Referral code copied!'
+    var copyText = document.getElementById("refCode").value;
+    navigator.clipboard.writeText(copyText).then(() => {
+      Toast.fire({
+        icon: 'success',
+        title: 'Referral code copied!'
+      });
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
     });
   }
 </script>

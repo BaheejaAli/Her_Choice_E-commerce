@@ -255,7 +255,7 @@ Order Details | Her Choice
         <h3 class="section-title">Order Summary</h3>
         <div class="summary-list">
             <div class="summary-row">
-                <span>Subtotal</span><span>₹{{ order.subtotal }}</span>
+                <span>Subtotal</span><span>₹{{ order.effective_subtotal }}</span>
             </div>
             <div class="summary-row">
                 <span>Delivery Charge</span><span>
@@ -267,16 +267,22 @@ Order Details | Her Choice
                 </span>
             </div>
             <div class="summary-row">
-                <span>Tax (Estimated)</span><span>₹{{ order.tax }}</span>
+                <span>Tax (Estimated)</span><span>₹{{ order.effective_tax }}</span>
             </div>
-            {% if order.coupon_discount > 0 %}
+            {% if order.effective_discount > 0 %}
             <div class="summary-row discount">
                 <span>Coupon Discount</span>
-                <span>- ₹ {{ order.coupon_discount }}</span>
+                <span>- ₹ {{ order.effective_discount }}</span>
+            </div>
+            {% endif %}
+            {% if order.removed_subtotal > 0 %}
+            <div class="summary-row" style="color: #dc3545;">
+                <span>Cancelled/Returned</span>
+                <span>- ₹ {{ order.removed_subtotal }}</span>
             </div>
             {% endif %}
             <div class="summary-row total-row">
-                <span>Total</span><span>₹{{ order.total }}</span>
+                <span>Effective Total</span><span>₹{{ order.effective_total }}</span>
             </div>
         </div>
     </div>

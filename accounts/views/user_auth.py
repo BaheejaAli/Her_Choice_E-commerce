@@ -15,6 +15,7 @@ from allauth.socialaccount.providers.google.views import oauth2_callback
 from django.views.decorators.http import require_POST
 from offer.models import Referral, ReferralUsage, ReferralReward
 from django.db import transaction
+from django.db.models import F
 
 
 # Create your views here.
@@ -107,7 +108,7 @@ def user_otp_verify(request):
         messages.error(request, 'Verification session expired or invalid.')
         return redirect('user_register') 
     
-    if timezone.now().timestamp() > float(otp_expiry):
+    if not otp_expiry or timezone.now().timestamp() > float(otp_expiry):
         messages.error(request, 'Verification code expired. Please resend.')
         # Clean up session data
         del request.session['verification_email']
@@ -125,18 +126,22 @@ def user_otp_verify(request):
                 user.is_active = True
                 user.save()
 
-                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                request.session['login_after_verify'] = user.id
+
+                # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
                 # Clear OTP session data
                 del request.session['verification_email']
                 del request.session['verification_otp']
                 del request.session['otp_expiry']
 
-                # Mark as newly verified for special welcome message
-                request.session['newly_verified'] = True
+                return redirect('post_verification_login')
 
-                messages.success(request, 'Email successfully verified. Welcome!')
-                return redirect('apply_referral')
+                # Mark as newly verified for special welcome message
+                # request.session['newly_verified'] = True
+
+                # messages.success(request, 'Email successfully verified. Welcome!')
+                # return redirect('apply_referral')
             
             except CustomUser.DoesNotExist:
                 messages.error(request, 'User account not found.')
@@ -150,6 +155,21 @@ def user_otp_verify(request):
         'otp_expiry': otp_expiry,
     }
     return render(request, 'accounts/user_otp_verify.html', context)
+
+
+def post_verification_login(request):
+    user_id = request.session.get('login_after_verify')
+
+    if not user_id:
+        return redirect("user_login")
+
+    user = CustomUser.objects.get(id=user_id)
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+    del request.session['login_after_verify']
+
+    messages.success(request, "Email successfully verified. Welcome!")
+    return redirect("apply_referral")
 
 
 # ================== APPLY REFERRAL ==============
@@ -170,7 +190,7 @@ def apply_referral(request):
         try:
             referral = Referral.objects.get(referral_code = code)
         
-            if referral.user == request.user:
+            if referral.user_id == request.user.id:
                 messages.error(request, "You cannot use your own referral code.")
                 return redirect("apply_referral")
             
@@ -190,11 +210,9 @@ def apply_referral(request):
                     referrer_reward_amount=referrer_amount,
                     receiver_reward_amount=receiver_amount
                 )
-                print(referrer_amount)
-                print(receiver_amount)
                 referrer_wallet, _ = Wallet.objects.get_or_create(user=referral.user)
-                referrer_wallet.balance += referrer_amount
-                referrer_wallet.save()
+                referrer_wallet.balance = F('balance') + referrer_amount
+                referrer_wallet.save(update_fields=['balance'])
 
                 WalletTransaction.objects.create(
                     wallet=referrer_wallet,
@@ -204,8 +222,8 @@ def apply_referral(request):
                 )
 
                 receiver_wallet, _ = Wallet.objects.get_or_create(user=request.user)
-                receiver_wallet.balance += receiver_amount
-                receiver_wallet.save()
+                receiver_wallet.balance = F('balance') + receiver_amount
+                receiver_wallet.save(update_fields=['balance'])
 
                 WalletTransaction.objects.create(
                     wallet=receiver_wallet,

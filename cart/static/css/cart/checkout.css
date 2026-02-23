@@ -508,3 +508,12 @@ a {
 .coupon-msg.success-msg {
   color: #188038;
 }
+
+/* Terms and Conditions */
+.terms {
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}

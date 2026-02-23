@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Verification and Reset
     path('verify-otp/', user_auth.user_otp_verify, name='user_otp_verify'),
+    path("post-verification-login/", user_auth.post_verification_login, name="post_verification_login"),
     path('forgot-password/', user_auth.user_forgot_password, name='user_forgot_password'),
     path('reset-verify/', user_auth.user_reset_password_verify, name='user_reset_password_verify'),
     path('reset-password/', user_auth.user_reset_password, name='user_reset_password'),
