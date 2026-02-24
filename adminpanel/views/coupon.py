@@ -19,12 +19,22 @@ def is_admin(user):
 def coupon_management(request):
     coupons = Coupon.objects.all().order_by('-created_at')
 
+    now = timezone.now()
+
+    total_coupons = coupons.count()
+    active_coupons = coupons.filter(
+        is_active=True,
+        valid_from__lte=now,
+        valid_to__gte=now).count()
+
+    expired_coupons = coupons.filter(valid_to__lt=now).count()
+
+
     query = request.GET.get("q","").strip()
     if query:
         coupons = coupons.filter(Q(code__icontains=query))
 
     status = request.GET.get("status","").strip()
-    now = timezone.now()
 
     if status == "active":
         coupons = coupons.filter(
@@ -40,14 +50,6 @@ def coupon_management(request):
 
     elif status == "scheduled":
         coupons = coupons.filter(valid_from__gt=now)
-
-    total_coupons = Coupon.objects.count()
-    active_coupons = Coupon.objects.filter(
-        is_active=True,
-        valid_from__lte=timezone.now(),
-        valid_to__gte=timezone.now(),).count()
-
-    expired_coupons = Coupon.objects.filter(valid_to__lt=now).count()
 
     paginator = Paginator(coupons, 5)
     page_number = request.GET.get("page")

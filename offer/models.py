@@ -5,7 +5,7 @@ from django.conf import settings
 import random
 import string
 from django.core.exceptions import ValidationError
-from django.conf import settings
+from decimal import Decimal
 
 TARGET_TYPE_CHOICES = (
     ('product', 'Product'),
@@ -48,15 +48,7 @@ class Offer(models.Model):
         return (self.is_active and self.start_at <= now and (self.end_at is None or self.end_at >= now))
 
     def __str__(self):
-        if self.product.exists():
-            target = ", ".join([p.name for p in self.product.all()])
-        elif self.category.exists():
-            target = ", ".join([c.name for c in self.category.all()])
-        else:
-            target = "No Target"
-
-
-        return f"{self.name} - {target}"
+        return self.name
     
 def generate_referral_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -96,7 +88,7 @@ class ReferralUsage(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             if self.referrer == self.receiver:
-                raise ValueError("User cannot use their own referral code.")
+                raise ValidationError("User cannot use their own referral code.")
 
         super().save(*args, **kwargs)
 
@@ -141,14 +133,37 @@ class Coupon(models.Model):
         verbose_name = "Coupon"
         verbose_name_plural = "Coupons"
         
-
     def clean(self):
         errors = {}
-        if not (1 <= self.discount_percentage <= 100):
-            errors['discount_percentage'] = "Please provide a discount percentage between 1 and 100."
-        if self.valid_to and self.valid_from and self.valid_to < self.valid_from:
-            errors['valid_to'] = "Please select an end date that is on or after the start date."
-        
+
+        if self.discount_percentage is not None:
+            if not (1 <= self.discount_percentage <= 100):
+                errors['discount_percentage'] = "Discount must be between 1 and 100."
+
+        if self.minimum_amount is not None:
+            if self.minimum_amount < 0:
+                errors['minimum_amount'] = "Minimum amount cannot be negative."
+
+        if self.max_discount_amount is not None:
+            if self.max_discount_amount < 0:
+                errors['max_discount_amount'] = "Max discount amount cannot be negative."
+
+        if self.limit is not None:
+            if self.limit <= 0:
+                errors['limit'] = "Total usage limit must be greater than 0."
+
+        if self.max_usage_per_user is not None:
+            if self.max_usage_per_user <= 0:
+                errors['max_usage_per_user'] = "Max usage per user must be greater than 0."
+
+        if self.limit is not None and self.max_usage_per_user is not None:
+            if self.max_usage_per_user > self.limit:
+                errors['max_usage_per_user'] = "Max usage per user cannot exceed total limit."
+
+        if self.valid_from and self.valid_to:
+            if self.valid_to <= self.valid_from:
+                errors['valid_to'] = "End date must be after start date."
+
         if errors:
             raise ValidationError(errors)
 
@@ -201,10 +216,10 @@ class Coupon(models.Model):
         return f"{self.code} ({self.discount_percentage}% OFF)"
     
     def calculate_discount(self, cart_total):
-        discount = (cart_total * self.discount_percentage) / 100
+        discount = (cart_total * self.discount_percentage) / Decimal('100')
         if self.max_discount_amount and self.max_discount_amount > 0:
             discount = min(discount, self.max_discount_amount)
-        return discount
+        return discount.quantize(Decimal('0.01'))
     
 
 class CouponUsage(models.Model):

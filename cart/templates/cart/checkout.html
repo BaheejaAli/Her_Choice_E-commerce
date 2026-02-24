@@ -1,7 +1,7 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.1" />
+<link rel="stylesheet" href="{% static 'css/cart/checkout.css' %}?v=1.2" />
 {% endblock %}
 {% block content %}
 <div class="container">
@@ -183,9 +183,9 @@
               <!-- COUPON CODE SECTION -->
               <div class="coupon-section">
                 <h3 class="coupon-title">Apply Coupon</h3>
-                {% if available_coupons %}
+                {% if filtered_coupons %}
                 <div class="available-coupons">
-                  {% for coupon in available_coupons %}
+                  {% for coupon in filtered_coupons %}
                   <div
                     class="coupon-card {% if applied_coupon_code == coupon.code %}active-coupon{% endif %} {% if not coupon.is_applicable %}disabled{% endif %}"
                     data-code="{{ coupon.code }}" data-applicable="{{ coupon.is_applicable|yesno:'true,false' }}">
@@ -199,6 +199,10 @@
                   </div>
                   {% endfor %}
                 </div>
+                {% else %}
+                <p class="no-coupon-text">
+                    No available coupons.
+                </p>
                 {% endif %}
                 <!-- Hidden field for selected coupon -->
                 <input type="hidden" name="coupon_code" id="selected_coupon"

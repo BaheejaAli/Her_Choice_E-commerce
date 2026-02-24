@@ -9,7 +9,7 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'css/admin_panel/offer_create.css' %}?v=1.1">
+          href="{% static 'css/admin_panel/offer_create.css' %}?v=1.2">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
           rel="stylesheet" />
 {% endblock extra_css %}
@@ -30,14 +30,6 @@
             </a>
         </div>
         <div class="offer-form-wrapper section-card">
-            {% if form.errors %}
-                <div class="alert alert-danger">
-                    {{ form.non_field_errors }}
-                    {% for field in form %}
-                        {% if field.errors %}{{ field.label }}: {{ field.errors }}{% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
             <form method="POST" class="p-4">
                 {% csrf_token %}
                 <div class="row g-4">
@@ -82,7 +74,7 @@
                         {{ form.start_at.errors }}
                     </div>
                     <div class="col-md-6">
-                        <label class="custom-label">End Date (Optional)</label>
+                        <label class="custom-label">End Date </label>
                         {{ form.end_at }}
                         {{ form.end_at.errors }}
                     </div>

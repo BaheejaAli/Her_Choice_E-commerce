@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from user_section.models import UserAddress, WishlistItem
 from orders.models import Order, OrderItem
-from offer.models import Coupon
+from offer.models import Coupon, CouponUsage
 from django.db import transaction
 import razorpay
 from django.conf import settings
@@ -16,6 +16,7 @@ from decimal import Decimal
 from wallet.models import WalletTransaction
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import F
 
 
 
@@ -144,7 +145,7 @@ def update_cart_quantity(request):
         max_allowed = min(variant.stock, 5)
         if cart_item.quantity < max_allowed:
             cart_item.quantity += 1
-            cart_item.save()
+            cart_item.save(update_fields=['quantity'])
         else:
             if variant.stock < 5:
                 if variant.stock == 1:
@@ -161,7 +162,7 @@ def update_cart_quantity(request):
     elif action == "decrease":
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
-            cart_item.save()
+            cart_item.save(update_fields=['quantity'])
 
     else:
         return JsonResponse({
@@ -239,13 +240,11 @@ def remove_cart_item(request):
 razorpay_client = razorpay.Client(
     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-
-@login_required
-def validate_cart_items(request, cart_items):
+def validate_cart_items(cart_items):
     """Checks stock and calculates subtotal, total_discount, total_mrp"""
-    total_mrp = 0
-    total_discount = 0
-    subtotal = 0
+    total_mrp = Decimal("0.00")
+    total_discount = Decimal("0.00")
+    subtotal = Decimal("0.00")
 
     for item in cart_items:
         variant = item.variant
@@ -255,13 +254,22 @@ def validate_cart_items(request, cart_items):
             not variant.product.category.is_active or
             not variant.product.brand.is_active
         ):
-            return None, f"{variant.product.name} is unavailable."
+            return {
+                "success": False,
+                "message": f"{variant.product.name} is unavailable."
+            }
 
         if variant.stock <= 0:
-            return None, f"{variant.product.name} is out of stock"
+            return {
+                "success": False,
+                "message": f"{variant.product.name} is out of stock."
+            }
 
         if item.quantity > variant.stock:
-            pass
+            return {
+                "success": False,
+                "message": f"Only {variant.stock} units of {variant.product.name} available."
+            }
 
         pricing = variant.get_pricing_data()
         final_price = pricing["final_price"]
@@ -271,11 +279,11 @@ def validate_cart_items(request, cart_items):
         total_discount += (variant.base_price - final_price) * item.quantity
     
     return {
+        "success": True,
         "subtotal": subtotal,
         "total_discount": total_discount,
         "total_mrp": total_mrp
-    }, None
-
+    }
 
 def process_coupon_action(request, subtotal):
     """Handles coupon apply/remove requests and returns coupon_discount and applied_coupon or a redirect."""
@@ -309,8 +317,6 @@ def process_coupon_action(request, subtotal):
             applied_coupon = Coupon.objects.get(code=coupon_code, is_active=True)
             is_valid, message = applied_coupon.is_valid(subtotal, request.user)
             if is_valid:
-                # We calculate the discount based on the subtotal (items price)
-                # But it will be deducted from the grand total in calculate_checkout_summary
                 coupon_discount = Decimal(str(applied_coupon.calculate_discount(subtotal)))
             else:
                 request.session.pop("coupon_code", None)
@@ -374,7 +380,8 @@ def handle_wallet_payment(request, selected_address, subtotal, total_discount, c
         return None
 
 
-def handle_razorpay_payment(request, selected_address, subtotal, total_discount, coupon_discount, tax, grand_total, delivery_charge, cart_items, applied_coupon):
+def handle_razorpay_payment(request, selected_address, subtotal, total_discount, coupon_discount, tax, grand_total, 
+                            delivery_charge, cart_items, applied_coupon):
     razorpay_order = razorpay_client.order.create({
         "amount": int(grand_total * 100),
         "currency": "INR",
@@ -386,6 +393,7 @@ def handle_razorpay_payment(request, selected_address, subtotal, total_discount,
     if applied_coupon:
         order.coupon = applied_coupon
         order.save()
+
 
     create_order_items(order, cart_items)
 
@@ -408,11 +416,12 @@ def checkout(request):
         return redirect("cart")
 
     # Validate Items & Prices
-    pricing_data, error_message = validate_cart_items(request, cart_items)
-    if error_message:
-        messages.error(request, error_message)
+    pricing_data = validate_cart_items(cart_items)
+
+    if not pricing_data["success"]:
+        messages.error(request, pricing_data["message"])
         return redirect("cart")
-    
+   
     subtotal = pricing_data["subtotal"]
     total_discount = pricing_data["total_discount"]
     total_mrp = pricing_data["total_mrp"]
@@ -455,22 +464,28 @@ def checkout(request):
     default_address = addresses.filter(is_default=True).first()
     
     # Enhanced available coupons logic
-    available_coupons_qs = Coupon.objects.filter(
+    available_coupons = Coupon.objects.filter(
         is_active=True,
         valid_from__lte=timezone.now(),
-        valid_to__gte=timezone.now()
+        valid_to__gte=timezone.now(),
+        used_count__lt=F('limit')
     )
-    
-    available_coupons = []
-    for c in available_coupons_qs:
-        is_valid, message = c.is_valid(subtotal, request.user)
-        c.is_applicable = is_valid
-        if not is_valid and c.minimum_amount > subtotal:
-             c.eligibility_message = f"Add ₹{c.minimum_amount - subtotal} more to use this"
-        else:
-             c.eligibility_message = message
-        available_coupons.append(c)
 
+    filtered_coupons = []
+    
+    for coupon in available_coupons:
+        usage = CouponUsage.objects.filter(user=request.user, coupon=coupon).first()
+        if usage and usage.used_count >= coupon.max_usage_per_user:
+            continue
+
+        is_valid, message = coupon.is_valid(subtotal, request.user)
+        coupon.is_applicable = is_valid
+        if not is_valid and coupon.minimum_amount > subtotal:
+             coupon.eligibility_message = f"Add ₹{coupon.minimum_amount - subtotal} more to use this"
+        else:
+             coupon.eligibility_message = message
+        filtered_coupons.append(coupon)
+    
     context = {
         "cart": cart,
         "cart_items": cart_items,
@@ -483,7 +498,7 @@ def checkout(request):
         "grand_total": grand_total,
         "addresses": addresses,
         "default_address": default_address,
-        "available_coupons": available_coupons,
+        "filtered_coupons": filtered_coupons,
         "applied_coupon_code": request.session.get("coupon_code"),
         "any_out_of_stock": check_any_out_of_stock(cart_items),
     }
@@ -517,7 +532,7 @@ def payment_handler(request):
                     return redirect("order_success", order_id=order.id)
 
                 if order.payment_status == 'refunded':
-                    # Edge case: avoid processing if already refunded
+                    # avoid processing if already refunded
                     return redirect("order_failure", order_id=order.id)
 
                 cart = get_object_or_404(Cart, user=order.user, is_active=True)

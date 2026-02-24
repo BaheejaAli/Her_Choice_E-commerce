@@ -15,7 +15,7 @@ def check_any_out_of_stock(cart_items):
         for item in cart_items
     )
 
-def create_order_instance(request, address, subtotal, total_discount, coupon_discount, tax, total, delivery_charge, payment_method, payment_status="pending"):
+def create_order_instance(request, address, subtotal, total_discount, coupon_discount, tax, total, delivery_charge, payment_method, applied_coupon=None, payment_status="pending"):
     """Creates a new Order record in the database."""
     return Order.objects.create(
         user=request.user,
@@ -24,12 +24,15 @@ def create_order_instance(request, address, subtotal, total_discount, coupon_dis
         payment_method=payment_method,
         payment_status=payment_status,
         subtotal=subtotal,
-        discount=total_discount + coupon_discount,
+        discount=total_discount,
+        coupon=applied_coupon,
+        coupon_discount=coupon_discount,
         tax=tax,
         total=total,
         status="pending",
         delivery_charge=delivery_charge
     )
+
 
 
 def create_order_items(order, cart_items):

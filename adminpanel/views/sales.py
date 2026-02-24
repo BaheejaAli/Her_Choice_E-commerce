@@ -97,18 +97,8 @@ def sales_report(request):
     total['gross_sales'] = total['gross_sales'] or 0
     total['total_order_amount'] = total['total_order_amount'] or 0
 
+    print(total['total_coupon_discount'])
 
-
-
-    # total = orders.aggregate(
-    #     sales_count = Count('id'),
-    #     total_order_amount = Sum('total'),
-    #     total_discount=Sum('discount'),
-    #     total_coupon_discount=Sum('coupon_discount')
-    # )
-    # # overall_sales = total_order_amount + total_discount + total_coupon_discount
-    # total['total_discount'] = (total['total_discount'] or 0) + (total['total_coupon_discount'] or 0)
-    # total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
 
     paginator = Paginator(orders, 10)
     page_number = request.GET.get("page")

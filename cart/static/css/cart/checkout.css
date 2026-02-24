@@ -477,6 +477,12 @@ a {
   color: #555;
 }
 
+.no-coupon-text {
+    font-size: 13px;
+    color: #999;
+    margin: 10px 0;
+}
+
 
 /* Responsive Design for Coupon Section */
 @media (max-width: 768px) {
