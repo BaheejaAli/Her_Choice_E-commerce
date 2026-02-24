@@ -3,6 +3,18 @@ from django.db.models import F
 from orders.models import Order, OrderItem
 from offer.models import Coupon, CouponUsage
 
+def check_any_out_of_stock(cart_items):
+    """Checks if any item in the provided list is out of stock or unavailable."""
+    return any(
+        not item.variant.is_active or 
+        not item.variant.product.is_active or 
+        not item.variant.product.category.is_active or 
+        not item.variant.product.brand.is_active or
+        item.variant.stock <= 0 or 
+        item.quantity > item.variant.stock 
+        for item in cart_items
+    )
+
 def create_order_instance(request, address, subtotal, total_discount, coupon_discount, tax, total, delivery_charge, payment_method, payment_status="pending"):
     """Creates a new Order record in the database."""
     return Order.objects.create(

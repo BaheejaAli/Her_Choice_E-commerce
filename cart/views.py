@@ -11,23 +11,13 @@ from offer.models import Coupon
 from django.db import transaction
 import razorpay
 from django.conf import settings
-from .utils import create_order_instance, create_order_items, finalize_order, complete_order_payment
+from .utils import check_any_out_of_stock, create_order_instance, create_order_items, finalize_order, complete_order_payment
 from decimal import Decimal
 from wallet.models import WalletTransaction
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-def check_any_out_of_stock(cart_items):
-    """Checks if any item in the provided list is out of stock or unavailable."""
-    return any(
-        not item.variant.is_active or 
-        not item.variant.product.is_active or 
-        not item.variant.product.category.is_active or 
-        not item.variant.product.brand.is_active or
-        item.variant.stock <= 0 or 
-        item.quantity > item.variant.stock 
-        for item in cart_items
-    )
+
 
 @require_POST
 @login_required
@@ -271,7 +261,6 @@ def validate_cart_items(request, cart_items):
             return None, f"{variant.product.name} is out of stock"
 
         if item.quantity > variant.stock:
-            # Don't silently save, let the UI handle the "Only X left" warning
             pass
 
         pricing = variant.get_pricing_data()
