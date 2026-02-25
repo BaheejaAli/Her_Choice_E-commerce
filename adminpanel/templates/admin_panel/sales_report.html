@@ -57,13 +57,6 @@
             </div>
         </div>
 
-        {% comment %} <div class="metric-card">
-            <small>GROSS SALES</small>
-            <div class="metric-value">
-                ₹ {{ total.gross_sales|default:"0.00" }}
-            </div>
-        </div> {% endcomment %}
-
         <div class="metric-card">
             <small>OVERALL COUPON DISCOUNT</small>
             <div class="metric-value" style="color: #d32f2f;">
@@ -99,35 +92,9 @@
                     <td># {{ order.orderid }}</td>
                     <td>{{ order.created_at|date:"Y-m-d" }}</td>
                     <td>{{ order.user.get_full_name }}</td>
-                    <td>{{order.subtotal}}</td>
-                    <td>-{{order.calculated_coupon_discount}}</td>
-                    <td>{{order.tax}} + {{order.delivery_charge}}</td>
-                    {% comment %} <td>subtotal:₹ {{ order.subtotal }}
-                        discount:{{order.discount}}
-                        
-                        total:{{order.total}}
-                        delivery_charge:{{order.delivery_charge}}
-                        coupon_discount:{{order.coupon_discount}}
-                        calculated_coupon_discount:{{order.calculated_coupon_discount}}
-                        removed_subtotal:{{order.removed_subtotal}}
-                        effective_subtotal:{{order.effective_subtotal}}
-                        effective_discount:{{order.effective_discount}}
-                        effective_total:{{order.effective_total}}
-                        
-                        
-                    </td> {% endcomment %}
-                    {% comment %} <td>
-                        {% with total_item_discount=order.discount|add:order.coupon_discount %}
-                            {% if total_item_discount > 0 %}
-                                <span class="discount-badge">
-                                    - ₹ {{ total_item_discount }}
-                                </span>
-                            {% else %}
-                                —
-                            {% endif %}
-                        {% endwith %}
-                    </td> {% endcomment %}
-                 
+                    <td>{{ order.subtotal }}</td>
+                    <td>- {{ order.calculated_coupon_discount }}</td>
+                    <td>{{ order.tax }} + {{ order.delivery_charge }}</td>
                     <td>
                         <strong>₹ {{ order.total }}</strong>
                     </td>

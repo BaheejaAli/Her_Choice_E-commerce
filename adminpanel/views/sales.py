@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator
 from datetime import datetime
 from django.http import HttpResponse
-from io import BytesIO
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -81,7 +80,6 @@ def sales_report(request):
     orders, start_date, end_date = get_filtered_orders(request)
     total = orders.aggregate(
         sales_count=Count('id'),
-        gross_sales=Sum('total'),
         total_order_amount=Sum('total'),
         total_item_discount=Sum('discount'),
         total_coupon_discount=Sum('coupon_discount'),
@@ -93,11 +91,7 @@ def sales_report(request):
     total['total_discount'] = (
         total['total_item_discount'] + total['total_coupon_discount']
     )
-
-    total['gross_sales'] = total['gross_sales'] or 0
     total['total_order_amount'] = total['total_order_amount'] or 0
-
-    print(total['total_coupon_discount'])
 
 
     paginator = Paginator(orders, 10)
@@ -123,11 +117,17 @@ def export_pdf(request):
     total = orders.aggregate(
         sales_count=Count('id'),
         total_order_amount=Sum('total'),
-        total_discount=Sum('discount'),
+        total_item_discount=Sum('discount'),
         total_coupon_discount=Sum('coupon_discount')
     )
-    total['total_discount'] = (total['total_discount'] or 0) + (total['total_coupon_discount'] or 0)
-    total['overall_sales'] = (total['total_order_amount'] or 0) + (total['total_discount'] or 0)
+    
+    total['total_item_discount'] = total['total_item_discount'] or 0
+    total['total_coupon_discount'] = total['total_coupon_discount'] or 0
+
+    total['total_discount'] = (
+        total['total_item_discount'] + total['total_coupon_discount']
+    )
+    total['total_order_amount'] = total['total_order_amount'] or 0
 
     html_string = render_to_string("admin_panel/sales_report_pdf.html", {
         "orders": orders,
@@ -149,13 +149,22 @@ def export_pdf(request):
 @never_cache
 def export_excel(request):
     orders, start_date, end_date = get_filtered_orders(request)
+    total = orders.aggregate(
+        sales_count=Count('id'),
+        total_order_amount=Sum('total'),
+        total_item_discount=Sum('discount'),
+        total_coupon_discount=Sum('coupon_discount')
+    )
+    total_orders = total['sales_count']
+    total_amount = total['total_order_amount'] or 0
+    total_coupon_discount = total['total_coupon_discount']
 
     # Create workbook
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = "Sales Report"
 
-    headers = ["Order ID", "Customer", "Total", "Discount", "Coupon", "Status", "Date"]
+    headers = ["Order ID", "Date", "Customer", "Total", "Coupon Discount", "Tax + Delivery charge", "Final Amount", "Status"]
 
     for col_num, header in enumerate(headers, 1):
         cell = sheet.cell(row=1, column=col_num)
@@ -164,13 +173,30 @@ def export_excel(request):
 
     # Add data rows
     for row_num, order in enumerate(orders, 2):
-        sheet.cell(row=row_num, column=1).value = order.id
-        sheet.cell(row=row_num, column=2).value = order.user.get_full_name if order.user else "Guest"
-        sheet.cell(row=row_num, column=3).value = float(order.total)
-        sheet.cell(row=row_num, column=4).value = float(order.discount or 0)
-        sheet.cell(row=row_num, column=5).value = float(order.coupon_discount or 0)
-        sheet.cell(row=row_num, column=6).value = order.status
-        sheet.cell(row=row_num, column=7).value = order.created_at.strftime("%Y-%m-%d")
+        sheet.cell(row=row_num, column=1).value = order.orderid
+        sheet.cell(row=row_num, column=2).value = order.created_at.strftime("%Y-%m-%d")
+        sheet.cell(row=row_num, column=3).value = order.user.get_full_name if order.user else "Guest"
+        sheet.cell(row=row_num, column=4).value = float(order.subtotal)
+        sheet.cell(row=row_num, column=5).value = float(order.calculated_coupon_discount or 0)
+        sheet.cell(row=row_num, column=6).value = order.tax + order.delivery_charge or 0
+        sheet.cell(row=row_num, column=7).value = order.total
+        sheet.cell(row=row_num, column=8).value = order.status
+
+    summary_start_row = row_num + 2  # Leave one empty row
+
+    sheet.cell(row=summary_start_row, column=1).value = "TOTAL ORDERS"
+    sheet.cell(row=summary_start_row, column=2).value = total_orders
+
+    sheet.cell(row=summary_start_row + 1, column=1).value = "TOTAL AMOUNT"
+    sheet.cell(row=summary_start_row + 1, column=2).value = float(total_amount)
+
+    sheet.cell(row=summary_start_row + 2, column=1).value = "TOTAL COUPON DISCOUNT"
+    sheet.cell(row=summary_start_row + 2, column=2).value = float(total_coupon_discount)
+
+    # Make summary bold
+    for i in range(3):
+        sheet.cell(row=summary_start_row + i, column=1).font = Font(bold=True)
+    
 
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <style>
+    <head>
+        <style>
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
@@ -54,89 +53,73 @@
             font-size: 10px;
             color: #888;
         }
-    </style>
-</head>
-
-<body>
-
-    <h1>Her Choice</h1>
-    <h2 style="text-align:center; margin-top:0;">Sales Report</h2>
-
-    <div class="date-range">
-        Report Period: {{ start_date|date:"d-m-Y" }} to {{ end_date|date:"d-m-Y" }}
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Customer</th>
-                <th class="text-right">Subtotal</th>
-                <th class="text-right">Discount</th>
-                <th class="text-right">Final Amount</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr>
-                <td>#{{ order.id }}</td>
-                <td>{{ order.created_at|date:"d-m-Y" }}</td>
-                <td>{{ order.user.get_full_name }}</td>
-                <td class="text-right">₹ {{ order.subtotal }}</td>
-                <td class="text-right">
-                    {% with total_item_discount=order.discount|add:order.coupon_discount %}
-                    {% if total_item_discount > 0 %}
-                    -₹ {{ total_item_discount }}
-                    {% else %}
-                    —
-                    {% endif %}
-                    {% endwith %}
-                </td>
-                <td class="text-right">
-                    <strong>₹ {{ order.total }}</strong>
-                </td>
-                <td>{{ order.status }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" style="text-align:center;">
-                    No orders found for this period.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="summary-box">
+        </style>
+    </head>
+    <body>
+        <h1>Her Choice</h1>
+        <h2 style="text-align:center; margin-top:0;">Sales Report</h2>
+        <div class="date-range">Report Period: {{ start_date|date:"d-m-Y" }} to {{ end_date|date:"d-m-Y" }}</div>
         <table>
-            <tr>
-                <td><strong>Total Orders</strong></td>
-                <td class="text-right">{{ total.sales_count }}</td>
-            </tr>
-            <tr>
-                <td><strong>Overall Sales</strong></td>
-                <td class="text-right">₹ {{ total.overall_sales|default:"0.00" }}</td>
-            </tr>
-            <tr>
-                <td><strong>Overall Discount</strong></td>
-                <td class="text-right">-₹ {{ total.total_discount|default:"0.00" }}</td>
-            </tr>
-            <tr>
-                <td><strong>Overall Final Profit</strong></td>
-                <td class="text-right">₹ {{ total.total_order_amount|default:"0.00" }}</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th class="text-right">Total</th>
+                    <th class="text-right">Coupon Discount</th>
+                    <th>Tax + Delivery charge</th>
+                    <th class="text-right">Final Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td># {{ order.orderid }}</td>
+                        <td>{{ order.created_at|date:"d-m-Y" }}</td>
+                        <td>{{ order.user.get_full_name }}</td>
+                        <td class="text-right">₹ {{ order.subtotal }}</td>
+                        <td>- {{ order.calculated_coupon_discount }}</td>
+                        <td>{{ order.tax }} + {{ order.delivery_charge }}</td>
+
+                        <td class="text-right">
+                            <strong>₹ {{ order.total }}</strong>
+                        </td>
+                        <td>{{ order.status }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align:center;">No orders found for this period.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
-    </div>
-
-    <div style="clear: both;"></div>
-
-    <div class="footer">
-        Generated on {{ now|date:"d-m-Y H:i" }} |
-        Her Choice Admin System
-    </div>
-
-</body>
-
+        <div class="summary-box">
+            <table>
+                <tr>
+                    <td>
+                        <strong>Total Orders</strong>
+                    </td>
+                    <td class="text-right">{{ total.sales_count }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Overall Coupon Discount</strong>
+                    </td>
+                    <td class="text-right">-₹ {{ total.total_coupon_discount|default:"0.00" }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Overall Final Profit</strong>
+                    </td>
+                    <td class="text-right">₹ {{ total.total_order_amount|default:"0.00" }}</td>
+                </tr>
+            </table>
+        </div>
+        <div style="clear: both;"></div>
+        <div class="footer">
+            Generated on {{ now|date:"d-m-Y H:i" }} |
+            Her Choice Admin System
+        </div>
+    </body>
 </html>

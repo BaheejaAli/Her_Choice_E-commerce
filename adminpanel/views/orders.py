@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
 from orders.models import Order, OrderItem
 from django.db.models import Q, F, Count, Sum
 from django.views.decorators.http import require_POST
