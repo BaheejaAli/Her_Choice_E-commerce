@@ -1,98 +1,155 @@
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --success-color: #4cc9f0;
+    --info-color: #4895ef;
+    --warning-color: #f72585;
+    --danger-color: #ef233c;
+    --bg-light: #f8f9fa;
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
 /* WELCOME TEXT */
-.welcome-text {
-    font-weight: 600;
-    margin-bottom: 20px;
+.admin-title {
+    font-weight: 700;
+    color: #2b2d42;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
 }
 
 /* STATS CARDS */
 .stats-card {
-    padding: 18px;
-    border-radius: 12px;
+    padding: 24px;
+    border-radius: 16px;
     background: #ffffff;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
 }
 
 .stats-card h6 {
-    font-size: 14px;
-    color: #666;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8d99ae;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
 }
 
 .stats-card h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 10px 0;
-}
-
-.success {
-    color: #28a745;
-}
-
-.danger {
-    color: #e74c3c;
+    font-size: 32px;
+    font-weight: 800;
+    color: #2b2d42;
+    margin: 0;
 }
 
 /* CHARTS */
 .chart-card {
-    padding: 18px;
-    border-radius: 12px;
+    padding: 24px;
+    border-radius: 16px;
     background: #ffffff;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: var(--card-shadow);
 }
 
-/* ALERTS */
-.custom-alert {
-    border-radius: 12px;
-    padding: 18px;
-    font-size: 15px;
+.chart-card h6 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2b2d42;
 }
 
-/* RECENT ORDERS */
-.recent-orders {
-    border-radius: 12px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-}
-
-.table thead {
-    background: #f1f3f5;
-}
-
-.table td {
-    padding: 14px;
-}
-
-/* ===============================
-   STATUS PILL (Product Style)
-================================ */
-.badge {
-    padding: 8px 16px;
-    border-radius: 999px;
-    font-size: 14px;
+/* Dropdown styling */
+.form-select-sm {
+    border-radius: 8px;
+    border: 1px solid #edf2f4;
+    padding: 8px 12px;
     font-weight: 500;
-    border: none;
-    min-width: 90px;
+    font-size: 13px;
+    background-color: #f8f9fa;
+}
+
+/* RECENT ORDERS TABLE */
+.recent-orders {
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    color: #8d99ae;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.table tbody td {
+    padding: 18px 24px;
+    color: #2b2d42;
+    font-weight: 500;
+}
+
+/* STATUS BADGES - Standardized */
+.badge-status {
     display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: capitalize;
     text-align: center;
+    min-width: 100px;
 }
 
-.badge.bg-success {
-    background: #e7f8ef !important;
-    color: #16a34a !important;
+.badge-status.pending { background: #fef3c7; color: #92400e; }
+.badge-status.processing { background: #dbeafe; color: #1e40af; }
+.badge-status.shipped { background: #e0f2fe; color: #0369a1; }
+.badge-status.delivered { background: #d1fae5; color: #065f46; }
+.badge-status.cancelled { background: #fee2e2; color: #991b1b; }
+.badge-status.returned { background: #fed7aa; color: #9a3412; }
+.badge-status.failed { background: #ffedd5; color: #c2410c; }
+.badge-status.return_requested {
+    background-color: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    animation: statusPulse 2s infinite;
 }
 
-.badge.bg-danger {
-    background: #fdecec !important;
-    color: #dc2626 !important;
+@keyframes statusPulse {
+    0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.2); }
+    70% { box-shadow: 0 0 0 5px rgba(217, 119, 6, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
 }
 
-.badge.bg-warning {
-    background: #fff3e0 !important;
-    color: #e65100 !important;
+/* ANALYTICS ITEMS */
+.list-group-item {
+    border: none;
+    padding: 14px 0;
+    font-weight: 500;
+    color: #2b2d42;
+    border-bottom: 1px solid #f8f9fa;
 }
 
-.badge.bg-info {
-    background: #e3f2fd !important;
-    color: #1976d2 !important;
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item strong {
+    color: var(--primary-color);
 }

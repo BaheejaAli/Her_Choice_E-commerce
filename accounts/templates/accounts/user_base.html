@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,12 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {
@@ -32,7 +37,7 @@
             background: #ffffff;
             padding: 35px;
             border-radius: 14px;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
         }
 
         .brand-title {
@@ -79,7 +84,32 @@
         {% block content %}{% endblock %}
     </div>
 
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        {% if messages %}
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for message in messages %}
+            Toast.fire({
+                icon: '{{ message.tags }}' === 'error' ? 'error' : ('{{ message.tags }}' === 'success' ? 'success' : ('{{ message.tags }}' === 'warning' ? 'warning' : 'info')),
+                title: "{{ message|safe }}"
+            });
+            {% endfor %}
+        });
+        {% endif %}
+    </script>
     {% block extra_script %}{% endblock %}
 
 </body>
+
 </html>

@@ -20,7 +20,7 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/admin_panel/admin_base.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'css/admin_panel/admin_base.css' %}?v=1.2">
     {% block extra_css %}
     {% endblock extra_css %}
 </head>
@@ -36,37 +36,37 @@
                         <i class="fa-solid fa-house"></i> Dashboard
                     </li>
                 </a>
-                <a href="{% url "user_management" %}" style="text-decoration: none"
+                <a href="{% url 'user_management' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-users"></i> Users
                     </li>
                 </a>
-                <a href="{% url "brand_list" %}" style="text-decoration: none"
+                <a href="{% url 'brand_list' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'brand_list' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-shirt"></i> Brands
                     </li>
                 </a>
-                <a href="{% url "category_list" %}" style="text-decoration: none"
+                <a href="{% url 'category_list' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'category_list' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-list"></i> Categories
                     </li>
                 </a>
-                <a href="{% url "product_list" %}" style="text-decoration: none"
+                <a href="{% url 'product_list' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-shirt"></i> Products
                     </li>
                 </a>
-                <a href="{% url "order_management" %}" style="text-decoration: none"
+                <a href="{% url 'order_management' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'order_management' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-box"></i> Orders
                     </li>
                 </a>
-                <a href="{% url "stock_management" %}" style="text-decoration: none"
+                <a href="{% url 'stock_management' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'stock_management' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-box"></i> Stock
@@ -97,7 +97,7 @@
                         <i class="fa-solid fa-chart-line"></i> Sales Reports
                     </li>
                 </a>
-                <a href="{% url "admin_logout" %}" style="text-decoration: none"
+                <a href="{% url 'admin_logout' %}" style="text-decoration: none"
                     class="{% if request.resolver_match.url_name == 'admin_logout' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -107,6 +107,20 @@
         </aside>
         {% comment %} MAIN CONTENT {% endcomment %}
         <main class="main-content">
+            <!-- Centralized Messages -->
+            {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    {% for message in messages %}
+                    Toast.fire({
+                        icon: '{{ message.tags }}' === 'error' ? 'error' : ('{{ message.tags }}' === 'success' ? 'success' : ('{{ message.tags }}' === 'warning' ? 'warning' : 'info')),
+                        title: "{{ message|safe }}"
+                    });
+                    {% endfor %}
+                });
+            </script>
+            {% endif %}
+
             <!-- Page Content -->
             <div class="page-content">
                 {% block content %}
@@ -133,18 +147,7 @@
 
     </script>
 
-    {% if messages %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            {% for message in messages %}
-            Toast.fire({
-                icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
-                title: "{{ message|escapejs }}"
-            });
-            {% endfor %}
-        });
-    </script>
-    {% endif %}
+
     {% block extra_js %}
     {% endblock extra_js %}
 </body>

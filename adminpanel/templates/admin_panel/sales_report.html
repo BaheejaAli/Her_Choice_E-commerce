@@ -5,9 +5,9 @@
 {% endblock %}
 {% block content %}
 <div class="report-main-content">
+    <h2 class="admin-title">Sales Report</h2>
     <div class="report-header">
         <div>
-            <h1>Sales Report</h1>
             <p>Analysis for {{ start_date }} to {{ end_date }}</p>
         </div>
         <div class="header-right" style="display: flex; gap: 10px;">
@@ -71,7 +71,7 @@
             </div>
         </div>
     </div>
-  
+
     <div class="table-wrapper">
         <table>
             <thead>
@@ -79,7 +79,7 @@
                     <th>Order ID</th>
                     <th>Date</th>
                     <th>Customer</th>
-                    <th>Total</th> 
+                    <th>Total</th>
                     <th>Coupon Discount</th>
                     <th>Tax + Delivery charge</th>
                     <th>Final Amount</th>

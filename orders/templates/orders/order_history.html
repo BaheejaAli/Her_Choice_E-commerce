@@ -13,14 +13,10 @@ Order History | Her Choice
     <h1>My Orders</h1>
     <p class="subtitle">Track, return, or buy things again</p>
 </div>
-{% if messages %}
-<div class="messages-container">
-    {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-</div>
-{% endif %}
+
 <!-- Filter Tabs -->
 <div class="filter-tabs">
-    <a href="{% url "order_history" %}" class="filter-tab {% if not status %}active{% endif %}">All Orders</a>
+    <a href="{% url 'order_history' %}" class="filter-tab {% if not status %}active{% endif %}">All Orders</a>
     <a href="?status=pending" class="filter-tab {% if status == 'pending' %}active{% endif %}">Pending</a>
     <a href="?status=processing" class="filter-tab {% if status == 'processing' %}active{% endif %}">Processing</a>
     <a href="?status=shipped" class="filter-tab {% if status == 'shipped' %}active{% endif %}">Shipped</a>
@@ -101,7 +97,7 @@ Order History | Her Choice
                 {% endif %}
             </div>
             <div class="order-actions">
-                <a href="{% url "order_details" order.id %}" class="btn btn-primary">
+                <a href="{% url 'order_details' order.id %}" class="btn btn-primary">
                     <i class="fas fa-eye"></i> View Details
                 </a>
             </div>

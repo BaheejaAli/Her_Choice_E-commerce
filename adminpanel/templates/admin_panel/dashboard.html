@@ -1,145 +1,266 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
-
 {% block title %}Dashboard | Her Choice{% endblock %}
-
-
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin_panel/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_panel/dashboard.css' %}?v=1.1">
 {% endblock %}
-
 {% block content %}
-
-<!-- ================== CARDS ================== -->
-<div class="row g-3 mb-4">
-    <h2 class="admin-title">Dashboard </h2>
-
-    <div class="col-md-3">
-        <div class="card stats-card">
-            <h6>Total Revenue</h6>
-            <h2>₹ {{ total_revenue }}</h2>
-        </div>
+<div class="container-fluid py-4">
+    <!-- ================== HEADER ================== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-title mb-0">Dashboard</h2>
     </div>
 
-    <div class="col-md-3">
-        <div class="card stats-card">
-            <h6>Total Orders</h6>
-            <h2>{{ total_orders }}</h2>
-        </div>
-    </div>
-
+    <!-- ================== STATS CARDS ================== -->
+    <div class="row g-4 mb-4">
         <div class="col-md-3">
-        <div class="card stats-card">
-            <h6>Total Customers</h6>
-            <h2>{{ total_customers }}</h2>
-        </div>
-    </div>
-
-
-
-    <div class="col-md-3">
-        <div class="card stats-card">
-            <h6>Products in Stock</h6>
-            <h2>{{ total_stock }}</h2>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- ================== CHARTS ================== -->
-<div class="row mb-4">
-
-    <div class="col-md-8">
-        <div class="card chart-card">
-            <div class="d-flex justify-content-between">
-                <h6>Sales Overview</h6>
-                <span class="text-muted">Monthly</span>
+            <div class="card stats-card">
+                <h6>Total Revenue</h6>
+                <h2>₹ {{ total_revenue }}</h2>
             </div>
-            <img src="{% static 'img/chart_placeholder.png' %}" class="img-fluid mt-3">
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <h6>Total Orders</h6>
+                <h2>{{ total_orders }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <h6>Customers</h6>
+                <h2>{{ total_customers }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <h6>Inv. Stock</h6>
+                <h2>{{ total_stock }}</h2>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card chart-card">
-            <h6>Payment Method Analysis</h6>
-            <img src="{% static 'img/donut_placeholder.png' %}" class="img-fluid mt-3">
+    <!-- ================== MAIN CHART ================== -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="mb-0">Sales & Revenue Performance</h6>
+                    <div class="d-flex align-items-center">
+                        <form method="GET" class="me-3">
+                            <select name="date_range" class="form-select form-select-sm shadow-sm"
+                                onchange="this.form.submit()" style="width: 130px;">
+                                <option value="today" {% if date_range == "today" %}selected{% endif %}>Today</option>
+                                <option value="week" {% if date_range == "week" %}selected{% endif %}>Last 7 Days</option>
+                                <option value="month" {% if date_range == "month" %}selected{% endif %}>This Month
+                                </option>
+                                <option value="year" {% if date_range == "year" %}selected{% endif %}>This Year</option>
+                            </select>
+                        </form>
+                        <div class="text-muted small fw-500">
+                            <i class="fas fa-circle text-primary me-1"></i> Revenue Trend
+                        </div>
+                    </div>
+                </div>
+                <div id="salesChart" style="min-height: 350px;"></div>
+            </div>
         </div>
     </div>
 
+    <!-- ================== TOP ANALYTICS ================== -->
+    <div class="row g-4 mb-4">
+        <!-- Top Products -->
+        <div class="col-md-4">
+            <div class="card chart-card h-100">
+                <h6 class="mb-3">Top Selling Products</h6>
+                <div class="list-group list-group-flush">
+                    {% for item in top_products %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-truncate" style="max-width: 200px;">{{ item.variant__product__name }}</span>
+                        <span class="fw-bold text-primary">{{ item.quantity }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted py-3 text-center">No data available</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Categories -->
+        <div class="col-md-4">
+            <div class="card chart-card h-100">
+                <h6 class="mb-3">Popular Categories</h6>
+                <div class="list-group list-group-flush">
+                    {% for item in top_categories %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{{ item.variant__product__category__name }}</span>
+                        <span class="fw-bold text-primary">{{ item.quantity }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted py-3 text-center">No data available</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Brands -->
+        <div class="col-md-4">
+            <div class="card chart-card h-100">
+                <h6 class="mb-3">Top Brands</h6>
+                <div class="list-group list-group-flush">
+                    {% for item in top_brands %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>{{ item.variant__product__brand__name }}</span>
+                        <span class="fw-bold text-primary">{{ item.quantity }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted py-3 text-center">No data available</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================== RECENT ORDERS ================== -->
+    <div class="card recent-orders p-0">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Recent Transactions</h5>
+            <a href="{% url 'order_management' %}" class="btn btn-sm btn-light fw-bold text-primary">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td><span class="fw-bold"># {{ order.id }}</span></td>
+                        <td>{{ order.user.get_full_name }}</td>
+                        <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                        <td><span class="fw-bold">₹ {{ order.total }}</span></td>
+                        <td>
+                            <span class="badge-status {{ order.status|lower }}">{{ order.get_status_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'order_view_details' order.id %}"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No recent orders found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-
-<!-- ================== ALERTS ================== -->
-<div class="row mb-4">
-
-    <div class="col-md-6">
-        <div class="alert alert-warning custom-alert">
-            <strong>Low Stock Alerts</strong><br>
-            15 products are running low on stock.
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="alert alert-info custom-alert">
-            <strong>Today's Revenue</strong><br>
-            Revenue generated today: $3,456
-        </div>
-    </div>
-
-</div>
-
-
-<!-- ================== RECENT ORDERS ================== -->
-<div class="card p-4 recent-orders">
-    <h5 class="mb-3">Recent Orders</h5>
-
-    <table class="table align-middle">
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <tr>
-                <td>#3210</td>
-                <td>Alice Johnson</td>
-                <td>2023-11-20</td>
-                <td>$125.99</td>
-                <td>Credit Card</td>
-                <td><span class="badge bg-success">Completed</span></td>
-                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
-            </tr>
-
-            <tr>
-                <td>#3109</td>
-                <td>Sarah Williams</td>
-                <td>2023-11-20</td>
-                <td>$89.75</td>
-                <td>PayPal</td>
-                <td><span class="badge bg-warning text-dark">Processing</span></td>
-                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
-            </tr>
-
-            <tr>
-                <td>#3208</td>
-                <td>Michael Brown</td>
-                <td>2023-11-19</td>
-                <td>$412.00</td>
-                <td>Credit Card</td>
-                <td><span class="badge bg-info">Shipped</span></td>
-                <td><button class="btn btn-outline-primary btn-sm">View Order</button></td>
-            </tr>
-        </tbody>
-    </table>
-
-</div>
-
 {% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var options = {
+            series: [{
+                name: 'Revenue',
+                data: {{ chart_data| safe }}
+            }],
+        chart: {
+        height: 350,
+        type: 'area',
+        toolbar: {
+            show: false
+        },
+        zoom: {
+            enabled: false
+        },
+        fontFamily: 'Inter, sans-serif'
+    },
+        dataLabels: {
+        enabled: false
+    },
+        stroke: {
+        curve: 'smooth',
+        width: 3,
+        colors: ['#4361ee']
+    },
+        fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.45,
+            opacityTo: 0.05,
+            stops: [20, 100, 100, 100]
+        }
+    },
+        colors: ['#4361ee'],
+        labels: {{ chart_labels| safe }},
+        xaxis: {
+        type: 'category',
+        axisBorder: {
+            show: false
+        },
+        axisTicks: {
+            show: false
+        },
+        labels: {
+            style: {
+                colors: '#8d99ae',
+                fontWeight: 500
+            }
+        }
+    },
+        yaxis: {
+        labels: {
+            style: {
+                colors: '#8d99ae',
+                fontWeight: 500
+            },
+            formatter: function (val) {
+                return "₹" + val.toLocaleString();
+            }
+        }
+    },
+        grid: {
+        borderColor: '#f1f3f5',
+        strokeDashArray: 4,
+        padding: {
+            left: 20,
+            right: 20
+        }
+    },
+        tooltip: {
+        theme: 'light',
+        x: {
+            show: true
+        },
+        y: {
+            formatter: function (val) {
+                return "₹" + val.toLocaleString();
+            }
+        }
+    },
+        markers: {
+        size: 5,
+        colors: ['#4361ee'],
+        strokeColors: '#fff',
+        strokeWidth: 2,
+        hover: {
+            size: 7
+        }
+    }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#salesChart"), options);
+    chart.render();
+        });
+</script>
+{% endblock extra_js %}

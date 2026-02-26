@@ -11,13 +11,7 @@
       <h1 class="page-title">Your Order</h1>
       <form method="POST">
         {% csrf_token %}
-        {% if messages %}
-        <div class="messages">
-          {% for message in messages %}
-          <div class="alert {{ message.tags }}">{{ message }}</div>
-          {% endfor %}
-        </div>
-        {% endif %}
+
 
         {% if any_out_of_stock %}
         <div class="stock-error-alert"
@@ -72,12 +66,27 @@
             <!-- PAYMENT METHOD -->
             <div class="section">
               <h2 class="section-title">💳 Payment Method</h2>
+
               <label class="payment-option">
                 <input type="radio" name="payment_method" value="cod" checked>
                 Cash on Delivery
+                {% if grand_total > 1000 %}
+                <small class="d-block text-danger" style="font-size: 0.75rem;">
+                  (Not available for orders above ₹ 1000)</small>
+                {% endif %}
               </label>
+
+              {% comment %} <label class="payment-option {% if grand_total > 1000 %}text-muted{% endif %}">
+                <input type="radio" name="payment_method" value="cod" {% if grand_total > 1000 %}disabled
+                {% else %}checked{% endif %}>
+                Cash on Delivery
+                {% if grand_total > 1000 %}
+                <small class="d-block text-danger" style="font-size: 0.75rem;">
+                  (Not available for orders above ₹ 1000)</small>
+                {% endif %}
+              </label> {% endcomment %}
               <label class="payment-option">
-                <input type="radio" name="payment_method" value="razorpay">
+                <input type="radio" name="payment_method" value="razorpay" {% if grand_total > 1000 %}checked{% endif %}>
                 Razorpay
               </label>
               <label class="payment-option">
@@ -201,7 +210,7 @@
                 </div>
                 {% else %}
                 <p class="no-coupon-text">
-                    No available coupons.
+                  No available coupons.
                 </p>
                 {% endif %}
                 <!-- Hidden field for selected coupon -->

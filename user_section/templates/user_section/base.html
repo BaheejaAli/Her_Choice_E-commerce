@@ -81,6 +81,18 @@
   </header>
   <!-- ====================== CONTENT ====================== -->
   <main>
+    {% if messages %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        {% for message in messages %}
+        Toast.fire({
+          icon: '{{ message.tags }}' === 'error' ? 'error' : ('{{ message.tags }}' === 'success' ? 'success' : ('{{ message.tags }}' === 'warning' ? 'warning' : 'info')),
+          title: "{{ message|safe }}"
+        });
+        {% endfor %}
+      });
+    </script>
+    {% endif %}
     {% block content %}
     {% endblock content %}
   </main>
@@ -196,18 +208,7 @@
     }
   </script>
 
-  {% if messages %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      {% for message in messages %}
-      Toast.fire({
-        icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
-        title: "{{ message|escapejs }}"
-      });
-      {% endfor %}
-    });
-  </script>
-  {% endif %}
+
 
   {% block extra_js %}
   {% endblock %}

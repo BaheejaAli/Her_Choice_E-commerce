@@ -244,8 +244,13 @@ def apply_referral(request):
         except Referral.DoesNotExist:
             messages.error(request, "Invalid referral code.")
             return redirect("apply_referral")
+
+    reward = ReferralReward.objects.filter(is_active=True).first()
+    context = {
+        'reward_amount': reward.receiver_amount if reward else 0
+    }
             
-    return render(request, "accounts/user_apply_referral.html")
+    return render(request, "accounts/user_apply_referral.html", context)
 
     
 

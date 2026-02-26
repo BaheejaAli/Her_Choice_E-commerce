@@ -11,17 +11,14 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin_panel/product_form.css' %}" />
-  {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"> {% endcomment %}
+{% comment %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"> {% endcomment %}
 {% endblock %}
 
 {% block content %}
 <div class="product-form-wrapper">
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="custom-alert alert-{{ message.tags }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+
   <form method="POST" enctype="multipart/form-data" novalidate class="elegant-form">
     {% csrf_token %}
 
@@ -136,7 +133,8 @@
       <br>
 
       <div class="form-actions">
-          <a href="{% url 'product_list' %}" class="btn-cancel" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
+        <a href="{% url 'product_list' %}" class="btn-cancel"
+          style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
         <button type="submit" class="btn-save">Add Product</button>
       </div>
     </div>
@@ -148,7 +146,7 @@
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     let cropper = null;
     let currentFileInput = null;
     let currentPreviewElement = null;
@@ -165,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    document.addEventListener('change', function(e) {
+    document.addEventListener('change', function (e) {
       if (e.target.type === 'file' && e.target.name.includes('image')) {
         const file = e.target.files[0];
         if (file) {
@@ -189,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    cropSaveBtn.addEventListener('click', function(e) {
+    cropSaveBtn.addEventListener('click', function (e) {
       if (!cropper) return;
       const canvas = cropper.getCroppedCanvas({ maxWidth: 1000, maxHeight: 1000 });
       canvas.toBlob((blob) => {

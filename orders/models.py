@@ -142,7 +142,7 @@ class Order(models.Model):
     @property
     def removed_subtotal(self):
         # Includes both cancelled items and fully returned items
-        return sum(item.total_price for item in self.items.all() if item.status == 'cancelled' or item.return_status == 'returned')
+        return sum(item.total_price for item in self.items.all() if item.status == 'cancelled' or item.return_status == 'returned' or item.return_status == 'failed')
 
     @property
     def effective_subtotal(self):
@@ -160,7 +160,7 @@ class Order(models.Model):
 
     @property
     def effective_total(self):
-        if self.status == 'cancelled' or self.status == 'returned':
+        if self.status == 'cancelled' or self.status == 'returned' or self.status == 'failed':
             return Decimal('0.00')
         if self.subtotal == 0: return self.total
         if self.removed_subtotal == self.subtotal:

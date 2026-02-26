@@ -2,47 +2,36 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/accounts/user_apply_referral.css' %}?v=1.1">
+<link rel="stylesheet" href="{% static 'css/accounts/user_apply_referral.css' %}?v=1.2">
 {% endblock %}
 
 {% block content %}
+<div class="referral-container">
+    <div class="referral-card">
+        <h2><i class="fas fa-gift"></i> Apply Referral Code</h2>
+        <p class="subtitle">Enter a friend's code below to receive your instant wallet bonus!</p>
 
-<div class="referral-card">
+        <form method="POST" action="{% url 'apply_referral' %}" class="referral-form">
+            {% csrf_token %}
+            <div class="referral-form-group">
+                <i class="fas fa-ticket-alt input-icon"></i>
+                <input type="text" name="referral_code" placeholder="Enter referral code" class="referral-input"
+                    required>
+            </div>
+            <ul class="benefits-list mt-4">
+                <li><i class="fas fa-check-circle"></i> Earn instant wallet credits of <strong>₹ {{ reward_amount }}</strong></li>
+            </ul>
+            <button type="submit" class="btn-apply">
+                Apply Code <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
 
-    <h2>🎁 Apply Referral Code</h2>
-    <p>If you have a referral code, enter it below and earn rewards!</p>
-
-    {% comment %} {% if messages %}
-        {% for message in messages %}
-            <p class="error-text">{{ message }}</p>
-        {% endfor %}
-    {% endif %} {% endcomment %}
-
-    <form method="POST" action="{% url 'apply_referral' %}">
-        {% csrf_token %}
-        <input type="text" name="referral_code"
-               placeholder="Enter referral code"
-               class="referral-input"
-               required>
-
-        <button type="submit" class="btn-submit">
-            Apply Code
-        </button>
-    </form>
-
-    <hr class="section-divider">
-
-    <a href="{% url 'user_homepage' %}" class="btn-skip">
-        Skip
-    </a>
-
-    <hr class="section-divider">
-
-    <h4>Your Referral Code:</h4>
-    <p class="referral-code-text">
-        {{ request.user.referral_profile.referral_code }}
-    </p>
-
+        <a href="{% url 'user_homepage' %}" class="btn-skip-link">
+            Skip for now
+        </a>
+    </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 {% endblock %}

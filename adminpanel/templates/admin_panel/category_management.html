@@ -5,17 +5,12 @@ Category Management | Her Choice
 {% endblock title %}
 
 {% block extra_css %}
-  <link rel="stylesheet"
-        href="{% static 'css/admin_panel/category_management.css' %}?v=1.4">
+<link rel="stylesheet" href="{% static 'css/admin_panel/category_management.css' %}?v=1.4">
 {% endblock extra_css %}
 {% block content %}
 <div class="category-management-wrapper">
   <h2 class="admin-title">Categories </h2>
-    {% if messages %}
-      <div class="messages-container">
-        {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
-      </div>
-    {% endif %}
+
   <!-- CSRF TOKEN FOR AJAX -->
   <form id="csrf-form">
     {% csrf_token %}
@@ -31,11 +26,7 @@ Category Management | Her Choice
   <!-- SEARCH & FILTER (MATCHES USER MANAGEMENT EXACTLY) -->
   <form method="get" class="search-filter-form" id="filterForm">
     <div class="filter-left">
-        <input type="text"
-               name="q"
-               class="search-input"
-               placeholder="Search categories..."
-               value="{{ search_query }}">
+      <input type="text" name="q" class="search-input" placeholder="Search categories..." value="{{ search_query }}">
       <button type="submit">
         <i class="fa fa-search"></i> Search
       </button>
@@ -46,10 +37,8 @@ Category Management | Her Choice
     <div class="filter-right">
       <select name="status" id="statusFilter">
         <option value="">All</option>
-          <option value="active"
-                  {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
-          <option value="inactive"
-                  {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        <option value="active" {% if current_status_filter == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if current_status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
       </select>
     </div>
   </form>
@@ -80,8 +69,8 @@ Category Management | Her Choice
           <td>
             <button type="button"
               class="btn status-btn {% if category.is_active %}btn-success{% else %}btn-secondary{% endif %}"
-                        data-url="{% url 'toggle_category_status' category.id %}"
-                        onclick="toggleCategoryStatus(this)">{{ category.is_active|yesno:"Active,Inactive" }}</button>
+              data-url="{% url 'toggle_category_status' category.id %}" onclick="toggleCategoryStatus(this)">
+              {{ category.is_active|yesno:"Active,Inactive" }}</button>
           </td>
           <td>
             <a href="{% url 'category_edit' category.id %}" class="action-btn edit">
