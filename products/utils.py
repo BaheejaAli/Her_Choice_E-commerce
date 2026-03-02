@@ -15,12 +15,6 @@ def prepare_products_for_display(products):
             product.display_image = None
             continue
 
-        # attach pricing to VARIANT
-        pricing = variant.get_pricing_data(offer)
-
-        variant.final_price = pricing["final_price"]
-        variant.discount_percentage = pricing["discount_percentage"]
-
         product.display_variant = variant
 
         # image

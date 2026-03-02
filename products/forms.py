@@ -115,25 +115,6 @@ class ProductVariantForm(forms.ModelForm):
         return color
 
 
-    def clean_base_price(self):
-        base_price = self.cleaned_data.get("base_price")
-        if base_price is None or base_price <= 0:
-            raise forms.ValidationError(
-                "Base price must be greater than zero."
-            )
-        return base_price
-
-    def clean_sales_price(self):
-        sales_price = self.cleaned_data.get("sales_price")
-        base_price = self.cleaned_data.get("base_price")
-
-        if sales_price is not None and base_price is not None:
-            if sales_price >= base_price:
-                raise forms.ValidationError(
-                    "sales price must be less than base price."
-                )
-        return sales_price
-
     def clean_stock(self):
         stock = self.cleaned_data.get("stock")
         if stock is None or stock < 0:

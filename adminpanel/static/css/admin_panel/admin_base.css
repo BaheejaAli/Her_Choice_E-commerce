@@ -157,9 +157,14 @@ body {
   font-weight: 500;
   line-height: 1.4;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-  animation: slideIn 0.35s ease-out;
   position: relative;
   overflow: hidden;
+}
+
+/* Base alert animation only for central messages */
+.messages-container .alert {
+  animation: slideIn 0.35s ease-out, fadeOut 0.4s ease-in forwards;
+  animation-delay: 0s, 4.5s;
 }
 
 /* Success */
@@ -204,10 +209,11 @@ body {
   }
 }
 
-/* Auto fade out (optional) */
-.alert {
-  animation: slideIn 0.35s ease-out, fadeOut 0.4s ease-in forwards;
-  animation-delay: 0s, 4.5s;
+@keyframes fadeOut {
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
 }
 
 @keyframes fadeOut {

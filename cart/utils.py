@@ -45,7 +45,7 @@ def create_order_items(order, cart_items):
             order=order,
             variant=item.variant,
             quantity=item.quantity,
-            price=item.variant.get_pricing_data()["final_price"]
+            price=item.variant.final_price
         )
 
 
@@ -68,7 +68,7 @@ def finalize_order(order, cart_items, cart, applied_coupon):
             order=order,
             variant=variant,
             quantity=item.quantity,
-            price=variant.get_pricing_data()["final_price"]
+            price=variant.final_price
         )
     
     if applied_coupon:

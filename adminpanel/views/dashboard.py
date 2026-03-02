@@ -5,7 +5,7 @@ from orders.models import Order,OrderItem
 from products.models import ProductVariant
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from django.db.models.functions import TruncMonth, TruncDay
+from django.db.models.functions import TruncMonth, TruncDay, TruncHour
 from django.utils import timezone
 from datetime import timedelta
 
@@ -36,6 +36,19 @@ def get_sales_chart_data(filtered_orders, date_range):
         filtered_orders = filtered_orders.filter(created_at__date=now.date())
         sales_data = (
             filtered_orders
+            .annotate(hour=TruncHour('created_at'))
+            .values('hour')
+            .annotate(total=Sum('total'))
+            .order_by('hour')
+        )
+        labels = [item["hour"].strftime("%I %p") for item in sales_data]
+        data = [float(item['total'] or 0) for item in sales_data]
+
+    elif date_range == "week":
+        week_ago = now - timedelta(days=7)
+        filtered_orders = filtered_orders.filter(created_at__gte=week_ago)
+        sales_data = (
+            filtered_orders
             .annotate(day=TruncDay('created_at'))
             .values('day')
             .annotate(total=Sum('total'))
@@ -44,9 +57,8 @@ def get_sales_chart_data(filtered_orders, date_range):
         labels = [item['day'].strftime("%d %b") for item in sales_data]
         data = [float(item['total'] or 0) for item in sales_data]
 
-    elif date_range == "week":
-        week_ago = now - timedelta(days=7)
-        filtered_orders = filtered_orders.filter(created_at__gte=week_ago)
+    elif date_range == "month":
+        filtered_orders = filtered_orders.filter(created_at__year=now.year, created_at__month=now.month)
         sales_data = (
             filtered_orders
             .annotate(day=TruncDay('created_at'))
@@ -67,18 +79,6 @@ def get_sales_chart_data(filtered_orders, date_range):
             .order_by('month')
         )
         labels = [item['month'].strftime("%b") for item in sales_data]
-        data = [float(item['total'] or 0) for item in sales_data]
-
-    else:
-        filtered_orders = filtered_orders.filter(created_at__month=now.month)
-        sales_data = (
-            filtered_orders
-            .annotate(day=TruncDay('created_at'))
-            .values('day')
-            .annotate(total=Sum('total'))
-            .order_by('day')
-        )
-        labels = [item['day'].strftime("%d %b") for item in sales_data]
         data = [float(item['total'] or 0) for item in sales_data]
 
     return labels, data
@@ -119,7 +119,7 @@ def get_top_brands():
 @user_passes_test(is_admin, login_url='admin_login')
 def admin_dashboard(request):
 
-    date_range = request.GET.get("date_range","month")
+    date_range = request.GET.get("date_range", "today")
     filtered_orders = Order.objects.exclude(status__in=['cancelled','failed'])
 
     total_revenue, total_orders, total_customers, total_stock = get_dashboard_totals(filtered_orders)

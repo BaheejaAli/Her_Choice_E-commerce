@@ -148,8 +148,6 @@ def product_detail_view(request, slug, sku=None):
 
    
     pricing = selected_variant.get_pricing_data()
-    selected_variant.final_price = pricing["final_price"]
-    selected_variant.discount_percentage = pricing["discount_percentage"]
 
     product.active_offer = pricing["active_offer"]
     

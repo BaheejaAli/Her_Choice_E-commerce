@@ -271,12 +271,10 @@ def validate_cart_items(cart_items):
                 "message": f"Only {variant.stock} units of {variant.product.name} available."
             }
 
-        pricing = variant.get_pricing_data()
-        final_price = pricing["final_price"]
-
+       
         total_mrp += variant.base_price * item.quantity
-        subtotal += final_price * item.quantity
-        total_discount += (variant.base_price - final_price) * item.quantity
+        subtotal += variant.final_price * item.quantity
+        total_discount += (variant.base_price - variant.final_price) * item.quantity
     
     return {
         "success": True,

@@ -112,11 +112,15 @@ class ProductVariant(models.Model):
     def clean(self):
         errors = {}
 
-        if self.base_price <= 0:
+        if self.base_price is None or self.base_price <= 0:
             errors['base_price'] = "Base price must be greater than zero."
 
-        if self.sales_price and self.sales_price >= self.base_price:
-            errors['sales_price'] = "Offer price must be less than base price."
+        if (
+            self.sales_price is not None and
+            self.base_price is not None and
+            self.sales_price >= self.base_price
+        ):
+            errors['sales_price'] = "Sales price must be less than base price."
 
         if errors:
             raise ValidationError(errors)
@@ -147,6 +151,14 @@ class ProductVariant(models.Model):
             'discount_percentage': max(discounts),
             'active_offer': offer
         }
+    
+    @property
+    def final_price(self):
+        return self.get_pricing_data()['final_price']
+
+    @property
+    def discount_percentage(self):
+        return self.get_pricing_data()['discount_percentage']
 
     @property
     def stock_status(self):
