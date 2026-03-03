@@ -32,7 +32,7 @@
     {% if v and v.is_active and product.is_active %}
     {% if v.stock > 0 %}
     <div class="button-group">
-      <button type="button" class="btn-add" onclick="quickAddToCart(this, {{ v.id }})">Add to Cart</button>
+      <a href="{% url 'product_detail' product.slug %}" class="btn-add">View Details</a>
       <button type="button" class="btn-wishlist {% if v.id in wishlist_variant_ids %}active{% endif %}"
         onclick="addToWishlist({{ v.id }}, this)">
         {% if v.id in wishlist_variant_ids %}

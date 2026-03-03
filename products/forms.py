@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 from .models import Product, ProductVariant, ProductVariantImage
-from django.forms.widgets import ClearableFileInput
+from django.core.exceptions import ValidationError
 
 # =========================
 # PRODUCT FORM
@@ -76,6 +76,21 @@ class ProductForm(forms.ModelForm):
                 "A product with this name already exists.")
 
         return name
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        is_active = cleaned_data.get("is_active")
+
+        # Only check when editing existing product
+        if is_active and self.instance.pk:
+            has_active_variant = self.instance.variants.filter(is_active=True).exists()
+
+            if not has_active_variant:
+                raise ValidationError({
+                    "is_active": "Cannot activate product without at least one active variant."
+                })
+
+        return cleaned_data
 
 
 # =========================

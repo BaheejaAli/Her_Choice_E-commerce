@@ -7,7 +7,7 @@ Home | Her Choice
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/user_section/homepage.css' %}?v=1.1" />
-<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.3" />
+<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.4" />
 {% endblock %}
 
 {% block content %}
@@ -118,59 +118,5 @@ Home | Her Choice
       });
   }
 
-  /* =========================
-     QUICK ADD TO CART (HOMEPAGE)
-  ========================= */
-  function quickAddToCart(button, variantId) {
-    if (!variantId) {
-      Toast.fire({
-        icon: "warning",
-        title: "Variant not available"
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("variant_id", variantId);
-
-    fetch("{% url 'add_to_cart' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": getCSRFToken(),
-        "X-Requested-With": "XMLHttpRequest"
-      },
-      body: formData
-    })
-      .then(res => res.json().then(data => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-
-        Toast.fire({
-          icon: ok ? "success" : "warning",
-          title: data.message || "Action failed"
-        });
-
-        if (ok) {
-          // Update navbar
-          if (typeof updateNavbarCounts === "function") {
-            updateNavbarCounts(data.data);
-          }
-
-          const originalText = button.innerText;
-          button.innerText = "Added ✓";
-          button.disabled = true;
-
-          setTimeout(() => {
-            button.innerText = originalText;
-            button.disabled = false;
-          }, 1800);
-        }
-      })
-      .catch(() => {
-        Toast.fire({
-          icon: "error",
-          title: "Network error. Please refresh"
-        });
-      });
-  }
 </script>
 {% endblock %}

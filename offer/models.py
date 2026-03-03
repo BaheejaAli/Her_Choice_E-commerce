@@ -6,6 +6,7 @@ import random
 import string
 from django.core.exceptions import ValidationError
 from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 TARGET_TYPE_CHOICES = (
     ('product', 'Product'),
@@ -16,7 +17,12 @@ TARGET_TYPE_CHOICES = (
 class Offer(models.Model):
     name = models.CharField(max_length=200)
     offer_type = models.CharField(max_length=20, choices=TARGET_TYPE_CHOICES)
-    discount_percentage = models.PositiveSmallIntegerField(default=0)
+    discount_percentage = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(99)
+        ]
+    )
     product = models.ManyToManyField(
         'products.Product', blank=True, related_name='product_offers')
     category = models.ManyToManyField(
@@ -115,7 +121,12 @@ class ReferralReward(models.Model):
 
 class Coupon(models.Model):
     code = models.CharField( max_length=20, unique=True)
-    discount_percentage = models.PositiveIntegerField()
+    discount_percentage = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(99)
+        ]
+    )
     minimum_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     max_discount_amount = models.DecimalField( max_digits=10, decimal_places=2, default=0)
     max_usage_per_user = models.PositiveIntegerField(default=1)

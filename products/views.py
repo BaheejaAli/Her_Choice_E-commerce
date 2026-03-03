@@ -17,7 +17,7 @@ from user_section.models import WishlistItem
 def product_listing(request):
     queryset = (
         Product.objects
-        .filter(is_active=True, variants__is_active=True, variants__stock__gt=0 )
+        .filter(is_active=True, variants__is_active=True, variants__product__is_active=True, variants__stock__gt=0 )
         .select_related('category', 'brand')
         .prefetch_related('variants__images')
         .distinct()
@@ -154,7 +154,7 @@ def product_detail_view(request, slug, sku=None):
     color_variants = (variants.order_by("color_id","id").distinct("color_id"))
     sizes = Size.objects.filter(productvariant__product = product, productvariant__color= selected_variant.color).distinct()
     # Show related products that have active variants
-    active_product_ids = ProductVariant.objects.filter(is_active=True).values_list('product_id', flat=True)
+    active_product_ids = ProductVariant.objects.filter(is_active=True, product__is_active=True).values_list('product_id', flat=True)
     
     related_products = (
         Product.objects

@@ -17,12 +17,13 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,blank=True,null=True, related_name="products")
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL,blank=True,null=True, related_name="products")
     material = models.CharField(max_length=100,blank=True,null=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     is_selective = models.BooleanField(default=False)
     is_most_demanded = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    auto_disabled = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created_at"]
@@ -39,6 +40,8 @@ class Product(models.Model):
 
     # Auto slug generation
     def save(self, *args, **kwargs):
+        self.full_clean() 
+
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
@@ -47,10 +50,36 @@ class Product(models.Model):
                 slug = f"{base_slug}-{count}"
                 count += 1
             self.slug = slug
-        if not self.category.is_active or not self.brand.is_active:
+
+        category_inactive = self.category and not self.category.is_active
+        brand_inactive = self.brand and not self.brand.is_active
+
+        if category_inactive or brand_inactive:
             self.is_active = False
+            self.auto_disabled = True
+        elif self.is_active:
+            self.auto_disabled = False
         super().save(*args, **kwargs)
 
+    def update_status_from_variants(self):
+        has_active_variant = self.variants.filter(is_active=True).exists()
+        category_inactive = self.category and not self.category.is_active
+        brand_inactive = self.brand and not self.brand.is_active
+
+        new_status = has_active_variant and not (category_inactive or brand_inactive)
+
+        if self.is_active != new_status:
+            self.is_active = new_status
+            self.auto_disabled = not new_status
+            super(Product, self).save(update_fields=["is_active", "auto_disabled"])
+
+    def clean(self):
+        if self.is_active:
+            has_active_variant = self.variants.filter(is_active=True).exists()
+            if not has_active_variant:
+                raise ValidationError({
+                    "is_active": "Cannot activate product without active variants."
+                })
 # =========================
 # SIZE
 # =========================
@@ -77,8 +106,8 @@ class Color(models.Model):
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="variants")
 
-    size = models.ForeignKey(Size, on_delete=models.SET_NULL,null=True, blank=True)
-    color = models.ForeignKey(Color, on_delete=models.SET_NULL,null=True, blank=True)
+    size = models.ForeignKey(Size, on_delete=models.PROTECT,null=True, blank=True)
+    color = models.ForeignKey(Color, on_delete=models.PROTECT,null=True, blank=True)
 
     base_price = models.DecimalField(max_digits=8, decimal_places=2)
     sales_price = models.DecimalField(
@@ -93,7 +122,12 @@ class ProductVariant(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        unique_together = ('product', 'size', 'color')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'size', 'color'],
+                name='unique_variant_combination'
+            )
+        ]
         indexes = [
             models.Index(fields=['product', 'is_active']),
             models.Index(fields=['sku']),
@@ -101,12 +135,17 @@ class ProductVariant(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.size} / {self.color}"
-
+    
+    
     # ---------- Derived values ----------
 
     @property
     def primary_image(self):
         return self.images.filter(is_primary=True).first()
+    
+    @property
+    def is_available(self):
+        return self.is_active and self.product.is_active
 
     # ---------- Validation ----------
     def clean(self):
@@ -179,6 +218,7 @@ class ProductVariant(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()   
         super().save(*args, **kwargs)
+        self.product.update_status_from_variants()
         
 # =========================
 # PRODUCT VARIANT IMAGE

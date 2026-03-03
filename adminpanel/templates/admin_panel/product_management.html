@@ -155,6 +155,25 @@ Product Management | Her Choice
 {% endblock content %}
 {% block extra_js %}
 <script>
+
+  //  GLOBAL TOAST FUNCTION
+  function showToast(icon, message) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+
+    Toast.fire({
+      icon: icon,
+      title: message
+    });
+  }
+
+
+  // TOGGLE PRODUCT STATUS
   function toggleProductStatus(btn) {
     const url = btn.dataset.url;
     const csrftoken =
@@ -168,22 +187,37 @@ Product Management | Her Choice
         'X-CSRFToken': csrftoken
       }
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          btn.textContent = data.is_active ? 'Active' : 'Inactive';
+    .then(response => response.json())
+    .then(data => {
 
-          btn.classList.toggle('btn-success', data.is_active);
-          btn.classList.toggle('btn-secondary', !data.is_active);
-        }
-      })
-      .catch(() => alert('Something went wrong'))
-      .finally(() => {
-        btn.disabled = false;
-      });
+      if (data.success) {
+
+        // Update button text
+        btn.textContent = data.is_active ? 'Active' : 'Inactive';
+
+        // Update button color
+        btn.classList.toggle('btn-success', data.is_active);
+        btn.classList.toggle('btn-secondary', !data.is_active);
+
+        showToast('success', data.message);
+
+      } else {
+
+        showToast('warning', data.message || 'Action not allowed');
+
+      }
+
+    })
+    .catch(() => {
+      showToast('error', 'Something went wrong!');
+    })
+    .finally(() => {
+      btn.disabled = false;
+    });
   }
 
 
+  // TOGGLE VARIANT STATUS
   function toggleVariantStatus(btn) {
     const url = btn.dataset.url;
     const csrftoken =
@@ -197,39 +231,53 @@ Product Management | Her Choice
         'X-CSRFToken': csrftoken
       }
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          btn.textContent = data.is_active ? 'Active' : 'Inactive';
+    .then(response => response.json())
+    .then(data => {
 
-          btn.classList.toggle('btn-success', data.is_active);
-          btn.classList.toggle('btn-secondary', !data.is_active);
-        } else {
-          alert(data.message || 'Action not allowed');
-        }
-      })
-      .catch(() => alert('Something went wrong'))
-      .finally(() => {
-        btn.disabled = false;
-      });
+      if (data.success) {
+
+        btn.textContent = data.is_active ? 'Active' : 'Inactive';
+
+        btn.classList.toggle('btn-success', data.is_active);
+        btn.classList.toggle('btn-secondary', !data.is_active);
+
+        showToast('success', data.message);
+
+      } else {
+
+        showToast('warning', data.message || 'Action not allowed');
+
+      }
+
+    })
+    .catch(() => {
+      showToast('error', 'Something went wrong!');
+    })
+    .finally(() => {
+      btn.disabled = false;
+    });
   }
 
-  {% comment %} for showing the variants in dropdown{% endcomment %}
+  // SHOW HIDE VARIANTS
+
   function toggleVariants(productId) {
+
     const currentRow = document.getElementById(`variants-${productId}`);
 
-
+    // Close other open dropdowns
     document.querySelectorAll('.variant-row').forEach(row => {
       if (row !== currentRow) {
         row.style.display = 'none';
       }
     });
 
+    // Toggle current row
     if (currentRow.style.display === 'table-row') {
       currentRow.style.display = 'none';
     } else {
       currentRow.style.display = 'table-row';
     }
   }
+
 </script>
 {% endblock extra_js %}

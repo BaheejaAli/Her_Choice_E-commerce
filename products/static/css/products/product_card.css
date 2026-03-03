@@ -137,14 +137,17 @@
 .btn-add {
     flex: 4;
     /* Takes most of the width */
-    background: #fff;
-    color: #ff1680;
+    background: #ff1680;
+    color: #fff;
     border: 1px solid #ff1680;
     font-weight: 600;
+    text-decoration: none;
 }
 
 .btn-add:hover {
-    background: #fff0f6;
+    background: #e61472;
+    border-color: #e61472;
+    color: #fff;
 }
 
 .btn-wishlist {

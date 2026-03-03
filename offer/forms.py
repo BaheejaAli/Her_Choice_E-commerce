@@ -39,8 +39,8 @@ class OfferForm(forms.ModelForm):
         elif len(name.strip()) < 3:
             errors['name'] = "Offer name must be at least 3 characters long."
 
-        if discount is not None and not (1 <= discount <= 100):
-            errors['discount_percentage'] = "Discount percentage must be between 1 and 100."
+        if discount is not None and not (1 <= discount <= 99):
+            errors['discount_percentage'] = "Discount percentage must be between 1 and 99."
 
         if offer_type == 'product':
             if not product or not product.exists():
@@ -133,8 +133,8 @@ class CouponForm(forms.ModelForm):
         if valid_from and valid_to and valid_to < valid_from:
             errors['valid_to'] = "End date must be after start date."
 
-        if discount is not None and not (1 <= discount <= 100):
-            errors['discount_percentage'] = "Discount must be between 1 and 100."
+        if discount is not None and not (1 <= discount <= 99):
+            errors['discount_percentage'] = "Discount must be between 1 and 99."
 
         if errors:
             raise ValidationError(errors)

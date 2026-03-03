@@ -3,7 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/products/product_listing.css' %}?v=1.1" />
-<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.2" />
+<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.4" />
 {% endblock %}
 
 {% block content %}
@@ -21,8 +21,7 @@
             <div class="category-list">
                 {% for category in categories %}
                 <label class="category-item">
-                    <input type="checkbox" name="category" value="{{ category.id }}" 
-                    {% if category.id|stringformat:"s" in selected_categories %} checked {% endif %} onchange="this.form.submit()">
+                    <input type="checkbox" name="category" value="{{ category.id }}" {% if category.id|stringformat:"s" in selected_categories %} checked {% endif %} onchange="this.form.submit()">
                     <span class="category-name">{{ category.name }}</span>
                     <span class="count">({{ category.product_count }})</span>
                 </label>
@@ -35,8 +34,7 @@
             <div class="brand-list" style="max-height: 200px; overflow-y: auto;">
                 {% for brand in brands %}
                 <label class="category-item">
-                    <input type="checkbox" name="brand" value="{{ brand.id }}"
-                     {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %} onchange="this.form.submit()">
+                    <input type="checkbox" name="brand" value="{{ brand.id }}" {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %} onchange="this.form.submit()">
                     <span class="category-name">{{ brand.name }}</span>
                     <span class="count">({{ brand.product_count }})</span>
                 </label>
@@ -151,58 +149,6 @@
                 Toast.fire({
                     icon: "error",
                     title: "Please login to use wishlist"
-                });
-            });
-    }
-
-    /* =========================
-       Quick Add to Cart
-    ========================= */
-    function quickAddToCart(button, variantId) {
-        const formData = new FormData();
-        formData.append('variant_id', variantId);
-
-        fetch("{% url 'add_to_cart' %}", {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken(),
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-            .then(res => res.json().then(data => ({ ok: res.ok, data })))
-            .then(({ ok, data }) => {
-
-                Toast.fire({
-                    icon: ok ? "success" : "warning",
-                    title: data.message || "Action failed"
-                });
-
-                if (ok) {
-                    // Update navbar
-                    if (typeof updateNavbarCounts === "function") {
-                        updateNavbarCounts(data.data);
-                    }
-
-                    const originalText = button.innerText;
-                    button.innerText = "Added ✓";
-                    button.disabled = true;
-
-                    setTimeout(() => {
-                        button.innerText = originalText;
-                        button.disabled = false;
-                    }, 2000);
-
-                    if (data.data?.cart_count) {
-                        const badge = document.querySelector('.cart-count-badge');
-                        if (badge) badge.innerText = data.data.cart_count;
-                    }
-                }
-            })
-            .catch(() => {
-                Toast.fire({
-                    icon: "error",
-                    title: "Network error. Please refresh."
                 });
             });
     }

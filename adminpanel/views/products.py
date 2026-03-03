@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 from products.models import Product, ProductVariant, ProductVariantImage
 from products.forms import ProductForm, ProductVariantForm
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 
 # ######### ADMIN CHECK #############
@@ -112,20 +113,25 @@ def product_update(request, pk):
 def toggle_product_status(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     product.is_active = not product.is_active
-    product.save(update_fields=['is_active'])
+    try:
+        product.save(update_fields=['is_active'])
 
-    if not product.is_active:
-        product.variants.update(is_active=False)
+        return JsonResponse({
+            'success': True,
+            'is_active': product.is_active,
+            'message': (
+                f'Product "{product.name}" activated.'
+                if product.is_active
+                else f'Product "{product.name}" deactivated.'
+            )
+        })
 
-    return JsonResponse({
-        'success': True,
-        'is_active': product.is_active,
-        'message': (
-            f'Product "{product.name}" activated.'
-            if product.is_active
-            else f'Product "{product.name}" deactivated.'
-        )
-    })
+    except ValidationError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message_dict.get("is_active", ["Action not allowed"])[0]
+        })
+  
 
 # =============== Add Product Variant ===================
 @never_cache
@@ -238,7 +244,7 @@ def toggle_variant_status(request, variant_id):
     if not variant.product.is_active:
         return JsonResponse({
             "success": False,
-            "message": "Product is inactive"
+            "message": "Product is already inactive"
         }, status=400)
     variant.is_active = not variant.is_active
     variant.save(update_fields=["is_active"])
