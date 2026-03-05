@@ -1,8 +1,8 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/products/product_detail.css' %}">
-<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}">
+<link rel="stylesheet" href="{% static 'css/products/product_detail.css' %}?v=1.5">
+<link rel="stylesheet" href="{% static 'css/products/product_card.css' %}?v=1.4">
 {% endblock %}
 {% block content %}
 <div class="product-detail-wrapper">
@@ -142,7 +142,7 @@
 <!-- RELATED PRODUCTS -->
 {% if related_products %}
 <section class="related-products-section">
-  <h3 class="related-title">You may also like</h3>
+  <h3 class="related-title"> You may also like</h3>
   <div class="related-grid">
     {% for product in related_products %}
     {% include "products/product_card.html" %}

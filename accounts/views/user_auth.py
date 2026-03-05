@@ -17,10 +17,7 @@ from offer.models import Referral, ReferralUsage, ReferralReward
 from django.db import transaction
 from django.db.models import F
 
-
-# Create your views here.
-
-# Define the OTP expiry duration (e.g., 5 minutes)
+# Define the OTP expiry duration(5 minutes)
 OTP_EXPIRY_SECONDS = 100
 
 # ========== USER REGISTRATION ======================
@@ -38,13 +35,11 @@ def user_register(request):
                 user.set_password(form.cleaned_data['password'])
                 user.save()
 
-                # Generate and Store OTP in session
                 otp = random.randint(100000, 999999)
                 request.session['verification_email'] = user.email
                 request.session['verification_otp'] = str(otp)
                 request.session['otp_expiry'] = (timezone.now() + timedelta(seconds=OTP_EXPIRY_SECONDS)).timestamp()
 
-                # SEND EMAIL 
                 send_otp_email(user.email, otp, subject_prefix="Account Verification")
 
                 messages.success(request, 'Registration successful. A verification code has been sent to your email.')
@@ -89,9 +84,6 @@ def user_login(request):
                 error_message = "Invalid email or password."
                 return render(request, 'accounts/user_login.html', {'form': form, 'error': error_message})
 
-                    # if request.session.get('newly_verified'):
-                    #     del request.session['newly_verified']
-                    #     messages.success(request, f"Welcome {user.first_name}! Your account has been successfully created and verified.")            
     else:
         form = UserLoginForm()
     
@@ -110,7 +102,6 @@ def user_otp_verify(request):
     
     if not otp_expiry or timezone.now().timestamp() > float(otp_expiry):
         messages.error(request, 'Verification code expired. Please resend.')
-        # Clean up session data
         del request.session['verification_email']
         del request.session['verification_otp']
         del request.session['otp_expiry']
@@ -121,28 +112,18 @@ def user_otp_verify(request):
 
         if submitted_otp == stored_otp:
             try:
-                # Activate the user account
                 user = CustomUser.objects.get(email=verification_email)
                 user.is_active = True
                 user.save()
 
                 request.session['login_after_verify'] = user.id
-
-                # login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 
-                # Clear OTP session data
                 del request.session['verification_email']
                 del request.session['verification_otp']
                 del request.session['otp_expiry']
 
                 return redirect('post_verification_login')
 
-                # Mark as newly verified for special welcome message
-                # request.session['newly_verified'] = True
-
-                # messages.success(request, 'Email successfully verified. Welcome!')
-                # return redirect('apply_referral')
-            
             except CustomUser.DoesNotExist:
                 messages.error(request, 'User account not found.')
                 return redirect('user_register')
@@ -252,12 +233,7 @@ def apply_referral(request):
             
     return render(request, "accounts/user_apply_referral.html", context)
 
-    
-
-
-
 # ================== USER RESEND OTP VERIFICATION  ==============
-
 @never_cache
 @require_POST
 def user_resend_otp(request):
@@ -312,26 +288,21 @@ def user_forgot_password(request):
 
             try:
                 user = CustomUser.objects.get(email=email)
-                
-                # Generate and store OTP/token for password reset
                 reset_otp = random.randint(100000, 999999)
                 request.session['reset_email'] = email
                 request.session['reset_otp'] = str(reset_otp)
                 request.session['otp_expiry'] = (timezone.now() + timedelta(seconds=OTP_EXPIRY_SECONDS)).timestamp()
                 
-                # SEND EMAIL 
                 email_sent = send_otp_email(email, reset_otp, subject_prefix="Password Reset")
 
                 if email_sent:
                     messages.success(request, 'A password reset code has been sent to your email.')
                 else:
-                    # Security practice: Still show a success message but log/handle the failure
                     messages.error(request, 'If an account exists, a reset code has been sent, but there was an email error.')
 
                 return redirect('user_reset_password_verify')
 
             except CustomUser.DoesNotExist:
-                # Do not reveal if the email exists for security reasons
                 messages.error(request, 'If an account exists, a reset code has been sent.')
                 return redirect('user_forgot_password') 
     else:
@@ -340,7 +311,7 @@ def user_forgot_password(request):
     return render(request, 'accounts/user_forgot_password.html', {'form': form})
 
 
-# ======================= PASSWORD RESET VERIFICATION (Reuse logic from OTP verify, but lead to password reset form) =====================
+# ======================= PASSWORD RESET VERIFICATION  =====================
 @never_cache
 def user_reset_password_verify(request):
     reset_email = request.session.get('reset_email')
@@ -351,10 +322,8 @@ def user_reset_password_verify(request):
         messages.error(request, 'Password reset session invalid.')
         return redirect('user_forgot_password') 
 
-    # Check for OTP expiration
     if timezone.now().timestamp() > float(otp_expiry):
         messages.error(request, 'Reset code expired. Please try again.')
-        # Clean up session data
         del request.session['reset_email']
         del request.session['reset_otp']
         del request.session['otp_expiry']
@@ -364,24 +333,21 @@ def user_reset_password_verify(request):
         submitted_otp = request.POST.get('otp') 
 
         if submitted_otp == stored_otp:
-            # OTP is correct. Set a flag to allow access to the actual reset form.
             request.session['otp_verified'] = True 
             
-            # Clear OTP specific session data (keep reset_email)
             del request.session['reset_otp']
             del request.session['otp_expiry']
             
             messages.success(request, 'Verification successful. You can now set a new password.')
-            return redirect('user_reset_password') # Redirect to the final reset form
+            return redirect('user_reset_password') 
         else:
             messages.error(request, 'Invalid verification code.')
     
     context = {
         'reset_email': reset_email,
         'otp_expiry': otp_expiry,
-        # The template for this view will be the same as user_otp_verify.html, just pointing to this view's URL
     }
-    return render(request, 'accounts/user_otp_verify.html', context) # Reusing the OTP template
+    return render(request, 'accounts/user_otp_verify.html', context) 
 
 # ===================== PASSWORD RESET FINAL STEP ==================
 @never_cache
@@ -389,7 +355,6 @@ def user_reset_password(request):
     reset_email = request.session.get('reset_email')
     otp_verified = request.session.get('otp_verified')
 
-    # Security check: Must have verified OTP to access this page
     if not reset_email or not otp_verified:
         messages.error(request, 'Access denied. Please verify your identity first.')
         return redirect('user_forgot_password')
@@ -405,15 +370,12 @@ def user_reset_password(request):
         if form.is_valid():
             new_password = form.cleaned_data['new_password']
             
-            # 1. Set the new password
             user.set_password(new_password)
             user.save()
 
-            # 2. Clear all reset session data
             del request.session['reset_email']
             del request.session['otp_verified']
             
-            # 3. Inform user and redirect to login
             messages.success(request, 'Your password has been reset successfully. Please log in.')
             return redirect('user_login')
     else:
@@ -427,15 +389,14 @@ def user_reset_password(request):
 @never_cache
 def user_logout(request):
     logout(request)
-    # messages.info(request, "You have been logged out successfully.")
     return redirect('user_login')
 
-
-def google_callback_safe(request, *args, **kwargs):
-    if request.user.is_authenticated:
-        return redirect("user_homepage")
+# to prevent Google OAuth from running again if the user is already authenticated.
+# def google_callback(request, *args, **kwargs):
+#     if request.user.is_authenticated:
+#         return redirect("user_homepage")
     
-    return oauth2_callback(request, *args, **kwargs)
+#     return oauth2_callback(request, *args, **kwargs)
 
 
 

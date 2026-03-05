@@ -23,8 +23,8 @@ def product_listing(request):
         .distinct()
     )
     
-    # Filters
     selected_categories = request.GET.getlist('category')
+    print(selected_categories)
     if selected_categories:
         queryset = queryset.filter(category_id__in=selected_categories)
 
@@ -40,7 +40,6 @@ def product_listing(request):
             Q(category__name__icontains=search_query)
         ).distinct()
 
-    # DB level sorting
     sort_by = request.GET.get('sort', 'date_added')
     if sort_by == 'name_az':
         queryset = queryset.order_by('name')
@@ -51,12 +50,11 @@ def product_listing(request):
     
     # Pricing
     products = list(queryset)
-    prepare_products_for_display(products)      # for price, offer and image display 
+    prepare_products_for_display(products)      
 
-    # Price range filter
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
-    if min_price:   # display_variant is from offer.utils
+    if min_price:   
         products = [
             p for p in products 
             if p.display_variant and p.display_variant.final_price >= int(min_price)]
@@ -67,7 +65,6 @@ def product_listing(request):
         if p.display_variant and p.display_variant.final_price <= int(max_price)
         ]
 
-    #  Python Sorting    
     if sort_by == "price_low":
         products.sort(key=lambda p: p.display_variant.final_price)
     elif sort_by == "price_high":
@@ -76,12 +73,10 @@ def product_listing(request):
     if (min_price or max_price) and not products:
         messages.info(request, "No products found in this price range")
 
-    # Pagination
     paginator = Paginator(products, 10)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Sidebar data
     categories = Category.objects.annotate(
         product_count=Count('products', filter=Q(products__is_active=True))
     ).order_by('-product_count')

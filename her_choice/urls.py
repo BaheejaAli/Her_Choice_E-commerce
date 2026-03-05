@@ -1,5 +1,5 @@
 from django.contrib import admin
-from accounts.views.user_auth import google_callback_safe
+# from accounts.views.user_auth import google_callback_safe
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static

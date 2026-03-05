@@ -122,10 +122,30 @@ body {
 
 /* Logo */
 .logo a {
-  font-size: 28px;
-  font-weight: 700;
   text-decoration: none;
-  color: #ff1680;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.logo-her {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d2d2d;
+  font-style: italic;
+  letter-spacing: -0.5px;
+}
+
+.logo-choice {
+  font-family: 'Dancing Script', cursive;
+  font-size: 38px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff1680, #ff4d94);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-left: -2px;
 }
 
 /* Search */
@@ -413,9 +433,17 @@ body {
 }
 
 .footer-logo {
-  color: #ff1680;
-  font-size: 22px;
-  font-weight: bold;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.footer-logo .logo-her {
+  font-size: 24px;
+}
+
+.footer-logo .logo-choice {
+  font-size: 28px;
 }
 
 .footer-text {

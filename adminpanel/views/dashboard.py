@@ -119,7 +119,7 @@ def get_top_brands():
 @user_passes_test(is_admin, login_url='admin_login')
 def admin_dashboard(request):
 
-    date_range = request.GET.get("date_range", "today")
+    date_range = request.GET.get("date_range", "week")
     filtered_orders = Order.objects.exclude(status__in=['cancelled','failed'])
 
     total_revenue, total_orders, total_customers, total_stock = get_dashboard_totals(filtered_orders)

@@ -41,46 +41,39 @@ def admin_login(request):
             )
 
     else:
-        form = AdminLoginForm() # Initialize empty form for GET request
+        form = AdminLoginForm()
 
     return render(request, "accounts/admin_login.html", {"form": form})
 
 # ================== Admin Forgot Password ==================
-# Handles admin forgot password by checking if the email exists
 @never_cache
 def admin_forgot_password(request):
     if request.method == "POST":
-        form = AdminForgotPasswordForm(request.POST) # <--- Using the Form
+        form = AdminForgotPasswordForm(request.POST) 
         
         if form.is_valid():
-            email = form.cleaned_data.get("email") # <--- Safe, cleaned data
+            email = form.cleaned_data.get("email") 
 
-            # Check if the user exists AND is an admin
             try:
                 user = CustomUser.objects.get(email=email, is_staff=True)
             except CustomUser.DoesNotExist:
                 return render(
                     request,
                     "accounts/admin_forgot_password.html",
-                    {"form": form, "error": "Email not found"}, # Pass form back with error
+                    {"form": form, "error": "Email not found"}, 
                 )
 
-            # ----- Generate 6-digit OTP -----
             otp = random.randint(100000, 999999)
 
-            # Save OTP + email in session
             request.session["reset_email"] = email
             request.session["reset_otp"] = str(otp)
             request.session["otp_timestamp"] = time.time()
 
-            # Send OTP Email
             send_otp_email(email, otp)
 
-            # Redirect to OTP verify page
             return redirect("admin_otp_verify")
 
         else:
-            # If form is invalid (e.g., email format is wrong)
             return render(
                 request, 
                 "accounts/admin_forgot_password.html", 
@@ -88,12 +81,11 @@ def admin_forgot_password(request):
             )
             
     else:
-        form = AdminForgotPasswordForm() # Initialize empty form for GET request
+        form = AdminForgotPasswordForm() 
 
     return render(request, "accounts/admin_forgot_password.html", {"form": form})
 
 # ================== Admin OTP Verification ==================
-# Verifies the OTP entered by the admin during password reset.
 @never_cache
 def admin_otp_verify(request):
     if request.method == "POST":
@@ -101,7 +93,6 @@ def admin_otp_verify(request):
         saved_otp = request.session.get("reset_otp")
         timestamp = request.session.get("otp_timestamp")
 
-        # Check for OTP validity
         if not saved_otp or not timestamp or (time.time() - timestamp) > 300: # 300 seconds = 5 minutes
             return render(
                 request,
@@ -124,7 +115,6 @@ def admin_otp_verify(request):
 # ================== Admin Reset Password ==================
 @never_cache
 def admin_reset_password(request):
-    # Ensure OTP was verified before resetting password 
     if not request.session.get("otp_verified"):
         return redirect("admin_otp_verify")
 
@@ -135,16 +125,13 @@ def admin_reset_password(request):
             new_password = form.cleaned_data.get("new_password")
             email = request.session.get("reset_email") 
 
-            # Update password in database
             try:
                 user = CustomUser.objects.get(email=email)
                 user.password = make_password(new_password)
                 user.save()
             except CustomUser.DoesNotExist:
-                 # Should not happen if flow is correct, but safe check
                  return redirect("admin_forgot_password")
 
-            # Clear session
             request.session.pop("reset_email", None)
             request.session.pop("reset_otp", None)
             request.session.pop("otp_verified", None)
@@ -152,11 +139,10 @@ def admin_reset_password(request):
 
             return redirect("admin_reset_success")
         else:
-             # If form is invalid (passwords don't match, or fail validation)
             return render(request, "accounts/admin_reset_password.html", {"form": form})
 
     else:
-        form = AdminResetPasswordForm() # Initialize empty form for GET request
+        form = AdminResetPasswordForm() 
 
     return render(request, "accounts/admin_reset_password.html", {"form": form})
 

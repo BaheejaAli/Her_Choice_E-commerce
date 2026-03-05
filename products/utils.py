@@ -5,7 +5,7 @@ def prepare_products_for_display(products):
         offer = get_best_offer(product)
         product.active_offer = offer
 
-        # pick first active variant WITH stock, or fallback to first active
+        # pick first active variant WITH stock, or back to first active
         variant = product.variants.filter(is_active=True, stock__gt=0).first()
         if not variant:
             variant = product.variants.filter(is_active=True).first()

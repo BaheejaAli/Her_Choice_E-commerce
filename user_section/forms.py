@@ -2,6 +2,7 @@ from django import forms
 from accounts.models import CustomUser
 from .models import UserAddress
 from django.core.exceptions import ValidationError
+import re
 
 
 class UserProfileUpdateForm(forms.ModelForm):
@@ -54,13 +55,31 @@ class UserAddressForm(forms.ModelForm):
             'country': forms.TextInput(attrs={'placeholder': 'Enter country'}),
             'address_type': forms.RadioSelect(),
         }
-
+    
     def clean_address_line_1(self):
         address = self.cleaned_data.get('address_line_1', '').strip()
         if not address:
-            raise ValidationError("Address line 1 cannot be empty.")
+            raise ValidationError("Address Line 1 cannot be empty.")
         if len(address) < 5:
             raise ValidationError("Address must be at least 5 characters long.")
+        if not re.match(r'^[A-Za-z\s,.-]+$', address):
+            raise ValidationError(
+                "Address can contain only letters, spaces, comma, dot or hyphen."
+            )
+
+        return address
+
+
+    def clean_address_line_2(self):
+        address = self.cleaned_data.get('address_line_2')
+        if address:  
+            if len(address) < 3:
+                raise ValidationError("Address Line 2 must be at least 3 characters.")
+            if not re.match(r'^[A-Za-z\s,.-]+$', address):
+                raise ValidationError(
+                    "Address can contain only letters, numbers, spaces, comma, dot or hyphen."
+                )
+
         return address
 
     def clean_city(self):

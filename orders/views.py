@@ -38,11 +38,9 @@ def order_history(request):
         orders = orders.order_by("-created_at")
     
     # Pagination
-    paginator = Paginator(orders, 6)
+    paginator = Paginator(orders, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    # Generate page range with ellipsis (same as admin pages)
     page_range = paginator.get_elided_page_range(page_obj.number)
     
     return render(request,"orders/order_history.html",{
@@ -98,7 +96,6 @@ def cancel_order(request, order_id):
             all_items = order.items.all()
             total_items_count = all_items.count()
             
-            # Use exclude to only get items that can actually be cancelled in this request
             items_to_cancel = all_items.filter(id__in=selected_item_ids).exclude(status="cancelled")
             
             total_refund_amount = Decimal('0.00')
@@ -116,16 +113,13 @@ def cancel_order(request, order_id):
                 item.save()
 
                 if can_refund:
-                    # Proportionate refund
                     item_refund = order.calculate_item_refund(item)
                     total_refund_amount += item_refund
 
-            # Check if EVERYTHING is either returned or cancelled for full completion (including delivery refund)
             finished_items_count = all_items.filter(Q(return_status='returned') | Q(status='cancelled')).count()
             is_full_completion = (finished_items_count == total_items_count)
 
             if can_refund and is_full_completion:
-                # Ensure the final total matches order.total precisely
                 already_refunded = WalletTransaction.objects.filter(
                     wallet__user=order.user,
                     description__icontains=order.orderid,
@@ -135,7 +129,6 @@ def cancel_order(request, order_id):
                 max_refundable_amount = order.total - order.delivery_charge
                 remaining_to_refund = max_refundable_amount - already_refunded
               
-                # Only override if we actually cancelled something new in this request
                 if items_to_cancel.exists():
                     total_refund_amount = max(remaining_to_refund, Decimal('0.00'))
 
@@ -174,15 +167,11 @@ def return_request(request, order_id):
         reason = request.POST.get("return_reason")
         comment = request.POST.get("return_comment")
 
-        # 1. Fetch the item and ensure it belongs to the logged-in user
         item = get_object_or_404(OrderItem, id=item_id, order__id=order_id, order__user=request.user)
 
-        # 2. Safety check: Only allow return if delivered and not already returned
         if item.status == 'delivered' and item.return_status == 'none':
             item.return_status = 'return_requested'
-            # You can save the reason/comment in a ReturnRequest model or a field on OrderItem
             item.save()
-            
             messages.success(request, f"Return request for {item.variant.product.name} has been submitted.")
         else:
             messages.error(request, "This item is not eligible for return.")

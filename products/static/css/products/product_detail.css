@@ -271,11 +271,11 @@
   font-weight: 500;
 }
 
-/* ADD TO CART – PREMIUM MUTED ROSE */
+/* ADD TO CART – BRAND PINK */
 .btn-add-cart {
   width: 100%;
   height: 50px;
-  background: #B88A8A;
+  background: #ff1680;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -291,9 +291,9 @@
 }
 
 .btn-add-cart:hover {
-  background: #a57878;
+  background: #e61472;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(184, 138, 138, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 22, 128, 0.3);
 }
 
 .btn-add-cart:active {
@@ -301,7 +301,7 @@
 }
 
 .btn-add-cart:disabled {
-  background: #d8c2c2;
+  background: #ffb3d1;
   cursor: not-allowed;
 }
 
@@ -323,15 +323,15 @@
 
 .btn-detail-wishlist:hover {
   background: #fffafa;
-  border-color: #B88A8A;
-  color: #B88A8A;
+  border-color: #ff1680;
+  color: #ff1680;
   transform: translateY(-2px);
 }
 
 .btn-detail-wishlist.active {
   background: transparent;
-  border-color: #B88A8A;
-  color: #B88A8A;
+  border-color: #ff1680;
+  color: #ff1680;
 }
 
 .btn-detail-wishlist.active i {

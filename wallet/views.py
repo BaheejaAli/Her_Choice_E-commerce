@@ -8,19 +8,29 @@ from django.conf import settings
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
 
 # Create your views here.
 @login_required
 def wallet_dashboard(request):
     wallet,_ = Wallet.objects.get_or_create(user=request.user)
-    transactions = wallet.transactions.all()
+    transactions_list = wallet.transactions.all()
+    
+    # Pagination
+    paginator = Paginator(transactions_list, 5) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    page_range = paginator.get_elided_page_range(page_obj.number)
+    
     active_reward = ReferralReward.objects.filter(is_active=True).first()
     user_referral,_ = Referral.objects.get_or_create(user=request.user)
 
-
     context = {
         "wallet":wallet,
-        "transactions":transactions,
+        "transactions":page_obj.object_list,
+        "page_obj":page_obj,
+        "page_range":page_range,
+        "is_paginated":page_obj.has_other_pages(),
         "active_reward": active_reward,
         "user_referral": user_referral,
     }

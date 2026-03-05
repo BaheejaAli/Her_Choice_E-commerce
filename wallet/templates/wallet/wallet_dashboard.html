@@ -1,53 +1,54 @@
 {% extends 'user_section/profile_base.html' %}
 {% load static %}
 {% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'css/wallet/wallet_dashboard.css' %}?v=1.1" />
-    <link rel="stylesheet"
-          href="{% static 'css/user_section/profile_base.css' %}" />
+<link rel="stylesheet" href="{% static 'css/wallet/wallet_dashboard.css' %}?v=1.1" />
+<link rel="stylesheet" href="{% static 'css/user_section/profile_base.css' %}" />
 {% endblock %}
 {% block title %}Her Choice | Wallet{% endblock %}
 {% block profile_content %}
-    <h2 class="wallet-title">My Wallet</h2>
-    <!-- Balance Card -->
-    <div class="wallet-card">
-        <div class="wallet-card-left">
-            <p class="wallet-label">Available Balance</p>
-            <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
-            <a href="{% url 'add_money' %}" class="wallet-btn">+ Add Money</a>
-        </div>
+<h2 class="wallet-title">My Wallet</h2>
+<!-- Balance Card -->
+<div class="wallet-card">
+    <div class="wallet-card-left">
+        <p class="wallet-label">Available Balance</p>
+        <h1 class="wallet-amount">₹ {{ wallet.balance }}</h1>
+        <a href="{% url 'add_money' %}" class="wallet-btn">+ Add Money</a>
     </div>
-    <!-- Transaction Section -->
-    <div class="transaction-section">
-        <h3>Transaction History</h3>
-        {% if transactions %}
-            <div class="transaction-list">
-                {% for transaction in transactions %}
-                    <div class="transaction-item">
-                        <div class="transaction-icon">
-                            {% if transaction.transaction_type == 'PAYMENT' %}
-                                <span>Out</span>
-                            {% else %}
-                                <span>In</span>
-                            {% endif %}
-                        </div>
-                        <div class="transaction-info">
-                            <p>{{ transaction.description }}</p>
-                            <small>{{ transaction.created_at|date:"d M Y" }}</small>
-                        </div>
-                        <div class="transaction-amount">
-                            {% if transaction.transaction_type == 'PAYMENT' %}
-                                <span style="color: red;">- ₹{{ transaction.amount }}</span>
-                            {% else %}
-                                <span style="color: green;">+ ₹{{ transaction.amount }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+</div>
+<!-- Transaction Section -->
+<div class="transaction-section">
+    <h3>Transaction History</h3>
+    {% if transactions %}
+    <div class="transaction-list">
+        {% for transaction in transactions %}
+        <div class="transaction-item">
+            <div class="transaction-icon">
+                {% if transaction.transaction_type == 'PAYMENT' %}
+                <span>Out</span>
+                {% else %}
+                <span>In</span>
+                {% endif %}
             </div>
-        {% else %}
-            <p class="no-transaction">No transactions yet.</p>
-        {% endif %}
+            <div class="transaction-info">
+                <p>{{ transaction.description }}</p>
+                <small>{{ transaction.created_at|date:"d M Y" }}</small>
+            </div>
+            <div class="transaction-amount">
+                {% if transaction.transaction_type == 'PAYMENT' %}
+                <span style="color: red;">- ₹{{ transaction.amount }}</span>
+                {% else %}
+                <span style="color: green;">+ ₹{{ transaction.amount }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
+
+    <!-- Pagination -->
+    {% include 'pagination.html' %}
+    {% else %}
+    <p class="no-transaction">No transactions yet.</p>
+    {% endif %}
+</div>
 {% endblock %}
 {% block extra_js %}{% endblock %}

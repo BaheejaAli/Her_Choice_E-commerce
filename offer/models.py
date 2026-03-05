@@ -227,9 +227,16 @@ class Coupon(models.Model):
         return f"{self.code} ({self.discount_percentage}% OFF)"
     
     def calculate_discount(self, cart_total):
+        cart_total = Decimal(cart_total)
+        print("Cart Total:", cart_total)
+        print("Discount Percentage:", self.discount_percentage)
+        print("Max Discount Amount:", self.max_discount_amount)
+        
         discount = (cart_total * self.discount_percentage) / Decimal('100')
         if self.max_discount_amount and self.max_discount_amount > 0:
-            discount = min(discount, self.max_discount_amount)
+            if discount > self.max_discount_amount:
+                discount = self.max_discount_amount
+                message = f"Maximum discount for this coupon is ₹{self.max_discount_amount}"
         return discount.quantize(Decimal('0.01'))
     
 
