@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Environment files (security)
+.env
+.env.*
+*.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Local database
+db.sqlite3
+*.sqlite3
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Testing / coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Node (if frontend exists)
+node_modules/
