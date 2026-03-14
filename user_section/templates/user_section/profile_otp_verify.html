@@ -54,10 +54,10 @@ Verify Email
   </div>
 </div>
 
-<link rel="stylesheet" href="{% static 'css/accounts/user_otp_verify.css' %}" />
+<link rel="stylesheet" href="{% static 'accounts/css/user_otp_verify.css' %}" />
 <script>
   window.otpExpiry = {{ otp_expiry | default_if_none: "0" }};
 </script>
 
-<script src="{% static 'js/accounts/user_otp_verify.js' %}"></script>
+<script src="{% static 'accounts/js/user_otp_verify.js' %}"></script>
 {% endblock %}
