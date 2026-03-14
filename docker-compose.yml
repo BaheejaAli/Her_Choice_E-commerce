@@ -4,7 +4,7 @@ services:
 
   db:
     image: postgres:16
-    container_name: herchoice_db
+    container_name: her_choice
     restart: always
     environment:
       POSTGRES_DB: herchoice
