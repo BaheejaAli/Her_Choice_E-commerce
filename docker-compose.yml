@@ -4,10 +4,10 @@ services:
 
   db:
     image: postgres:16
-    container_name: her_choice
+    container_name: herchoice_db
     restart: always
     environment:
-      POSTGRES_DB: herchoice
+      POSTGRES_DB: her_choice
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
     ports:
