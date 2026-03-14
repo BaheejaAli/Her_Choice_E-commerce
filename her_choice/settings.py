@@ -61,10 +61,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.sites",
+    "django.contrib.staticfiles",
      # cloudinary
     "cloudinary_storage",
     "cloudinary",
-    "django.contrib.staticfiles",
+    
     # The following apps are required:
     "allauth",
     "allauth.account",
@@ -194,7 +195,9 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static", 
+]
 MEDIA_URL = '/media/'
 # settings.py
 
