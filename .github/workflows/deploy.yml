@@ -1,0 +1,28 @@
+name: Django CI/CD Deployment
+
+on:
+push:
+branches:
+- main
+
+jobs:
+deploy:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Deploy to EC2 Server
+    uses: appleboy/ssh-action@master
+    with:
+      host: ${{ secrets.EC2_HOST }}
+      username: ubuntu
+      key: ${{ secrets.EC2_KEY }}
+      script: |
+        cd ~/Her_Choice_E-commerce
+        git pull origin main
+        source env/bin/activate
+        pip install -r requirements.txt
+        python manage.py migrate
+        python manage.py collectstatic --noinput
+        sudo systemctl restart gunicorn
+```
