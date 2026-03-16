@@ -388,7 +388,8 @@ def user_reset_password(request):
 @login_required
 @never_cache
 def user_logout(request):
-    logout(request)
+    if request.method == "POST":
+        logout(request)
     return redirect('user_login')
 
 # to prevent Google OAuth from running again if the user is already authenticated.
