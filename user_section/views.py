@@ -13,7 +13,6 @@ from django.core.mail import send_mail
 from django.views.decorators.http import require_POST
 from datetime import timedelta
 from django.utils import timezone
-from django.views.decorators.cache import never_cache
 from accounts.models import CustomUser
 from .models import Wishlist, WishlistItem
 from django.db import transaction
@@ -104,7 +103,6 @@ def contact_page(request):
 
     return render(request, "user_section/contact.html")
 
-@never_cache
 @login_required
 def profile_info(request):
     user = request.user
@@ -145,7 +143,6 @@ def upload_profile_pic(request):
 
 
 
-@never_cache
 @login_required
 def edit_profile(request):
     user = request.user
@@ -212,7 +209,6 @@ def edit_profile(request):
     return render(request, 'user_section/profile_edit.html', {'form': form})
 
 
-@never_cache
 @login_required
 def profile_otp_verify(request):
     otp = request.session.get('profile_otp')
@@ -252,7 +248,6 @@ def profile_otp_verify(request):
     return render(request, 'user_section/profile_otp_verify.html', {'otp_expiry': otp_expiry})
 
 
-@never_cache
 @login_required
 def profile_resend_otp(request):
     email = request.session.get('profile_email')
@@ -280,7 +275,6 @@ def profile_resend_otp(request):
     return redirect('profile_otp_verify')
 
 
-@never_cache
 @login_required
 def profile_address(request):
     user = request.user
@@ -288,7 +282,6 @@ def profile_address(request):
     return render(request, "user_section/profile_address.html", {'user': user, 'addresses': addresses})
 
 
-@never_cache
 @login_required
 def profile_add_address(request):
 
@@ -312,7 +305,6 @@ def profile_add_address(request):
     return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': False, 'next': next_url})
 
 
-@never_cache
 @login_required
 def profile_edit_address(request, address_id):
     address = get_object_or_404(UserAddress, id=address_id, user=request.user)
@@ -344,7 +336,6 @@ def profile_delete_address(request, address_id):
     return redirect('profile_address')
 
 
-@never_cache
 @login_required
 def profile_change_password(request):
     if request.method == "POST":
@@ -376,7 +367,6 @@ def profile_change_password(request):
         return redirect('profile_info')
     return render(request, "user_section/profile_change_password.html")
 
-@never_cache
 @login_required
 def wishlist_view(request):
     wishlist, created = Wishlist.objects.get_or_create(user = request.user)
