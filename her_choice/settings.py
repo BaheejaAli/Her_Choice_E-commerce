@@ -14,12 +14,19 @@ from pathlib import Path
 import environ
 import os
 import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialize environ
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+cloudinary.config(
+    secure=True
+)
 
 # ======= Email Configuration (SMTP) ========
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -255,7 +262,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = "accounts.adapter.CustomSocialAccountAdapter"
 
-CLOUDINARY_URL= env("CLOUDINARY_URL")
+# CLOUDINARY_URL= env("CLOUDINARY_URL")
 
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FROM_EMAIL = 'noreply@yourapp.com'
