@@ -24,7 +24,6 @@ def product_listing(request):
     )
     
     selected_categories = request.GET.getlist('category')
-    print(selected_categories)
     if selected_categories:
         queryset = queryset.filter(category_id__in=selected_categories)
 

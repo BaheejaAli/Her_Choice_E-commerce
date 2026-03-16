@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
-    print("--- CUSTOM SOCIAL ADAPTER SAVE_USER IS RUNNING ---")
     '''
         This Adapter is used to auto Active the Google authenticated users 
         Saving their Data to the database .

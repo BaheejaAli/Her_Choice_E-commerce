@@ -74,7 +74,6 @@ def homepage(request):
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"
 
-@login_required
 def contact_page(request):
     if request.method == "POST":
         name = request.POST.get("name")
