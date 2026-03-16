@@ -9,6 +9,7 @@ jobs:
 deploy:
 runs-on: ubuntu-latest
 
+```
 steps:
   - name: Deploy to EC2
     uses: appleboy/ssh-action@v1.0.3
@@ -24,4 +25,4 @@ steps:
         python manage.py migrate
         python manage.py collectstatic --noinput
         sudo systemctl restart gunicorn
-
+```
