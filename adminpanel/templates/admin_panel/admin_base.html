@@ -97,9 +97,8 @@
                         <i class="fa-solid fa-chart-line"></i> Sales Reports
                     </li>
                 </a>
-                <a href="#" style="text-decoration: none"
-                    class="{% if request.resolver_match.url_name == 'admin_logout' %}active{% endif %}"
-                    onclick="event.preventDefault(); confirmAdminLogout();">
+                <a href="{% url 'admin_logout' %}" style="text-decoration: none"
+                    class="{% if request.resolver_match.url_name == 'admin_logout' %}active{% endif %}">
                     <li>
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
                     </li>
@@ -145,21 +144,7 @@
             }
         });
 
-        function confirmAdminLogout() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You will be logged out of the admin panel!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ff1493',
-                cancelButtonColor: '#333',
-                confirmButtonText: 'Yes, logout!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{% url 'admin_logout' %}";
-                }
-            });
-        }
+
     </script>
 
 

@@ -64,10 +64,7 @@
         {% if user.is_authenticated %}
         <a href="{% url 'profile_info' %}" class="btn-profile">
           <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
-        <form action="{% url 'user_logout' %}" method="post" id="logout-form">
-          {% csrf_token %}
-          <button type="button" class="logout-btn" onclick="confirmLogout()">Logout</button>
-        </form>
+        <a href="{% url 'user_logout' %}" class="logout-btn" style="text-decoration: none;">Logout</a>
         {% else %}
         <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
         {% endif %}
@@ -182,21 +179,7 @@
       }
     });
 
-    function confirmLogout() {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You will be logged out of your account!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ff1493',
-        cancelButtonColor: '#333',
-        confirmButtonText: 'Yes, logout!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          document.getElementById('logout-form').submit();
-        }
-      });
-    }
+
 
     function updateNavbarCounts(data) {
       if (!data) return;

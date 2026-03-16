@@ -1,0 +1,14 @@
+{% extends 'accounts/user_base.html' %}
+{% block title %}
+Logout Confirmation
+{% endblock %}
+{% block content %}
+<h2 class="brand-title">Her Choice</h2>
+<p class="brand-subtitle mb-4">Are you sure you want to log out?</p>
+
+<form method="POST" action="{% url 'user_logout' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-custom w-100 mb-3" style="background-color: #ff1493; border-color: #ff1493;">Yes, Log out</button>
+  <a href="javascript:history.back()" class="btn btn-outline-secondary w-100">Cancel</a>
+</form>
+{% endblock %}
