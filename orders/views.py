@@ -13,8 +13,9 @@ from decimal import Decimal
 from wallet.models import Wallet, WalletTransaction
 from django.core.paginator import Paginator
 from django.db.models import F
+from django.views.decorators.cache import never_cache
 
-# Create your views here.
+@never_cache
 @login_required
 def order_history(request):
     orders = Order.objects.filter(user= request.user)
@@ -53,7 +54,7 @@ def order_history(request):
         "sort":sort
     })
 
-
+@never_cache
 @login_required
 def order_details(request,order_id):
     order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"),
@@ -62,7 +63,7 @@ def order_details(request,order_id):
         "order":order,   
     }
     return render(request, "orders/order_details.html",context)
-
+@never_cache
 @login_required
 def download_invoice_pdf(request, order_id):
     order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"), id=order_id, user=request.user)
@@ -76,6 +77,7 @@ def download_invoice_pdf(request, order_id):
 
     return response
 
+@never_cache
 @login_required
 @require_POST
 def cancel_order(request, order_id):
@@ -159,6 +161,7 @@ def cancel_order(request, order_id):
         return redirect("order_details", order_id=order.id)
     
 
+@never_cache
 @login_required
 @require_POST
 def return_request(request, order_id):

@@ -64,7 +64,7 @@
         {% if user.is_authenticated %}
         <a href="{% url 'profile_info' %}" class="btn-profile">
           <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
-        <a href="{% url 'user_logout' %}" class="logout-btn" style="text-decoration: none;">Logout</a>
+        <a href="#" class="logout-btn" style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
         {% else %}
         <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
         {% endif %}
@@ -95,6 +95,28 @@
     {% endif %}
     {% block content %}
     {% endblock content %}
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to log out of your account?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="{% url 'user_logout' %}" method="post" style="margin: 0;">
+              {% csrf_token %}
+              <button type="submit" class="btn" style="background-color: #ff1493; color: white; border: none;">Yes, Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
   <!-- ====================== FOOTER ====================== -->
   <footer class="footer">

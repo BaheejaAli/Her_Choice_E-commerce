@@ -9,8 +9,10 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
+from django.views.decorators.cache import never_cache
 
 # Create your views here.
+@never_cache
 @login_required
 def wallet_dashboard(request):
     wallet,_ = Wallet.objects.get_or_create(user=request.user)
@@ -40,6 +42,7 @@ def wallet_dashboard(request):
 razorpay_client = razorpay.Client(
     auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
+@never_cache
 @login_required
 def add_money(request):
     if request.method == "POST":
@@ -72,6 +75,7 @@ def add_money(request):
     return render(request, 'wallet/add_money.html')
 
 
+@never_cache
 @login_required
 @require_POST
 def verify_payment(request):
