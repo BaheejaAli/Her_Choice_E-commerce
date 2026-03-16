@@ -1,27 +1,26 @@
 name: Deploy Django Project
 
 on:
-push:
-branches:
-- main
+  push:
+    branches: [ "main" ]
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/Her_Choice_E-commerce
+            git pull origin main
+            source .venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            sudo systemctl restart gunicorn
 
-steps:
-  - name: Deploy to EC2
-    uses: appleboy/ssh-action@v1.0.3
-    with:
-      host: ${{ secrets.EC2_HOST }}
-      username: ubuntu
-      key: ${{ secrets.EC2_KEY }}
-      script: |
-        cd ~/Her_Choice_E-commerce
-        git pull origin main
-        source .venv/bin/activate
-        pip install -r requirements.txt
-        python manage.py migrate
-        python manage.py collectstatic --noinput
-        sudo systemctl restart gunicorn
 
