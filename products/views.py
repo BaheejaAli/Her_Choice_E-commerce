@@ -19,9 +19,9 @@ def product_listing(request):
         Product.objects
         .filter(is_active=True, variants__is_active=True, variants__product__is_active=True, variants__stock__gt=0 )
         .select_related('category', 'brand')
-        .prefetch_related('variants__images')
         .distinct()
     )
+    # .prefetch_related('variants__images')
     
     selected_categories = request.GET.getlist('category')
     if selected_categories:
