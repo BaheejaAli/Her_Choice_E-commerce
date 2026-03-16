@@ -74,12 +74,15 @@ def add_to_cart(request):
         # Remove from wishlist
         WishlistItem.objects.filter(
             wishlist__user=request.user, variant=variant).delete()
+        
+        wishlist_count = WishlistItem.objects.filter(wishlist__user=request.user).count() if request.user.is_authenticated else 0
 
         return JsonResponse({
             "status": "success",
             "message": "Item added to cart successfully",
             "data": {
                 "cart_count": cart.total_items,
+                "wishlist_count": wishlist_count,
             }
         }, status=200)
 
