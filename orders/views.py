@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -15,6 +16,7 @@ from django.core.paginator import Paginator
 from django.db.models import F
 
 # Create your views here.
+@never_cache
 @login_required
 def order_history(request):
     orders = Order.objects.filter(user= request.user)
@@ -54,6 +56,7 @@ def order_history(request):
     })
 
 
+@never_cache
 @login_required
 def order_details(request,order_id):
     order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"),
@@ -63,6 +66,7 @@ def order_details(request,order_id):
     }
     return render(request, "orders/order_details.html",context)
 
+@never_cache
 @login_required
 def download_invoice_pdf(request, order_id):
     order = get_object_or_404(Order.objects.prefetch_related("items__variant__size", "items__variant__color"), id=order_id, user=request.user)
@@ -76,6 +80,7 @@ def download_invoice_pdf(request, order_id):
 
     return response
 
+@never_cache
 @login_required
 @require_POST
 def cancel_order(request, order_id):
@@ -159,6 +164,7 @@ def cancel_order(request, order_id):
         return redirect("order_details", order_id=order.id)
     
 
+@never_cache
 @login_required
 @require_POST
 def return_request(request, order_id):

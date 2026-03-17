@@ -161,6 +161,35 @@
           if (typeof updateNavbarCounts === "function") {
             updateNavbarCounts(data.data);
           }
+
+          // Remove item from DOM if we are on the wishlist page
+          const addToCartBtn = document.querySelector(`button[onclick="addToCart(${variantId})"]`);
+          if (addToCartBtn) {
+            const itemCard = addToCartBtn.closest('.wl-card');
+            if (itemCard) {
+              itemCard.remove();
+
+              // Re-check empty state
+              if (document.querySelectorAll('.wl-card').length === 0) {
+                const container = document.querySelector('.wishlist-grid');
+                if (container) {
+                  container.innerHTML = `
+                    <div class="wl-empty">
+                      <div class="wl-empty__icon">♥</div>
+                      <h2 class="wl-empty__title">Your wishlist is empty</h2>
+                      <p class="wl-empty__text">Start adding items you love and they'll show up here for easy access later.</p>
+                      <a href="{% url 'user_homepage' %}" class="wl-empty__link">Browse Products</a>
+                    </div>`;
+                }
+              }
+
+              // Update sub-header count text
+              const countText = document.querySelector('.wishlist-title p');
+              if (countText && data.data.wishlist_count !== undefined) {
+                countText.textContent = `${data.data.wishlist_count} item${data.data.wishlist_count !== 1 ? 's' : ''} saved`;
+              }
+            }
+          }
         }
 
         Toast.fire({

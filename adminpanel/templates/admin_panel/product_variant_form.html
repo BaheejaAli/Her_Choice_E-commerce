@@ -344,7 +344,10 @@
       const total = updateTotalCount();
       if (total < 3) {
         e.preventDefault();
-        alert("At least 3 images are required.");
+        Toast.fire({
+            icon: 'error',
+            title: 'At least 3 images are required.'
+        });
         return;
       }
 

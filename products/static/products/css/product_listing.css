@@ -11,33 +11,41 @@
 /* ================= SIDEBAR ================= */
 
 .filter-sidebar {
-  width: 260px;
+  width: 320px;
   flex-shrink: 0;
-  border-right: 1px solid #edeff2;
-  padding-right: 20px;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 /* Sidebar title */
 .results-count {
   padding-bottom: 15px;
-  border-bottom: 1px solid #edeff2;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: 20px;
 }
 
 .results-count span {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: #282c3f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Sidebar headings */
 .filter-sidebar h4 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #282c3f;
   text-transform: uppercase;
-  margin: 20px 0 15px;
-  letter-spacing: 0.3px;
+  margin: 25px 0 15px;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* ================= CATEGORY & BRAND ================= */
@@ -49,24 +57,47 @@
   gap: 12px;
 }
 
+/* Custom scrollbar for brand list */
+.brand-list::-webkit-scrollbar {
+  width: 4px;
+}
+.brand-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+.brand-list::-webkit-scrollbar-thumb {
+  background: #d4d5d9;
+  border-radius: 4px;
+}
+.brand-list::-webkit-scrollbar-thumb:hover {
+  background: #ff3f6c;
+}
+
 .category-item {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  color: #282c3f;
+  font-size: 16px;
+  color: #3e4152;
   cursor: pointer;
+  padding: 4px 0;
+  transition: all 0.2s ease;
+}
+
+.category-item:hover {
+  color: #ff3f6c;
 }
 
 /* Custom checkbox */
 .category-item input[type="checkbox"] {
   appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 1px solid #c3c4ca;
-  border-radius: 2px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d4d5d9;
+  border-radius: 4px;
   margin-right: 12px;
   position: relative;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .category-item input[type="checkbox"]:checked {
@@ -78,7 +109,7 @@
   content: "✓";
   position: absolute;
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   top: 50%;
   left: 50%;
@@ -90,51 +121,90 @@
 }
 
 .count {
-  font-size: 11px;
+  font-size: 14px;
   color: #94969f;
+  margin-left: 8px;
+}
+
+/* HR Divider */
+.filter-divider {
+  border: none;
+  border-top: 1px dashed #eaeaea;
+  margin: 20px 0;
 }
 
 /* ================= PRICE FILTER ================= */
 
 .price-filter-container {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .price-filter-container input {
   width: 100%;
-  padding: 7px 10px;
+  padding: 10px 12px;
   border: 1px solid #d4d5d9;
+  border-radius: 6px;
   font-size: 13px;
   outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fcfcfc;
 }
 
 .price-filter-container input:focus {
   border-color: #ff3f6c;
+  box-shadow: 0 0 0 2px rgba(255,63,108,0.1);
+  background-color: #fff;
 }
 
 /* Buttons */
 .btn-apply {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: #ff3f6c;
   color: #fff;
-  border: 1px solid #ff3f6c;
-  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-apply:hover {
+  background: #e63560;
+}
+
+.btn-apply:active {
+  transform: scale(0.98);
 }
 
 .btn-clear {
   display: block;
   width: 100%;
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 12px;
+  padding: 12px;
   text-align: center;
+  background: #fff;
   border: 1px solid #d4d5d9;
+  border-radius: 6px;
   text-decoration: none;
   color: #535766;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  border-color: #535766;
+  color: #282c3f;
+  background-color: #f9f9fa;
 }
 
 /* ================= MAIN CONTENT ================= */
