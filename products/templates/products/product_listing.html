@@ -2,15 +2,20 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'products/css/product_listing.css' %}?v=1.1" />
-<link rel="stylesheet" href="{% static 'products/css/product_card.css' %}?v=1.1" />
-<link rel="stylesheet" href="{% static 'products/css/product_listing.css' %}?v=1.2" />
-<link rel="stylesheet" href="{% static 'products/css/product_card.css' %}?v=1.1" />
+<link rel="stylesheet" href="{% static 'products/css/product_listing.css' %}?v=1.3" />
+<link rel="stylesheet" href="{% static 'products/css/product_card.css' %}?v=1.2" />
 {% endblock %}
 
 {% block content %}
 <div class="shop-container">
-    <aside class="filter-sidebar">
+    <div class="filter-overlay" id="filter-overlay" hidden></div>
+    <aside class="filter-sidebar" id="filter-sidebar">
+        <div class="filter-mobile-header">
+            <span class="filter-mobile-title">Filters</span>
+            <button type="button" class="filter-close-btn" id="filter-close-btn" aria-label="Close filters">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
         <div class="results-count">
             <span>Her Choice Fashion Store </span>
         </div>
@@ -63,6 +68,9 @@
     <!-- Sort based on -->
     <main class="product-results">
         <div class="sort-bar">
+            <button type="button" class="filter-toggle-btn" id="filter-toggle-btn">
+                <i class="fa-solid fa-sliders"></i> Filters
+            </button>
             <div class="sort-wrapper">
                 <label for="sort-select">Sort by:</label>
                 <select id="sort-select" name="sort" onchange="applySort(this.value)">
@@ -168,5 +176,36 @@
         });
         return cookieValue;
     }
+
+    // Mobile filter drawer
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('filter-sidebar');
+        const overlay = document.getElementById('filter-overlay');
+        const openBtn = document.getElementById('filter-toggle-btn');
+        const closeBtn = document.getElementById('filter-close-btn');
+
+        if (!sidebar || !overlay || !openBtn || !closeBtn) return;
+
+        function openFilters() {
+            sidebar.classList.add('is-open');
+            overlay.hidden = false;
+            overlay.classList.add('is-active');
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeFilters() {
+            sidebar.classList.remove('is-open');
+            overlay.classList.remove('is-active');
+            overlay.hidden = true;
+            document.body.classList.remove('no-scroll');
+        }
+
+        openBtn.addEventListener('click', openFilters);
+        closeBtn.addEventListener('click', closeFilters);
+        overlay.addEventListener('click', closeFilters);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeFilters();
+        });
+    });
 </script>
 {% endblock extra_js %}
