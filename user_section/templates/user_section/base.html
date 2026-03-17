@@ -47,6 +47,27 @@
           <li>
             <a href="{% url 'contact' %}">Contact</a>
           </li>
+          <!-- Mobile-only auth -->
+          <li class="menu-divider mobile-only" aria-hidden="true"></li>
+          {% if user.is_authenticated %}
+            <li class="mobile-only">
+              <a href="{% url 'profile_info' %}">
+                Hi, {{ user.get_full_name|default:user.email }}
+              </a>
+            </li>
+            <li class="mobile-only">
+              <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
+                {% csrf_token %}
+                <button type="button" onclick="confirmLogout()" class="menu-logout-btn">
+                  Logout
+                </button>
+              </form>
+            </li>
+          {% else %}
+            <li class="mobile-only">
+              <a href="{% url 'user_login' %}" class="menu-login-link">Login / Signup</a>
+            </li>
+          {% endif %}
         </ul>
         <!-- Search box -->
         <div class="nav-search">

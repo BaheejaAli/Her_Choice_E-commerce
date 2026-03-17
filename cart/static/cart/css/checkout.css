@@ -172,6 +172,27 @@ a {
   .checkout-grid {
     grid-template-columns: 1fr;
   }
+
+  .checkout-wrapper {
+    margin: 20px 12px;
+    padding: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-wrapper {
+    margin: 16px 10px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .section {
+    margin-bottom: 22px;
+  }
+
+  .apply-coupon-btn {
+    width: 100%;
+  }
 }
 
 /* =========================

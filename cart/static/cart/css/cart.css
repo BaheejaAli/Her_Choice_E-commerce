@@ -4,6 +4,7 @@
 
 /* Container */
 .cart-page .container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     background: #ffffff;
@@ -231,8 +232,18 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .cart-page {
+        padding: 20px 12px 40px;
+    }
+
+    .cart-page .container {
+        border-radius: 12px;
+    }
+
     .cart-page .main-content {
         grid-template-columns: 1fr;
+        padding: 18px;
+        gap: 24px;
     }
 
     .cart-page .cart-item {
@@ -242,5 +253,29 @@
 
     .cart-page .item-actions {
         margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-page {
+        padding: 16px 10px 34px;
+    }
+
+    .cart-page .main-content {
+        padding: 14px;
+        gap: 18px;
+    }
+
+    .cart-page h1 {
+        font-size: 22px;
+        margin-bottom: 18px;
+    }
+
+    .cart-page .cart-item {
+        padding: 16px;
+    }
+
+    .cart-page .order-summary {
+        padding: 18px;
     }
 }

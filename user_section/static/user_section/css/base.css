@@ -341,6 +341,13 @@ body {
     gap: 12px;
   }
 
+  /* Hide auth actions from navbar row on mobile */
+  .icons .btn-login,
+  .icons .btn-profile,
+  .icons #logout-form {
+    display: none !important;
+  }
+
   .btn-login {
     padding: 8px 15px;
     font-size: 13px;
@@ -497,6 +504,45 @@ body {
 
 .logout-btn:hover {
   color: #ff1680;
+}
+
+/* Mobile-only menu items (auth) */
+.mobile-only {
+  display: none;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 6px 0;
+}
+
+.menu-logout-form {
+  margin: 0;
+}
+
+.menu-logout-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 8px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.menu-logout-btn:hover {
+  background: #fff0f6;
+  border-radius: 10px;
+  color: #ff1680;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
 }
 
 /* ========= FOOTER ========= */
