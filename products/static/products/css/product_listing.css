@@ -11,7 +11,7 @@
 /* ================= SIDEBAR ================= */
 
 .filter-sidebar {
-  width: 270px;
+  width: 320px;
   flex-shrink: 0;
   border: 1px solid #eaeaea;
   border-radius: 12px;
@@ -28,7 +28,7 @@
 }
 
 .results-count span {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #282c3f;
   text-transform: uppercase;
@@ -37,7 +37,7 @@
 
 /* Sidebar headings */
 .filter-sidebar h4 {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #282c3f;
   text-transform: uppercase;
@@ -76,7 +76,7 @@
 .category-item {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
   color: #3e4152;
   cursor: pointer;
   padding: 4px 0;
@@ -121,7 +121,7 @@
 }
 
 .count {
-  font-size: 12px;
+  font-size: 14px;
   color: #94969f;
   margin-left: 8px;
 }
