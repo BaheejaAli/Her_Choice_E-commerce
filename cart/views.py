@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.http import JsonResponse, HttpResponse
 from products.models import Product, ProductVariant
 from .models import Cart, CartItem
@@ -21,6 +22,7 @@ from django.db.models import F
 
 
 @require_POST
+@never_cache
 @login_required
 def add_to_cart(request):
     try:
@@ -124,6 +126,7 @@ def cart(request):
     return render(request, "cart/cart.html", context)
 
 
+@never_cache
 @login_required
 @require_POST
 def update_cart_quantity(request):
@@ -202,6 +205,7 @@ def update_cart_quantity(request):
     })
 
 
+@never_cache
 @login_required
 @require_POST
 def remove_cart_item(request):

@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from products.models import Product, ProductVariant
 from accounts.forms import ProfilePicForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from .forms import UserProfileUpdateForm, UserAddressForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -24,6 +25,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+@never_cache
 def homepage(request):
     # Get IDs of products that have at least one active variant
     # This prevents duplicates and ensures we only show available items
@@ -103,6 +105,7 @@ def contact_page(request):
 
     return render(request, "user_section/contact.html")
 
+@never_cache
 @login_required
 def profile_info(request):
     user = request.user
@@ -120,6 +123,7 @@ def profile_info(request):
     return render(request, "user_section/profile.html", context)
 
 
+@never_cache
 @login_required
 def upload_profile_pic(request):
     if request.method != "POST":
@@ -143,6 +147,7 @@ def upload_profile_pic(request):
 
 
 
+@never_cache
 @login_required
 def edit_profile(request):
     user = request.user
@@ -209,6 +214,7 @@ def edit_profile(request):
     return render(request, 'user_section/profile_edit.html', {'form': form})
 
 
+@never_cache
 @login_required
 def profile_otp_verify(request):
     otp = request.session.get('profile_otp')
@@ -248,6 +254,7 @@ def profile_otp_verify(request):
     return render(request, 'user_section/profile_otp_verify.html', {'otp_expiry': otp_expiry})
 
 
+@never_cache
 @login_required
 def profile_resend_otp(request):
     email = request.session.get('profile_email')
@@ -275,6 +282,7 @@ def profile_resend_otp(request):
     return redirect('profile_otp_verify')
 
 
+@never_cache
 @login_required
 def profile_address(request):
     user = request.user
@@ -282,6 +290,7 @@ def profile_address(request):
     return render(request, "user_section/profile_address.html", {'user': user, 'addresses': addresses})
 
 
+@never_cache
 @login_required
 def profile_add_address(request):
 
@@ -305,6 +314,7 @@ def profile_add_address(request):
     return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': False, 'next': next_url})
 
 
+@never_cache
 @login_required
 def profile_edit_address(request, address_id):
     address = get_object_or_404(UserAddress, id=address_id, user=request.user)
@@ -327,6 +337,7 @@ def profile_edit_address(request, address_id):
     return render(request, "user_section/profile_add_edit_address.html", {'form': form, 'edit_mode': True, 'next': next_url})
 
 
+@never_cache
 @login_required
 def profile_delete_address(request, address_id):
     address = get_object_or_404(request.user.addresses, id=address_id)
@@ -336,6 +347,7 @@ def profile_delete_address(request, address_id):
     return redirect('profile_address')
 
 
+@never_cache
 @login_required
 def profile_change_password(request):
     if request.method == "POST":
@@ -367,6 +379,7 @@ def profile_change_password(request):
         return redirect('profile_info')
     return render(request, "user_section/profile_change_password.html")
 
+@never_cache
 @login_required
 def wishlist_view(request):
     wishlist, created = Wishlist.objects.get_or_create(user = request.user)
@@ -389,6 +402,7 @@ def wishlist_view(request):
     }
     return render(request,"user_section/wishlist.html",context)
 
+@never_cache
 @login_required
 @require_POST
 def add_to_wishlist(request):
@@ -425,6 +439,7 @@ def add_to_wishlist(request):
         }
     })
         
+@never_cache
 @login_required
 @require_POST
 def remove_from_wishlist(request):
