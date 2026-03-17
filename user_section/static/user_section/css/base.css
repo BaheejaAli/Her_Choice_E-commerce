@@ -517,6 +517,19 @@ body {
   margin: 6px 0;
 }
 
+.menu-user-header a {
+  display: block;
+  padding: 12px 10px;
+  font-weight: 700;
+  color: #1f2937;
+  background: linear-gradient(135deg, #fff0f6 0%, #fce4ec 60%, #ffffff 100%);
+  border-radius: 12px;
+}
+
+.menu-user-header a:hover {
+  color: #ff1680;
+}
+
 .menu-logout-form {
   margin: 0;
 }
