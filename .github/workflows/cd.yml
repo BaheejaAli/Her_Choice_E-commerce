@@ -27,4 +27,4 @@ jobs:
             pip install -r requirements.txt --no-cache-dir
             python manage.py migrate
             python manage.py collectstatic --noinput
-            sudo systemctl reload gunicorn
+            sudo systemctl restart gunicorn
