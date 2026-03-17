@@ -544,6 +544,35 @@ body {
 }
 
 @media (max-width: 768px) {
+  .section-card {
+    padding: 20px;
+  }
+
+  .tracking-section {
+    padding: 22px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .header-right {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .invoice-header-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .address-row {
     grid-template-columns: 1fr;
   }
@@ -566,6 +595,80 @@ body {
   .timeline {
     flex-direction: column;
     gap: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-info h1 {
+    font-size: 22px;
+  }
+
+  .order-number {
+    font-size: 14px;
+  }
+
+  .action-btn.secondary {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .tracking-header h2 {
+    font-size: 22px;
+  }
+
+  .timeline-step .step-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 18px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .order-item {
+    padding: 18px 0;
+    gap: 14px;
+  }
+
+  .item-image {
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+  }
+
+  .item-name {
+    font-size: 16px;
+  }
+
+  .item-meta {
+    font-size: 14px;
+  }
+
+  .item-price {
+    font-size: 16px;
+  }
+
+  .summary-row {
+    font-size: 15px;
+  }
+
+  .total-row {
+    font-size: 18px;
+  }
+
+  .modal-header {
+    padding: 18px 16px;
+  }
+
+  .modal-body {
+    padding: 18px 16px;
+  }
+
+  .modal-footer {
+    padding: 14px 16px;
+    flex-direction: column;
   }
 }
 

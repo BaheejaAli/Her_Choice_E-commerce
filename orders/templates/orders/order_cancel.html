@@ -1,4 +1,26 @@
 {% extends "user_section/profile_base.html" %}
+{% block extra_css %}
+<style>
+  .cancel-container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  @media (max-width: 480px) {
+    .cancel-container {
+      padding: 16px;
+    }
+
+    .cancel-container .btn {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+</style>
+{% endblock extra_css %}
 {% block profile_content %}
 
 <div class="cancel-container">

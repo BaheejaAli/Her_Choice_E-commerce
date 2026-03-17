@@ -375,14 +375,14 @@ body {
 /* Footer responsiveness */
 @media (max-width: 768px) {
   .footer {
-    padding: 40px 20px;
+    padding: 30px 16px;
     margin-top: 50px;
   }
 
   .footer-top {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+    gap: 16px;
   }
 
   .footer-col {
@@ -397,6 +397,17 @@ body {
   .footer-text {
     font-size: 13px;
     line-height: 1.5;
+  }
+
+  /* Make footer links less "line by line" (2 columns) */
+  .footer-col ul {
+    column-count: 2;
+    column-gap: 18px;
+  }
+
+  .footer-col ul li {
+    break-inside: avoid;
+    margin-bottom: 6px;
   }
 
   .footer-col ul li a {

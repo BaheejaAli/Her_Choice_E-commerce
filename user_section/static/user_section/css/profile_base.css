@@ -126,6 +126,89 @@
     padding: 40px;
 }
 
+/* ===============================
+   RESPONSIVE PROFILE LAYOUT
+================================ */
+@media (max-width: 992px) {
+    .main-container {
+        margin: 24px auto;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        padding: 0 12px;
+        margin: 18px auto;
+        gap: 14px;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 18px 0 10px;
+    }
+
+    .avatar-wrapper {
+        margin-bottom: 16px;
+    }
+
+    .profile-header {
+        padding: 16px 16px 14px;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        gap: 10px;
+        padding: 12px 12px 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .sidebar-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar-menu li {
+        flex: 0 0 auto;
+    }
+
+    .sidebar-menu a {
+        padding: 10px 14px;
+        border: 1px solid #eee;
+        border-radius: 999px;
+        background: #fafafa;
+        white-space: nowrap;
+    }
+
+    .sidebar-menu a.active {
+        border-left: none;
+        border-color: #ff1493;
+        background: #fef5f9;
+    }
+
+    .menu-icon {
+        margin-right: 8px;
+    }
+
+    .content-area {
+        padding: 22px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-area {
+        padding: 18px 14px;
+    }
+
+    .sidebar-menu a {
+        padding: 9px 12px;
+        font-size: 14px;
+    }
+}
+
 /* Make sure modal centers nicely and crop area is visible */
 .crop-modal {
   position: fixed;

@@ -20,13 +20,14 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'adminpanel/css/admin_base.css' %}?v=1.2">
+    <link rel="stylesheet" href="{% static 'adminpanel/css/admin_base.css' %}?v=1.3">
     {% block extra_css %}
     {% endblock extra_css %}
 </head>
 
 <body>
     <div class="dashboard-wrapper d-flex">
+        <div class="admin-overlay" id="admin-overlay" hidden></div>
         <aside class="sidebar">
             <h3 class="logo">Her Choice</h3>
             <ul class="sidebar-menu list-unstyled">
@@ -107,6 +108,12 @@
         </aside>
         {% comment %} MAIN CONTENT {% endcomment %}
         <main class="main-content">
+            <div class="admin-mobile-topbar">
+                <button type="button" class="admin-nav-toggle" id="admin-nav-toggle" aria-label="Toggle sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="admin-mobile-title">Admin Panel</div>
+            </div>
             <!-- Centralized Messages -->
             {% if messages %}
             <script>
@@ -142,6 +149,33 @@
                 toast.addEventListener('mouseenter', Swal.stopTimer)
                 toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
+        });
+
+        // Admin sidebar toggle (mobile)
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('admin-nav-toggle');
+            const overlay = document.getElementById('admin-overlay');
+            if (!btn || !overlay) return;
+
+            function openSidebar() {
+                document.body.classList.add('admin-sidebar-open');
+                overlay.hidden = false;
+            }
+
+            function closeSidebar() {
+                document.body.classList.remove('admin-sidebar-open');
+                overlay.hidden = true;
+            }
+
+            btn.addEventListener('click', function () {
+                if (document.body.classList.contains('admin-sidebar-open')) closeSidebar();
+                else openSidebar();
+            });
+
+            overlay.addEventListener('click', closeSidebar);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeSidebar();
+            });
         });
 
 

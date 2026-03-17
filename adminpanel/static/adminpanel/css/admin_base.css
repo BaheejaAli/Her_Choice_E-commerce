@@ -12,6 +12,47 @@ body {
   height: 100vh;
 }
 
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+.admin-mobile-topbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.admin-nav-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+
+.admin-nav-toggle:hover {
+  border-color: #e91e63;
+  color: #e91e63;
+}
+
+.admin-mobile-title {
+  font-weight: 700;
+  color: #111827;
+}
+
 .admin-title {
   color: #2d3436;
   font-weight: 700;
@@ -243,12 +284,21 @@ body {
   }
 
   .sidebar {
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #eaeaea;
-    padding: 20px;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(280px, 86vw);
+    border-right: 1px solid #eaeaea;
+    border-bottom: none;
+    padding: 18px;
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    z-index: 1000;
+  }
+
+  body.admin-sidebar-open .sidebar {
+    transform: translateX(0);
   }
 
   .main-content {
@@ -256,27 +306,25 @@ body {
     padding: 15px;
   }
 
+  .admin-mobile-topbar {
+    display: flex;
+  }
+
+  /* Keep sidebar list vertical on mobile drawer */
   .sidebar-menu {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 8px;
+    display: block;
     padding: 0;
   }
 
-  .sidebar-menu a {
-    margin-bottom: 0;
-  }
-
   .sidebar-menu li {
-    margin-bottom: 0;
-    text-align: center;
+    text-align: left;
   }
 
   .sidebar-menu li i {
-    display: block;
-    margin-right: 0;
-    margin-bottom: 5px;
-    font-size: 18px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 0;
+    font-size: 16px;
   }
 
   .page-content {
@@ -289,12 +337,20 @@ body {
 }
 
 @media (max-width: 480px) {
-  .sidebar-menu {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .logo {
     text-align: center;
     margin-bottom: 15px;
+  }
+}
+
+/* Generic admin tables: prevent overflow on mobile */
+@media (max-width: 768px) {
+  .page-content .table-container,
+  .page-content .table-card {
+    overflow-x: auto;
+  }
+
+  .page-content table {
+    min-width: 720px;
   }
 }

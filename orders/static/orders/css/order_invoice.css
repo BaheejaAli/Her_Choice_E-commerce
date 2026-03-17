@@ -64,6 +64,61 @@
   overflow: hidden;
 }
 
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .invoice-wrapper {
+    margin: 20px auto;
+    padding: 0 12px;
+  }
+
+  .invoice-actions {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .invoice-container {
+    padding: 24px 18px;
+  }
+
+  .invoice-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .brand-name {
+    font-size: 30px;
+  }
+
+  .items-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .invoice-container {
+    padding: 18px 14px;
+  }
+
+  .brand-name {
+    font-size: 26px;
+  }
+
+  .brand-tagline {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+}
+
 .invoice-container::before {
   content: '';
   position: absolute;

@@ -494,6 +494,28 @@
 }
 
 @media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .order-header {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .order-body,
+  .order-footer {
+    padding: 16px;
+  }
+
+  .order-total {
+    font-size: 18px;
+  }
+
   .order-item {
     flex-direction: column;
   }
