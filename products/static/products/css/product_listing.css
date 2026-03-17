@@ -2,10 +2,11 @@
 
 .shop-container {
   display: flex;
-  padding: 20px;
+  padding: clamp(12px, 2vw, 20px);
   gap: 30px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0;
 }
 
 /* ================= SIDEBAR ================= */
@@ -278,7 +279,8 @@
 
 @media (max-width: 480px) {
     .listing-product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
     }
     .shop-container {
         padding: 10px;

@@ -118,6 +118,26 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+}
+
+/* Mobile toggle (hidden on desktop) */
+.nav-toggle {
+  display: none;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+}
+
+.nav-toggle:hover {
+  border-color: #ff1680;
+  color: #ff1680;
 }
 
 /* Logo */
@@ -263,9 +283,50 @@ body {
     justify-content: space-between;
   }
 
+  .logo {
+    order: 1;
+  }
+
   .menu {
-    display: none;
-    /* Hide menu on mobile for now as there's no hamburger toggle */
+    display: none !important;
+    width: 100%;
+    order: 4;
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0 0;
+  }
+
+  .menu.menu-open {
+    display: flex !important;
+  }
+
+  .menu.menu-open {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    right: auto;
+    width: min(320px, calc(100vw - 24px));
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 10px 14px;
+    flex-direction: column;
+    gap: 0;
+    z-index: 999;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .menu li a {
+    display: block;
+    padding: 12px 6px;
+    font-size: 16px;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    order: 0;
+    margin-right: 10px;
+    margin-left: 0;
   }
 
   .nav-search {
@@ -276,6 +337,7 @@ body {
   }
 
   .icons {
+    order: 2;
     gap: 12px;
   }
 
@@ -303,6 +365,33 @@ body {
   }
 }
 
+/* Footer responsiveness */
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 20px;
+    margin-top: 50px;
+  }
+
+  .footer-text {
+    width: 100%;
+  }
+
+  .footer-links a {
+    margin-left: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-bottom {
+    gap: 12px;
+  }
+
+  .footer-links a {
+    margin-left: 0;
+    margin-right: 12px;
+    display: inline-block;
+  }
+}
 /* Menu */
 .menu {
   list-style: none;
@@ -311,6 +400,8 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* menu-open styles are used on mobile only (see media query) */
 
 .menu li a {
   text-decoration: none;

@@ -382,8 +382,18 @@
     gap: 40px;
   }
 
+  .product-image-section,
+  .product-info-section {
+    min-width: 0;
+    width: 100%;
+  }
+
   .main-img-container {
     height: 360px;
+  }
+
+  .thumbnail-grid {
+    flex-wrap: wrap;
   }
 
   .action-btns {
@@ -393,5 +403,19 @@
   .btn-add-cart,
   .btn-detail-wishlist {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-detail-wrapper {
+    padding: 16px;
+  }
+
+  .product-title {
+    font-size: 26px;
+  }
+
+  .current-price {
+    font-size: 26px;
   }
 }

@@ -9,7 +9,7 @@
       {% block title %}Her Choice{% endblock %}
     </title>
     <link rel="stylesheet"
-          href="{% static 'user_section/css/base.css' %}?v=1.5" />
+          href="{% static 'user_section/css/base.css' %}?v=1.6" />
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap"
@@ -20,12 +20,21 @@
     <!-- ====================== NAVBAR ====================== -->
     <header class="header">
       <nav class="nav-container">
+        <!-- Mobile menu toggle -->
+        <button class="nav-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-controls="primary-menu"
+                aria-expanded="false"
+                id="nav-toggle-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
         <!-- Logo -->
         <div class="logo">
           <a href="/" class="logo-text"><span class="logo-her">Her</span> <span class="logo-choice">Choice</span></a>
         </div>
         <!-- Menu -->
-        <ul class="menu">
+        <ul class="menu" id="primary-menu">
           <li>
             <a href="/">Home</a>
           </li>
@@ -219,6 +228,18 @@
         if (wishlistBadge) wishlistBadge.textContent = data.wishlist_count;
       }
     }
+
+    // Mobile nav toggle
+    document.addEventListener('DOMContentLoaded', function () {
+      const btn = document.getElementById('nav-toggle-btn');
+      const menu = document.getElementById('primary-menu');
+      if (!btn || !menu) return;
+
+      btn.addEventListener('click', function () {
+        const isOpen = menu.classList.toggle('menu-open');
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+    });
     </script>
     {% block extra_js %}
     {% endblock %}
