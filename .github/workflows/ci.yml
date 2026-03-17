@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           set -e
+          cd Her_Choice_E-commerce
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
@@ -28,11 +29,13 @@ jobs:
       - name: Run Django checks
         run: |
           set -e
+          cd Her_Choice_E-commerce
           source venv/bin/activate
           python manage.py check
 
       - name: Run tests
         run: |
           set -e
+          cd Her_Choice_E-commerce
           source venv/bin/activate
           python manage.py test
