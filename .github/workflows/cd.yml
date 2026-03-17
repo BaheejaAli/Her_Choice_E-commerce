@@ -23,7 +23,7 @@ jobs:
             echo "Deploy started"
             cd Her_Choice_E-commerce
             git pull origin main
-            source .venv/bin/activate
+            source  env/bin/activate
             pip install -r requirements.txt --no-cache-dir
             python manage.py migrate
             python manage.py collectstatic --noinput
