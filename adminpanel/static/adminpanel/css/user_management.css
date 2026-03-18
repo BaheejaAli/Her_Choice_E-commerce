@@ -196,7 +196,7 @@
     color: #c62828;
 }
 
-.btn-danger {
+/* .btn-danger {
     background: #ffebee;
     color: #c62828;
     border: none;
@@ -208,6 +208,32 @@
     align-items: center;
     gap: 12px;
     text-decoration: none;
+} */
+ /* ===== OUTLINE DANGER BUTTON (BLOCK) ===== */
+.btn-danger {
+    background: transparent;
+    color: #c62828;
+    border: 2px solid #c62828;
+
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+/* HOVER */
+.btn-danger:hover {
+    background: #c62828;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.25);
 }
 
 .btn-success {

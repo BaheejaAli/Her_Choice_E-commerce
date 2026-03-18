@@ -1,6 +1,5 @@
 /* ==============================
    REFERRAL REWARD ADMIN STYLE
-   (Matching Product Management)
 ================================ */
 
 /* Wrapper */
@@ -24,35 +23,40 @@
     margin: 0;
 }
 
-/* Add Button */
+/* ================== ADD BUTTON ================== */
+/* ✅ CONNECTED TO GLOBAL COLOR */
 .add-btn {
-    background: #ff0f7b;
-    color: #ffffff;
+    background: var(--admin-primary) !important;
+    color: #ffffff !important;
+
     padding: 10px 16px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 500;
+
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+
     border: none;
-    transition: 0.2s ease;
+    transition: all 0.25s ease;
 }
 
 .add-btn:hover {
-    background: #e80d6f;
-    color: white;
+    background: var(--admin-primary-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(194, 24, 91, 0.25);
 }
 
-/* Card */
+/* ================== CARD ================== */
 .reward-card {
     background: #ffffff;
     padding: 20px;
     border-radius: 18px;
 }
 
-/* Table */
+/* ================== TABLE ================== */
 .reward-table {
     width: 100%;
     border-collapse: collapse;
@@ -80,7 +84,7 @@
     background: #fafafa;
 }
 
-/* ================== STATUS PILL (Product Style) ================== */
+/* ================== STATUS BUTTON ================== */
 .status-btn {
     padding: 8px 16px;
     border-radius: 999px;
@@ -90,9 +94,9 @@
     min-width: 90px;
     display: inline-block;
     text-align: center;
-    cursor: pointer;
 }
 
+/* keep previous colors */
 .status-btn.btn-success {
     background: #e7f8ef !important;
     color: #16a34a !important;
@@ -103,7 +107,7 @@
     color: #dc2626 !important;
 }
 
-/* ================== ACTION BUTTONS (Product Style) ================== */
+/* ================== ACTION BUTTONS ================== */
 .action-buttons {
     display: flex;
     gap: 12px;
@@ -123,7 +127,7 @@
     text-decoration: underline;
 }
 
-/* Empty State */
+/* ================== EMPTY ================== */
 .empty-state {
     padding: 30px;
     text-align: center;
@@ -131,7 +135,7 @@
     font-size: 14px;
 }
 
-/* Responsive */
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
     .reward-header {
         flex-direction: column;

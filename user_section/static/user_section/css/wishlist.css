@@ -28,7 +28,7 @@
 .heart-icon {
     width: 52px;
     height: 52px;
-    background: linear-gradient(135deg, #ff1680, #e91e63);
+    background: linear-gradient(135deg, #ff3f6c, #e91e63);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -65,8 +65,8 @@
 }
 
 .back-home:hover {
-    color: #ff1680;
-    border-color: #ff1680;
+    color: #ff3f6c;
+    border-color: #ff3f6c;
     background: #fff;
 }
 
@@ -151,7 +151,7 @@
 }
 
 .wl-card__remove:hover {
-    background: #ff1680;
+    background: #ff3f6c;
     color: #fff;
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(255, 22, 128, 0.3);
@@ -163,7 +163,7 @@
     top: 12px;
     left: 12px;
     padding: 4px 10px;
-    background: linear-gradient(135deg, #ff1680, #e91e63);
+    background: linear-gradient(135deg, #ff3f6c, #e91e63);
     color: #fff;
     font-size: 11px;
     font-weight: 700;
@@ -217,7 +217,7 @@
 }
 
 .wl-card__name a:hover {
-    color: #ff1680;
+    color: #ff3f6c;
 }
 
 /* ---------- Price ---------- */
@@ -245,7 +245,7 @@
 .wl-card__off {
     font-size: 12px;
     font-weight: 600;
-    color: #ff1680;
+    color: #ff3f6c;
 }
 
 .wl-card__regular-price {
@@ -262,10 +262,10 @@
 .wl-card__btn {
     width: 100%;
     height: 42px;
-    border: 1.5px solid #ff1680;
+    border: 1.5px solid #ff3f6c;
     border-radius: 10px;
     background: #fff;
-    color: #ff1680;
+    color: #ff3f6c;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -278,7 +278,7 @@
 }
 
 .wl-card__btn:hover {
-    background: linear-gradient(135deg, #ff1680, #e91e63);
+    background: linear-gradient(135deg, #ff3f6c, #e91e63);
     color: #fff;
     box-shadow: 0 4px 16px rgba(255, 22, 128, 0.25);
     transform: translateY(-1px);
@@ -340,7 +340,7 @@
     text-decoration: none;
     padding: 10px 28px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #ff1680, #e91e63);
+    background: linear-gradient(135deg, #ff3f6c, #e91e63);
     color: #fff;
     font-size: 13px;
     font-weight: 600;

@@ -56,10 +56,10 @@
 }
 
 .referral-input:focus {
-    border-color: #ff1680;
+    border-color: #ff3f6c;
     background-color: #fff;
     outline: none;
-    box-shadow: 0 0 0 4px rgba(255, 22, 128, 0.1);
+    box-shadow: 0 0 0 4px rgba(255, 63, 108, 0.12);
 }
 
 .input-icon {
@@ -67,7 +67,7 @@
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: #ff1680;
+    color: #ff3f6c;
     font-size: 18px;
 }
 
@@ -75,7 +75,7 @@
 .btn-apply {
     width: 100%;
     padding: 15px;
-    background: #ff1680;
+    background: #ff3f6c;
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -90,8 +90,8 @@
 }
 
 .btn-apply:hover {
-    background: #e61473;
-    box-shadow: 0 8px 20px rgba(255, 22, 128, 0.3);
+    background: #e63560;
+    box-shadow: 0 8px 20px rgba(255, 63, 108, 0.34);
 }
 
 .btn-skip-link {
@@ -130,7 +130,7 @@
     background: #fff5f8;
     padding: 15px 20px;
     border-radius: 12px;
-    border: 1px dashed #ff1680;
+    border: 1px dashed #ff3f6c;
     justify-content: center;
 }
 
@@ -138,14 +138,14 @@
     font-family: 'Monaco', 'Consolas', monospace;
     font-size: 20px;
     font-weight: 700;
-    color: #ff1680;
+    color: #ff3f6c;
     margin: 0;
 }
 
 .btn-copy {
     background: none;
     border: none;
-    color: #ff1680;
+    color: #ff3f6c;
     cursor: pointer;
     font-size: 18px;
     padding: 5px;
@@ -179,7 +179,7 @@
 
 /* Reward Badge */
 .reward-badge {
-    background: #ff1680;
+    background: #ff3f6c;
     color: white;
     padding: 12px 20px;
     border-radius: 50px;
@@ -188,7 +188,7 @@
     gap: 10px;
     font-weight: 700;
     font-size: 18px;
-    box-shadow: 0 4px 15px rgba(255, 22, 128, 0.2);
+    box-shadow: 0 4px 15px rgba(255, 63, 108, 0.22);
 }
 
 .reward-badge i {

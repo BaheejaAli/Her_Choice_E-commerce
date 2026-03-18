@@ -55,7 +55,7 @@
 
 .btn-shop {
   display: inline-block;
-  background: #ff1680;
+  background: #ff3f6c;
   color: #fff;
   padding: 16px 45px;
   border-radius: 8px;
@@ -65,15 +65,15 @@
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
   box-shadow: none;
-  border: 1px solid #ff1680;
+  border: 1px solid #ff3f6c;
 }
 
 .btn-shop:hover {
-  background: #e61472;
+  background: #e63560;
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #e61472;
+  border-color: #e63560;
 }
 
 @keyframes fadeInUp {

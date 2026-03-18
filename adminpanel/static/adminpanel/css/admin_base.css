@@ -1,167 +1,259 @@
-/* GENERAL */
+/* ================== GENERAL ================== */
 body {
   background: #f6f7fb;
   font-family: 'Poppins', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   margin: 0;
 }
 
-/* DASHBOARD LAYOUT */
+/* ================== ROOT ================== */
+:root {
+  --admin-border: #e5e7eb;
+  --admin-bg: #ffffff;
+  --admin-muted: #9ca3af;
+
+  --admin-radius: 12px;
+  --admin-transition: 0.2s ease-in-out;
+  --admin-focus-ring: rgba(233, 30, 99, 0.15);
+
+  /* ✅ MAIN COLOR */
+  --admin-primary: #c2185b;
+  --admin-primary-hover: #8e1246;
+}
+
+/* ================== LAYOUT ================== */
 .dashboard-wrapper {
   display: flex;
-  height: 100vh;
 }
 
-.admin-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
-}
-
-.admin-mobile-topbar {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  background: #ffffff;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 14px;
-}
-
-.admin-nav-toggle {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
-}
-
-.admin-nav-toggle:hover {
-  border-color: #e91e63;
-  color: #e91e63;
-}
-
-.admin-mobile-title {
-  font-weight: 700;
-  color: #111827;
-}
-
-.admin-title {
-  color: #2d3436;
-  font-weight: 700;
-  border-left: 5px solid #e91e63;
-  padding-left: 15px;
-}
-
-/* ------------------------------------------------ */
-/* SIDEBAR (Final, Max Specificity Styles) */
-/* ------------------------------------------------ */
-.sidebar {
-  width: 240px;
-  background: #ffffff;
-  border-right: 1px solid #eaeaea;
-  padding: 20px;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.logo {
-  font-size: 22px;
-  font-weight: 700;
-  color: #ff1680;
-  margin-bottom: 25px;
-}
-
-/* 1. ANCHOR TAG (A) BASE STYLES - REMOVE UNDERLINE */
-/* This rule is highly specific and should beat all others, including Bootstrap. */
-.sidebar-menu a,
-.sidebar-menu ul a {
-  text-decoration: none !important;
-  /* Forcefully removes the underline */
-  display: block;
-  /* Ensures the whole area is clickable */
-}
-
-/* 2. LIST ITEM (LI) BASE STYLES */
-.sidebar-menu li {
-  padding: 12px 10px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Ensure the text color within the LI is the default color when not active/hovered */
-.sidebar-menu a li {
-  color: #444;
-}
-
-.sidebar-menu a.active li {
-  background: #ffe6f1;
-  /* Your desired background color */
-  color: #ff1680;
-  /* Your desired text color */
-  font-weight: 600;
-  /* Makes selected item stand out */
-}
-
-/* Icon spacing */
-.sidebar-menu li i {
-  margin-right: 10px;
-}
-
-/* 3. HOVER STATE */
-/* Targets the LI when its PARENT A is hovered */
-.sidebar-menu a:hover li {
-  background: #ffe8f2;
-  color: #ff1680;
-}
-
-/* 4. ACTIVE (SELECTED) STATE */
-/* VITAL: Targets the LI when its PARENT A has the 'active' class (set by Django) */
-.sidebar-menu a.active li {
-  background: #ffe6f1;
-  /* Changes the background color */
-  color: #ff1680;
-  /* Changes the font color */
-  font-weight: 600;
-  /* Makes selected item stand out */
-  text-decoration: none !important;
-  /* Ensures no underline when active */
-}
-
-/* ------------------------------------------------ */
-/* MAIN CONTENT */
-/* ------------------------------------------------ */
 .main-content {
   flex: 1;
   padding: 25px;
   margin-left: 240px;
 }
 
-/* TOP BAR */
-.top-bar {
-  background: #ffffff;
-  padding: 12px 18px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+.page-content {
+  margin-top: 20px;
+}
+
+/* ================== SIDEBAR ================== */
+.sidebar {
+  width: 240px;
+  background: var(--admin-bg);
+  border-right: 1px solid var(--admin-border);
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+}
+/* ===== ADMIN LOGO (MATCH FRONTEND) ===== */
+
+.sidebar h3 {
   display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 25px;
+}
+
+/* HER */
+.logo-her {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d2d2d;
+  font-style: italic;
+  letter-spacing: -0.5px;
+}
+
+/* CHOICE */
+.logo-choice {
+  font-family: 'Dancing Script', cursive;
+  font-size: 40px;
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff3f6c, #ff4d94);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sidebar-menu a {
+  text-decoration: none !important;
+  display: block;
+}
+
+.sidebar-menu li {
+  padding: 12px 10px;
+  border-radius: 8px;
+  transition: var(--admin-transition);
+}
+
+.sidebar-menu a li {
+  color: #444;
+}
+
+.sidebar-menu a:hover li,
+.sidebar-menu a.active li {
+  background: #ffe6f1;
+  color: var(--admin-primary);
+  font-weight: 600;
+}
+
+/* ================== ✅ GLOBAL BUTTON SYSTEM ================== */
+
+.main-content button,
+.main-content .btn,
+.main-content .btn-primary,
+.main-content .btn-search,
+.main-content .btn-create,
+.main-content .btn-add-new-product,
+.main-content .btn-add-new-category,
+.main-content .btn-add-new-brand {
+
+  background: var(--admin-primary) !important;
+  color: #ffffff !important;
+
+  border: none !important;
+  border-radius: 10px;
+
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.main-content button:hover,
+.main-content .btn:hover,
+.main-content .btn-primary:hover,
+.main-content .btn-search:hover,
+.main-content .btn-create:hover,
+.main-content .btn-add-new-product:hover,
+.main-content .btn-add-new-category:hover,
+.main-content .btn-add-new-brand:hover {
+
+  background: var(--admin-primary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(194, 24, 91, 0.25);
+}
+
+/* ================== SIDEBAR ICON SPACING ================== */
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;   /* 👈 spacing between icon & text */
+}
+
+.sidebar-menu li i {
+  font-size: 16px;
+  min-width: 18px;  /* 👈 keeps alignment perfect */
+}
+/* ================== 🚫 PROTECT STATUS BUTTONS ================== */
+
+.status-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  border: none;
+  font-weight: 500;
+}
+
+/* ACTIVE */
+.status-btn.btn-success {
+  background: #e7f8ef !important;
+  color: #16a34a !important;
+}
+
+/* BLOCK */
+.status-btn.btn-secondary {
+  background: #fdecec !important;
+  color: #dc2626 !important;
+}
+
+/* OPTIONAL HOVER */
+.status-btn.btn-success:hover {
+  background: #d1f2e0 !important;
+}
+
+.status-btn.btn-secondary:hover {
+  background: #fcdede !important;
+}
+
+/* ================== SEARCH (ORDERS STYLE) ================== */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box {
+  position: relative;
+  width: 60%;
+}
+
+.search-box i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--admin-muted);
 }
 
 .search-box input {
-  padding: 7px 14px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-border);
+  transition: var(--admin-transition);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 3px var(--admin-focus-ring);
+}
+
+/* SEARCH BUTTON */
+.btn-search {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--admin-radius);
+  font-weight: 600;
+}
+
+/* CLEAR BUTTON */
+.clear-search-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-border);
+  background: #ffffff;
+  color: var(--admin-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--admin-transition);
+}
+
+.clear-search-btn:hover {
+  background: #fce7f3;
+  border-color: var(--admin-primary);
+  color: var(--admin-primary-hover);
+}
+
+/* ================== TOP BAR ================== */
+.top-bar {
+  background: var(--admin-bg);
+  padding: 12px 18px;
+  border-radius: var(--admin-radius);
+  margin-bottom: 20px;
 }
 
 .profile-pic {
@@ -170,131 +262,30 @@ body {
   border-radius: 50%;
 }
 
-/* PAGE CONTENT */
-.page-content {
-  margin-top: 20px;
-}
-
-/* ===============================
-   DJANGO MESSAGES
-   =============================== */
-
-.messages-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 380px;
-}
-
-/* Base alert style */
+/* ================== ALERT ================== */
 .alert {
   padding: 14px 18px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.4;
+  border-radius: var(--admin-radius);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-  position: relative;
-  overflow: hidden;
 }
 
-/* Base alert animation only for central messages */
-.messages-container .alert {
-  animation: slideIn 0.35s ease-out, fadeOut 0.4s ease-in forwards;
-  animation-delay: 0s, 4.5s;
+/* ================== MOBILE ================== */
+.admin-mobile-topbar {
+  display: none;
 }
 
-/* Success */
-.alert-success {
-  background: #e6f9f0;
-  color: #0f5132;
-  border-left: 5px solid #198754;
+.admin-nav-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  background: #fff;
 }
 
-/* Error */
-.alert-error,
-.alert-danger {
-  background: #fdecea;
-  color: #842029;
-  border-left: 5px solid #dc3545;
-}
-
-/* Warning */
-.alert-warning {
-  background: #fff4e5;
-  color: #664d03;
-  border-left: 5px solid #ffc107;
-}
-
-/* Info */
-.alert-info {
-  background: #e7f3ff;
-  color: #084298;
-  border-left: 5px solid #0d6efd;
-}
-
-/* Slide animation */
-@keyframes slideIn {
-  from {
-    transform: translateX(120%);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  to {
-    transform: translateX(120%);
-    opacity: 0;
-  }
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(120%);
-  }
-}
-
-/* RESPONSIVE */
-@media (max-width: 992px) {
-  .sidebar {
-    width: 200px;
-    padding: 15px;
-  }
-
-  .sidebar-menu li {
-    font-size: 14px;
-    padding: 10px 8px;
-  }
-}
-
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
-  .dashboard-wrapper {
-    flex-direction: column;
-    height: auto;
-  }
-
   .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: min(280px, 86vw);
-    border-right: 1px solid #eaeaea;
-    border-bottom: none;
-    padding: 18px;
     transform: translateX(-110%);
-    transition: transform 0.25s ease;
-    z-index: 1000;
   }
 
   body.admin-sidebar-open .sidebar {
@@ -303,54 +294,13 @@ body {
 
   .main-content {
     margin-left: 0;
-    padding: 15px;
+  }
+
+  .search-box {
+    width: 100%;
   }
 
   .admin-mobile-topbar {
     display: flex;
-  }
-
-  /* Keep sidebar list vertical on mobile drawer */
-  .sidebar-menu {
-    display: block;
-    padding: 0;
-  }
-
-  .sidebar-menu li {
-    text-align: left;
-  }
-
-  .sidebar-menu li i {
-    display: inline-block;
-    margin-right: 10px;
-    margin-bottom: 0;
-    font-size: 16px;
-  }
-
-  .page-content {
-    margin-top: 10px;
-  }
-
-  .main-content {
-    padding: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .logo {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-}
-
-/* Generic admin tables: prevent overflow on mobile */
-@media (max-width: 768px) {
-  .page-content .table-container,
-  .page-content .table-card {
-    overflow-x: auto;
-  }
-
-  .page-content table {
-    min-width: 720px;
   }
 }

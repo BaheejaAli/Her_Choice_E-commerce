@@ -136,8 +136,8 @@ body {
 }
 
 .nav-toggle:hover {
-  border-color: #ff1680;
-  color: #ff1680;
+  border-color: #ff3f6c;
+  color: #ff3f6c;
 }
 
 /* Logo */
@@ -161,7 +161,7 @@ body {
   font-family: 'Dancing Script', cursive;
   font-size: 38px;
   font-weight: 700;
-  background: linear-gradient(45deg, #ff1680, #ff4d94);
+  background: linear-gradient(45deg, #ff3f6c, #ff4d94);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -201,9 +201,9 @@ body {
 }
 
 .search-box:focus-within {
-  border-color: #ff1680;
+  border-color: #ff3f6c;
   background-color: #fff;
-  box-shadow: 0 4px 12px rgba(255, 22, 128, 0.1);
+  box-shadow: 0 4px 12px rgba(255, 63, 108, 0.12);
 }
 
 .search-box input {
@@ -217,7 +217,7 @@ body {
 
 /* The Pink Search Button inside the box */
 .btn-search {
-  background: #ff1680;
+  background: #ff3f6c;
   color: white;
   border: none;
   padding: 0 20px;
@@ -227,7 +227,7 @@ body {
 }
 
 .btn-search:hover {
-  background: #e61473;
+  background: #e63560;
 }
 
 /* The Clear Button placed BESIDE the search bar */
@@ -249,8 +249,8 @@ body {
 
 .btn-clear-outside:hover {
   background: #fff0f6;
-  color: #ff1680;
-  border-color: #ff1680;
+  color: #ff3f6c;
+  border-color: #ff3f6c;
 }
 
 /* 5. Mobile Responsiveness */
@@ -481,7 +481,7 @@ body {
 }
 
 .menu li a:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* Right Icons + Auth */
@@ -511,7 +511,7 @@ body {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: #ff1680;
+  background: #ff3f6c;
   color: white;
   font-size: 10px;
   font-weight: 700;
@@ -527,7 +527,7 @@ body {
 }
 
 .icon-btn:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* Auth Buttons */
@@ -536,14 +536,14 @@ body {
   padding: 10px 25px;
   border-radius: 6px;
   text-decoration: none;
-  background: #ff1680;
+  background: #ff3f6c;
   color: white;
   font-weight: 600;
   transition: background 0.3s ease;
 }
 
 .btn-login:hover {
-  background: #d10068;
+  background: #e63560;
 }
 
 .user-name {
@@ -566,7 +566,7 @@ body {
 }
 
 .logout-btn:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* Mobile-only menu items (auth) */
@@ -590,7 +590,7 @@ body {
 }
 
 .menu-user-header a:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 .menu-logout-form {
@@ -612,7 +612,7 @@ body {
 .menu-logout-btn:hover {
   background: #fff0f6;
   border-radius: 10px;
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 @media (max-width: 768px) {
@@ -688,7 +688,7 @@ body {
 }
 
 .footer-col ul li a:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* NEWSLETTER */
@@ -709,14 +709,14 @@ body {
   padding: 10px 18px;
   font-size: 15px;
   border: none;
-  background: #ff1680;
+  background: #ff3f6c;
   color: white;
   border-radius: 0 6px 6px 0;
   cursor: pointer;
 }
 
 .newsletter-form button:hover {
-  background: #e01473;
+  background: #e63560;
 }
 
 /* DIVIDER */
@@ -745,7 +745,7 @@ body {
 }
 
 .footer-links a:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* ===============================
@@ -799,16 +799,16 @@ body {
   color: #2ecc71;
 }
 
-/* Error/Danger - Styled with your main brand color #ff1680 */
+/* Error/Danger - Styled with your main brand color #ff3f6c */
 .alert-error,
 .alert-danger {
-  border-left: 5px solid #ff1680;
+  border-left: 5px solid #ff3f6c;
   background: #fff5f8;
   color: #a91054;
 }
 
 .alert-error i {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* Warning */

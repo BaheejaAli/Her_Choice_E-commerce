@@ -275,7 +275,7 @@
 .btn-add-cart {
   width: 100%;
   height: 54px;
-  background: #ff1680;
+  background: #ff3f6c;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -291,9 +291,9 @@
 }
 
 .btn-add-cart:hover {
-  background: #e61472;
+  background: #e63560;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 22, 128, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 63, 108, 0.32);
 }
 
 .btn-add-cart:active {
@@ -323,15 +323,15 @@
 
 .btn-detail-wishlist:hover {
   background: #fffafa;
-  border-color: #ff1680;
-  color: #ff1680;
+  border-color: #ff3f6c;
+  color: #ff3f6c;
   transform: translateY(-2px);
 }
 
 .btn-detail-wishlist.active {
   background: transparent;
-  border-color: #ff1680;
-  color: #ff1680;
+  border-color: #ff3f6c;
+  color: #ff3f6c;
 }
 
 .btn-detail-wishlist.active i {

@@ -4,7 +4,7 @@
     padding: 20px;
 }
 
-/* ===== Brand Cell (Logo Left, Name Right) ===== */
+/* ===== Brand Cell ===== */
 .brand-cell {
     display: flex;
     align-items: center;
@@ -24,11 +24,9 @@
     font-size: 16px;
     font-weight: 600;
     color: #111827;
-    white-space: nowrap;
 }
 
-
-/* ===== Header Section ===== */
+/* ===== Header ===== */
 .page-header-section {
     display: flex;
     justify-content: space-between;
@@ -40,7 +38,6 @@
     font-size: 24px;
     font-weight: 600;
     color: #111827;
-    margin-bottom: 4px;
 }
 
 .page-subtitle {
@@ -50,7 +47,7 @@
 
 /* ===== Add Button ===== */
 .btn-add-new-brand {
-    background: #ff1680;
+    background: var(--admin-accent);
     color: #ffffff;
     border: none;
     border-radius: 10px;
@@ -64,17 +61,15 @@
 }
 
 .btn-add-new-brand:hover {
-    opacity: 0.9;
+    background: var(--admin-accent-hover);
 }
 
-/* ===== Search & Filter ===== */
+/* ===== Search ===== */
 .search-filter-form {
     display: flex;
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 24px;
-    background: transparent;
-    padding: 0;
 }
 
 .filter-left {
@@ -88,35 +83,35 @@
     width: 100%;
     max-width: 420px;
     padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border-radius: var(--admin-radius);
+    border: 1px solid var(--admin-border);
     font-size: 15px;
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #ff1680;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-focus-ring);
 }
 
+/* Search Button */
 .search-filter-form button {
-    background: #ff1680;
+    background: var(--admin-accent);
     color: #ffffff;
     border: none;
     padding: 10px 16px;
-    border-radius: 12px;
+    border-radius: var(--admin-radius);
     font-size: 14px;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
 }
 
 .search-filter-form button:hover {
-    opacity: 0.9;
+    background: var(--admin-accent-hover);
 }
 
+/* Clear */
 .clear-btn {
-    color: #ff1680;
+    color: var(--admin-accent);
     font-size: 14px;
     text-decoration: none;
 }
@@ -125,67 +120,32 @@
     text-decoration: underline;
 }
 
+/* Filter */
 .filter-right select {
     padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* ===== Table Card ===== */
-.table-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: var(--admin-radius);
+    border: 1px solid var(--admin-border);
 }
 
 /* ===== Table ===== */
+.table-card {
+    background: #ffffff;
+    border-radius: var(--admin-radius);
+    padding: 16px;
+}
+
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px;
 }
 
 /* Header */
 .admin-table thead th {
-    text-align: left;
     font-weight: 700;
-    font-size: 16px;
-    color: #000000;
+    color: #000;
     padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--admin-border);
 }
-
-/* Column widths for better proportions */
-.admin-table thead th:nth-child(1) {
-    width: 8%;
-}
-
-/* ID */
-.admin-table thead th:nth-child(2) {
-    width: 30%;
-}
-
-/* Brand - reduced for professional look */
-.admin-table thead th:nth-child(3) {
-    width: 15%;
-    text-align: center;
-}
-
-/* Products */
-.admin-table thead th:nth-child(4) {
-    width: 15%;
-    text-align: center;
-}
-
-/* Status */
-.admin-table thead th:nth-child(5) {
-    width: 32%;
-    text-align: center;
-}
-
-/* Action */
 
 /* Rows */
 .admin-table tbody tr {
@@ -194,90 +154,44 @@
 
 .admin-table tbody td {
     padding: 14px 12px;
-    vertical-align: middle;
 }
 
-/* Apply same widths to table cells */
-.admin-table tbody td:nth-child(1) {
-    width: 8%;
-}
-
-.admin-table tbody td:nth-child(2) {
-    width: 30%;
-}
-
-.admin-table tbody td:nth-child(3) {
-    width: 15%;
-    text-align: center;
-}
-
-.admin-table tbody td:nth-child(4) {
-    width: 15%;
-    text-align: center;
-}
-
-.admin-table tbody td:nth-child(5) {
-    width: 32%;
-    text-align: center;
-}
-
-/* Sub text (description) */
+/* Sub text */
 .sub-text {
     font-size: 13px;
-    color: #9ca3af;
-    margin-top: 4px;
+    color: var(--admin-muted);
 }
 
-a {
-    text-decoration: none;
-}
-
-/* ===== Status Button ===== */
+/* ===== Status ===== */
 .status-btn {
     padding: 8px 16px;
     border-radius: 20px;
     font-size: 14px;
-    font-weight: 500;
     border: none;
-    cursor: pointer;
 }
 
-/* Active */
 .btn-success {
     background: #e7f8ef;
     color: #16a34a;
 }
 
-/* Inactive */
 .btn-secondary {
     background: #fdecec;
     color: #dc2626;
 }
 
-/* ===== Action Buttons ===== */
+/* ===== Actions ===== */
 .action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
     font-size: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-}
-
-.action-btn.edit {
     color: #1e40af;
+    display: inline-flex;
+    gap: 12px;
 }
 
-.action-btn:hover {
-    opacity: 0.85;
-}
-
-/* ===== Empty State ===== */
+/* ===== Empty ===== */
 .empty-text {
     text-align: center;
-    color: #9ca3af;
+    color: var(--admin-muted);
     padding: 20px;
 }
 
@@ -287,15 +201,5 @@ a {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
-    }
-
-    .search-filter-section {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
-
-    .search-input-wrapper {
-        max-width: 100%;
     }
 }

@@ -92,7 +92,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #ff1680;
+    border-color: #ff3f6c;
 }
 
 /* ================== FORM ERRORS ================== */
@@ -111,7 +111,7 @@
 }
 
 .btn-primary {
-    background: #ff1680;
+    background: #ff3f6c;
     color: #ffffff;
     padding: 12px 20px;
     border-radius: 10px;

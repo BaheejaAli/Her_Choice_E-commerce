@@ -49,7 +49,7 @@
         <div class="input-group">
           {{ form.password }}
           <span class="input-group-text bg-white" style="cursor: pointer"
-            onclick="togglePassword('id_password', 'eyeNew')"><i class="far fa-eye" id="eyeNew"></i></span>
+            onclick="togglePassword('id_password', 'eyeNew')"><i class="far fa-eye-slash" id="eyeNew"></i></span>
         </div>
         {% for error in form.password.errors %}
         <small class="text-danger d-block">{{ error }}</small>
@@ -72,12 +72,14 @@
 
       if (input.type === 'password') {
         input.type = 'text'
-        icon.classList.remove('fa-eye')
-        icon.classList.add('fa-eye-slash') // Change icon to the crossed-out eye
+        // Password is visible → show "eye" (tap to hide)
+        icon.classList.remove('fa-eye-slash')
+        icon.classList.add('fa-eye')
       } else {
         input.type = 'password'
-        icon.classList.remove('fa-eye-slash')
-        icon.classList.add('fa-eye') // Change icon back to the standard eye
+        // Password is hidden → show "eye-slash" (tap to show)
+        icon.classList.remove('fa-eye')
+        icon.classList.add('fa-eye-slash')
       }
     }
   </script>

@@ -39,7 +39,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    background: #ff1680;
+    background: #ff3f6c;
     /* Your brand pink */
     color: #fff;
     padding: 6px 14px;
@@ -48,7 +48,7 @@
     border-radius: 4px;
     z-index: 5;
     text-transform: uppercase;
-    box-shadow: 0 2px 6px rgba(255, 22, 128, 0.3);
+    box-shadow: 0 2px 6px rgba(255, 63, 108, 0.32);
     pointer-events: none;
     /* Allows clicking through the badge to the product link */
 }
@@ -138,16 +138,16 @@
 .btn-add {
     flex: 4;
     /* Takes most of the width */
-    background: #ff1680;
+    background: #ff3f6c;
     color: #fff;
-    border: 1px solid #ff1680;
+    border: 1px solid #ff3f6c;
     font-weight: 600;
     text-decoration: none;
 }
 
 .btn-add:hover {
-    background: #e61472;
-    border-color: #e61472;
+    background: #e63560;
+    border-color: #e63560;
     color: #fff;
 }
 
@@ -161,7 +161,7 @@
 
 .btn-wishlist:hover {
     background: #eee;
-    color: #ff1680;
+    color: #ff3f6c;
 }
 
 /* ================= STATUS TAGS ================= */

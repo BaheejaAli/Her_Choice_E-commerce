@@ -518,7 +518,7 @@ del {
 }
 
 .btn-add-variant {
-  background: #ff1680;
+  background: #ff3f6c;
   color: #fff;
   padding: 8px 14px;
   border-radius: 8px;
@@ -574,7 +574,7 @@ del {
 }
 
 .variant-table td a:hover {
-  color: #ff1680;
+  color: #ff3f6c;
 }
 
 /* Empty text */
