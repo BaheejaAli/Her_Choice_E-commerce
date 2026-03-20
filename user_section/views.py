@@ -156,7 +156,6 @@ def edit_profile(request):
         form = UserProfileUpdateForm(request.POST, instance=request.user)
 
         if form.is_valid():
-            print("the form is valid")
             new_email = form.cleaned_data['email']
 
             # EMAIL CHANGED

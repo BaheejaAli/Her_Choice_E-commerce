@@ -17,7 +17,7 @@ def wallet_dashboard(request):
     transactions_list = wallet.transactions.all()
     
     # Pagination
-    paginator = Paginator(transactions_list, 5) 
+    paginator = Paginator(transactions_list, 2) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     page_range = paginator.get_elided_page_range(page_obj.number)
