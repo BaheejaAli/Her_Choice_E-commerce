@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from offer.utils import get_best_offer
+from django.conf import settings
+from django.db.models import Avg
 
 # Create your models here.
 
@@ -37,6 +39,12 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def average_rating(self):
+        return self.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+
+    def review_count(self):
+        return self.reviews.count()
 
     # Auto slug generation
     def save(self, *args, **kwargs):
@@ -245,6 +253,26 @@ class ProductVariantImage(models.Model):
                 is_primary=True
             ).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
+
+# =========================
+# PRODUCT REVIEW
+# =========================
+
+class Review(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.product} ({self.rating})"
+    
+    class Meta:
+        unique_together = ['user', 'product']
+    
+
 
 
  

@@ -375,6 +375,41 @@
   gap: 24px;
 }
 
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating-stars i {
+  font-size: 14px;
+}
+
+.rating-value {
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-muted {
+  color: #ccc;
+}
+.review-section {
+  width: 100%;
+  margin-top: 40px;
+}
+.star-rating i {
+  font-size: 20px;
+  cursor: pointer;
+  color: #ccc;
+  margin-right: 5px;
+}
+
+.star-rating i.fas {
+  color: #ffc107;
+}
 /* ---------------- Responsive ---------------- */
 @media (max-width: 768px) {
   .product-main-row {

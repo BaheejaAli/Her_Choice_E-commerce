@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Product, ProductVariant, Size
+from .models import Product, ProductVariant, Size, Review
 from brandsandcategories.models import Category, Brand
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -178,3 +178,18 @@ def product_detail_view(request, slug, sku=None):
     }
 
     return render(request, "products/product_detail.html", context)
+
+def add_review(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    rating = request.POST.get('rating')
+    comment = request.POST.get('comment')
+
+    Review.objects.update_or_create(
+        user=request.user,
+        product=product,
+        defaults={
+            'rating': rating,
+            'comment': comment
+        }
+    )
+    return redirect('product_detail', product_id=product.id)
