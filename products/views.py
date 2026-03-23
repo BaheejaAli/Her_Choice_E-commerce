@@ -192,10 +192,6 @@ def add_review(request, product_id):
     if not rating:
         messages.error(request, "Please select a rating ")
         return redirect('product_detail', slug=product.slug)
-
-    if rating not in [1, 2, 3, 4, 5]:
-        messages.error(request, "Invalid rating value")
-        return redirect('product_detail', slug=product.slug)
     
     review, created = Review.objects.update_or_create(
         user=request.user,
