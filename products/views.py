@@ -9,6 +9,8 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from products.utils import prepare_products_for_display
 from user_section.models import WishlistItem
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 
 # -------------------------
@@ -179,22 +181,33 @@ def product_detail_view(request, slug, sku=None):
 
     return render(request, "products/product_detail.html", context)
 
+@login_required
+@require_POST
 def add_review(request, product_id):
+    
     product = get_object_or_404(Product, id=product_id)
     rating = request.POST.get('rating')
-    comment = request.POST.get('comment')
+    comment = request.POST.get('comment', '').strip()
 
     if not rating:
         messages.error(request, "Please select a rating ")
         return redirect('product_detail', slug=product.slug)
 
-    Review.objects.update_or_create(
+    if rating not in [1, 2, 3, 4, 5]:
+        messages.error(request, "Invalid rating value")
+        return redirect('product_detail', slug=product.slug)
+    
+    review, created = Review.objects.update_or_create(
         user=request.user,
         product=product,
         defaults={
-            'rating': rating,
+            'rating': int(rating),
             'comment': comment
         }
     )
-    messages.success(request, "Review submitted successfully ")
+
+    if created:
+        messages.success(request, "Review added successfully ")
+    else:
+        messages.success(request, "Your review has been updated ")
     return redirect('product_detail', slug=product.slug)

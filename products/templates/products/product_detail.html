@@ -166,29 +166,26 @@
           </div>
           <p>{{ review.comment }}</p>
         </div>
-        <hr>
       {% empty %}
         <p>No reviews yet</p>
       {% endfor %}
-      <h4>Write a Review</h4>
-      <form method="POST" action="{% url 'add_review' product.id %}">
-        {% csrf_token %}
-        <label>Rating:</label>
-        <div class="star-rating">
-          <i class="far fa-star" data-value="1"></i>
-          <i class="far fa-star" data-value="2"></i>
-          <i class="far fa-star" data-value="3"></i>
-          <i class="far fa-star" data-value="4"></i>
-          <i class="far fa-star" data-value="5"></i>
-        </div>
-        <input type="hidden" name="rating" id="rating-value" required>
-        <br>
-        <br>
-        <textarea name="comment" placeholder="Write your review...(optional)"></textarea>
-        <br>
-        <br>
-        <button type="submit">Submit Review</button>
-      </form>
+      <div class="review-form">
+        <h4>Write a Review</h4>
+        <form method="POST" action="{% url 'add_review' product.id %}">
+          {% csrf_token %}
+          <label>Rating:</label>
+          <div class="star-rating">
+            <i class="far fa-star" data-value="1"></i>
+            <i class="far fa-star" data-value="2"></i>
+            <i class="far fa-star" data-value="3"></i>
+            <i class="far fa-star" data-value="4"></i>
+            <i class="far fa-star" data-value="5"></i>
+          </div>
+          <input type="hidden" name="rating" id="rating-value" required>
+          <textarea name="comment" placeholder="Write your review...(optional)"></textarea>
+          <button type="submit">Submit Review</button>
+        </form>
+      </div>
     </div>
   </div>
   <!-- RELATED PRODUCTS -->
