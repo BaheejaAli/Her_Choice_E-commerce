@@ -4,7 +4,7 @@ Her Choice is a production-ready e-commerce platform built with **Django** and *
 
 It goes beyond basic CRUD by implementing advanced features like a referral reward system, OTP-based authentication, wallet management, and DevOps-based deployment architecture.
 
-
+---
 ## 🌟 Advanced Features
 🔐 Custom Authentication & Security
 - Custom User Model extending Django’s AbstractBaseUser (Email/Phone login)
@@ -26,7 +26,7 @@ It goes beyond basic CRUD by implementing advanced features like a referral rewa
 - Order summary with tax calculation
 - Coupon and discount support
 - Wishlist functionality
-
+---
 ## 🛠️ Tech Stack
 | **Layer**        | **Technology**             | **Purpose & Implementation**                                          |
 | ---------------- | -------------------------- | --------------------------------------------------------------------- |
@@ -36,7 +36,7 @@ It goes beyond basic CRUD by implementing advanced features like a referral rewa
 | DevOps           | AWS EC2 / Nginx / Gunicorn | Production-grade hosting with reverse proxy and WSGI management.      |
 | Version Control  | Git / GitHub               | GitFlow-based workflow (Main, Develop, Feature branches)          |
 
-
+---
 ##  📸 Screenshots
 
 ### 🏠 Home Page
@@ -54,7 +54,7 @@ It goes beyond basic CRUD by implementing advanced features like a referral rewa
   <img src="https://github.com/user-attachments/assets/b44ddb02-c707-4911-a213-8eb6a14e57e0" width="80%" alt="Home Page Screenshot"/>
 </p>
 
-
+---
 ### 🛒 Shopping Cart
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2bc05557-154f-40c9-bd58-718720287d86" width="80%" alt="Home Page Screenshot"/>
@@ -87,7 +87,7 @@ Her-Choice/
 ├── manage.py                  # Django management script
 └── README.md                  # Project documentation
 ```
-
+---
 ## 🚀 Deployment & DevOps
 
 This project is optimized for production environments:
@@ -98,7 +98,7 @@ This project is optimized for production environments:
 - Automated:
   - Static file collection
   - Database migrations
-
+---
 ## ⚙️ Setup Instructions
 
 ```bash
@@ -124,6 +124,7 @@ This project is optimized for production environments:
   # Run server
   python manage.py runserver
 ```
+---
 ## 🎯 Key Highlights
 - Scalable Django architecture
 - Secure authentication system
