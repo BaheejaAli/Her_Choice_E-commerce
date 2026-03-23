@@ -1,158 +1,210 @@
 {% extends 'user_section/base.html' %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'products/css/product_detail.css' %}?v=1.6">
-<link rel="stylesheet" href="{% static 'products/css/product_card.css' %}?v=1.7">
+  <link rel="stylesheet"
+        href="{% static 'products/css/product_detail.css' %}?v=1.2">
+  <link rel="stylesheet"
+        href="{% static 'products/css/product_card.css' %}?v=1.7">
 {% endblock %}
 {% block content %}
-<div class="product-detail-wrapper">
-  <!-- Breadcrumb -->
-  <nav class="breadcrumb-nav">
-    <a href="{% url 'user_homepage' %}">Home</a>
-    <i class="fas fa-chevron-right"></i>
-    <a href="{% url 'product_listing' %}">Shop</a>
-    <i class="fas fa-chevron-right"></i>
-    <span>{{ product.category.name }}</span>
-    <i class="fas fa-chevron-right"></i>
-    <span>{{ product.name }}</span>
-  </nav>
-  <div class="product-main-row">
-    <!-- LEFT : IMAGES -->
-    <div class="product-image-section">
-      <div class="main-img-container" id="zoom-container">
-        {% if selected_variant.images.exists %}
-        <img src="{{ selected_variant.images.first.image.url }}" id="product-img" alt="{{ product.name }}">
-        {% else %}
-        <img src="{% static 'images/placeholder.png' %}" id="product-img">
-        {% endif %}
-      </div>
-      <div class="thumbnail-grid">
-        {% for image in selected_variant.images.all %}
-        <div class="thumb-wrapper {% if forloop.first %}active{% endif %}"
-          onclick="changeImage(this, '{{ image.image.url }}')">
-          <img src="{{ image.image.url }}">
+  <div class="product-detail-wrapper">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb-nav">
+      <a href="{% url 'user_homepage' %}">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="{% url 'product_listing' %}">Shop</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>{{ product.category.name }}</span>
+      <i class="fas fa-chevron-right"></i>
+      <span>{{ product.name }}</span>
+    </nav>
+    <div class="product-main-row">
+      <!-- LEFT : IMAGES -->
+      <div class="product-image-section">
+        <div class="main-img-container" id="zoom-container">
+          {% if selected_variant.images.exists %}
+            <img src="{{ selected_variant.images.first.image.url }}"
+                 id="product-img"
+                 alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/placeholder.png' %}" id="product-img">
+          {% endif %}
         </div>
+        <div class="thumbnail-grid">
+          {% for image in selected_variant.images.all %}
+            <div class="thumb-wrapper {% if forloop.first %}active{% endif %}"
+                 onclick="changeImage(this, '{{ image.image.url }}')">
+              <img src="{{ image.image.url }}">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- RIGHT : DETAILS -->
+      <div class="product-info-section">
+        <p class="brand-name">Brand: {{ product.brand.name }}</p>
+        <h1 class="product-title">{{ product.name }}</h1>
+        <!-- Color Variants -->
+        <div class="variant-preview-section">
+          <h4>Other Colors</h4>
+          <div class="variant-preview-list">
+            {% for v in color_variants %}
+              {% with img=v.images.all|first %}
+                {% if img %}
+                  <a href="{% url 'product_detail_variant' product.slug v.sku %}"
+                     class="variant-preview {% if v.color_id == selected_variant.color_id %}active{% endif %}">
+                    <img src="{{ img.image.url }}">
+                  </a>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Size Variants -->
+        {% if sizes %}
+          <div class="size-section">
+            <h4>Size</h4>
+            <div class="size-options">
+              {% for v in variants %}
+                {% if v.color_id == selected_variant.color_id %}
+                  <a href="{% url 'product_detail_variant' product.slug v.sku %}"
+                     class="size-btn {% if v.id == selected_variant.id %}selected{% endif %}">{{ v.size.name }}</a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        <!-- Rating (static placeholder) -->
+        <div class="rating-container">
+          <!-- Stars -->
+          <span class="rating-stars">
+            {% for i in "12345" %}
+              {% if forloop.counter <= product.average_rating %}
+                <i class="fas fa-star text-warning"></i>
+              {% else %}
+                <i class="far fa-star text-muted"></i>
+              {% endif %}
+            {% endfor %}
+          </span>
+          <!-- Rating Number -->
+          <span class="rating-value">{{ product.average_rating|floatformat:1 }}</span>
+          <span class="rating-separator">|</span>
+          <!-- Review Count -->
+          <span class="review-count">{{ product.review_count }} Reviews</span>
+        </div>
+        <hr class="divider">
+        <!-- PRICE -->
+        <div class="price-container">
+          <span class="current-price">₹{{ selected_variant.final_price|default:selected_variant.base_price }}</span>
+          {% if selected_variant.discount_percentage > 0 %}
+            <span class="mrp">MRP ₹{{ selected_variant.base_price }}</span>
+            <span class="discount-percent">({{ selected_variant.discount_percentage }}% OFF)</span>
+          {% endif %}
+        </div>
+        <p class="tax-info">Inclusive of all taxes</p>
+        <!-- STOCK -->
+        <div class="stock-status" id="stock-status-container">
+          {% with avail=selected_variant.get_availability_data %}
+            <div id="stock-status-display"
+                 class="status-{{ avail.status }}"
+                 data-original-html='<i class="{{ avail.icon }}"></i> {{ avail.label }}'
+                 data-original-color="{{ avail.color }}"
+                 style="color: {{ avail.color }};
+                        font-weight: 600">
+              <i class="{{ avail.icon }}"></i> {{ avail.label }}
+            </div>
+          {% endwith %}
+        </div>
+        <!-- ACTION BUTTONS -->
+        <div class="action-btns">
+          {% if selected_variant.is_active and selected_variant.stock > 0 %}
+            <form class="add-to-cart-form">
+              {% csrf_token %}
+              <input type="hidden" name="variant_id" value="{{ selected_variant.id }}">
+              <button type="button"
+                      class="btn-add-cart"
+                      id="add-to-cart-btn"
+                      onclick="addToCart(this)">
+                <i class="fas fa-shopping-bag"></i> Add to Cart
+              </button>
+            </form>
+            <button class="btn-detail-wishlist {% if is_in_wishlist %}active{% endif %}"
+                    onclick="addToWishlist({{ selected_variant.id }})">
+              <i class="{% if is_in_wishlist %}fas{% else %}far{% endif %} fa-heart"></i>
+            </button>
+          {% else %}
+            <button class="btn-disabled" disabled>
+              {% if not selected_variant.is_active or not product.is_active or not product.category.is_active or not product.brand.is_active %}
+                UNAVAILABLE
+              {% else %}
+                OUT OF STOCK
+              {% endif %}
+            </button>
+          {% endif %}
+        </div>
+        <hr class="divider">
+        <!-- DESCRIPTION -->
+        <div class="product-details-container">
+          <h4>Product Details</h4>
+          <p>{{ product.description }}</p>
+        </div>
+      </div>
+    </div>
+    <!-- REVIEWS SECTION -->
+    <div class="review-section">
+      <h3>Customer Reviews</h3>
+      {% for review in product.reviews.all %}
+        <div class="review-box">
+          <strong>{{ review.user.username }}</strong>
+          <div>
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <i class="fas fa-star text-warning"></i>
+              {% else %}
+                <i class="far fa-star text-muted"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p>{{ review.comment }}</p>
+        </div>
+        <hr>
+      {% empty %}
+        <p>No reviews yet</p>
+      {% endfor %}
+    </div>
+    <h4>Write a Review</h4>
+    <form method="POST" action="{% url 'add_review' product.id %}">
+      {% csrf_token %}
+      <label>Rating:</label>
+      <div class="star-rating">
+        <i class="far fa-star" data-value="1"></i>
+        <i class="far fa-star" data-value="2"></i>
+        <i class="far fa-star" data-value="3"></i>
+        <i class="far fa-star" data-value="4"></i>
+        <i class="far fa-star" data-value="5"></i>
+      </div>
+      <input type="hidden" name="rating" id="rating-value" required>
+      <br>
+      <br>
+      <textarea name="comment" placeholder="Write your review..." required></textarea>
+      <br>
+      <br>
+      <button type="submit">Submit Review</button>
+    </form>
+  </div>
+  <!-- RELATED PRODUCTS -->
+  {% if related_products %}
+    <section class="related-products-section">
+      <h3 class="related-title">You may also like</h3>
+      <div class="related-grid">
+        {% for product in related_products %}
+          {% include "products/product_card.html" %}
         {% endfor %}
       </div>
-    </div>
-    <!-- RIGHT : DETAILS -->
-    <div class="product-info-section">
-      <p class="brand-name">Brand: {{ product.brand.name }}</p>
-      <h1 class="product-title">{{ product.name }}</h1>
-      <!-- Color Variants -->
-      <div class="variant-preview-section">
-        <h4>Other Colors</h4>
-        <div class="variant-preview-list">
-          {% for v in color_variants %}
-          {% with img=v.images.all|first %}
-          {% if img %}
-          <a href="{% url 'product_detail_variant' product.slug v.sku %}"
-            class="variant-preview {% if v.color_id == selected_variant.color_id %}active{% endif %}">
-            <img src="{{ img.image.url }}">
-          </a>
-          {% endif %}
-          {% endwith %}
-          {% endfor %}
-        </div>
-      </div>
-      <!-- Size Variants -->
-      {% if sizes %}
-      <div class="size-section">
-        <h4>Size</h4>
-        <div class="size-options">
-          {% for v in variants %}
-          {% if v.color_id == selected_variant.color_id %}
-          <a href="{% url 'product_detail_variant' product.slug v.sku %}"
-            class="size-btn {% if v.id == selected_variant.id %}selected{% endif %}">{{ v.size.name }}</a>
-          {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-      {% endif %}
-      <!-- Rating (static placeholder) -->
-      <div class="rating-container">
-        <span class="rating-value">4.2 <i class="fas fa-star"></i></span>
-        <span class="rating-separator">|</span>
-        <span class="review-count">124 Reviews</span>
-      </div>
-      <hr class="divider">
-      <!-- PRICE -->
-      <div class="price-container">
-        <span class="current-price">₹{{ selected_variant.final_price|default:selected_variant.base_price }}</span>
-        {% if selected_variant.discount_percentage > 0 %}
-        <span class="mrp">MRP ₹{{ selected_variant.base_price }}</span>
-        <span class="discount-percent">({{ selected_variant.discount_percentage }}% OFF)</span>
-        {% endif %}
-      </div>
-      <p class="tax-info">Inclusive of all taxes</p>
-      <!-- STOCK -->
-      <div class="stock-status" id="stock-status-container">
-        {% with avail=selected_variant.get_availability_data %}
-        <div id="stock-status-display" class="status-{{ avail.status }}"
-          data-original-html='<i class="{{ avail.icon }}"></i> {{ avail.label }}'
-          data-original-color="{{ avail.color }}" style="color: {{ avail.color }}; font-weight: 600;">
-          <i class="{{ avail.icon }}"></i> {{ avail.label }}
-        </div>
-        {% endwith %}
-      </div>
-      <!-- ACTION BUTTONS -->
-      <div class="action-btns">
-        {% if selected_variant.is_active and selected_variant.stock > 0 %}
-        <form class="add-to-cart-form">
-          {% csrf_token %}
-          <input type="hidden" name="variant_id" value="{{ selected_variant.id }}">
-
-          {% comment %} <div class="qty-selection">
-            <span>Qty:</span>
-            <div class="quantity-selector">
-              <button type="button" class="qty-btn" id="minus-btn">−</button>
-              <input type="number" name="quantity" id="qty-input" class="qty-input" value="1" min="1"
-                max="{{ selected_variant.stock }}">
-              <button type="button" class="qty-btn" id="plus-btn">+</button>
-            </div>
-          </div> {% endcomment %}
-
-          <button type="button" class="btn-add-cart" id="add-to-cart-btn" onclick="addToCart(this)">
-            <i class="fas fa-shopping-bag"></i> Add to Cart
-          </button>
-        </form>
-        <button class="btn-detail-wishlist {% if is_in_wishlist %}active{% endif %}"
-          onclick="addToWishlist({{ selected_variant.id }})">
-          <i class="{% if is_in_wishlist %}fas{% else %}far{% endif %} fa-heart"></i>
-        </button>
-        {% else %}
-        <button class="btn-disabled" disabled>
-          {% if not selected_variant.is_active or not product.is_active or not product.category.is_active or not product.brand.is_active %}
-          UNAVAILABLE
-          {% else %}
-          OUT OF STOCK
-          {% endif %}
-        </button>
-        {% endif %}
-      </div>
-      <hr class="divider">
-      <!-- DESCRIPTION -->
-      <div class="product-details-container">
-        <h4>Product Details</h4>
-        <p>{{ product.description }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- RELATED PRODUCTS -->
-{% if related_products %}
-<section class="related-products-section">
-  <h3 class="related-title"> You may also like</h3>
-  <div class="related-grid">
-    {% for product in related_products %}
-    {% include "products/product_card.html" %}
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
+    </section>
+  {% endif %}
 {% endblock %}
 {% block extra_js %}
-<script>
+  <script>
   function getCSRFToken() {
     return document.querySelector('[name=csrfmiddlewaretoken]').value;
   }
@@ -330,5 +382,31 @@
       zoomContainer.style.cursor = 'default';
     });
   }
-</script>
+
+ 
+  const stars = document.querySelectorAll(".star-rating i");
+  const ratingInput = document.getElementById("rating-value");
+
+  stars.forEach(star => {
+    star.addEventListener("click", function () {
+      const value = this.getAttribute("data-value");
+      ratingInput.value = value;
+
+      // Reset all stars
+      stars.forEach(s => {
+        s.classList.remove("fas");
+        s.classList.add("far");
+      });
+
+      // Fill selected stars
+      stars.forEach(s => {
+        if (s.getAttribute("data-value") <= value) {
+          s.classList.remove("far");
+          s.classList.add("fas");
+        }
+      });
+    });
+  });
+
+  </script>
 {% endblock %}
