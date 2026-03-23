@@ -186,7 +186,7 @@ def add_review(request, product_id):
 
     if not rating:
         messages.error(request, "Please select a rating ")
-        return redirect('product_detail', product_id=product.id)
+        return redirect('product_detail', slug=product.slug)
 
     Review.objects.update_or_create(
         user=request.user,
@@ -197,4 +197,4 @@ def add_review(request, product_id):
         }
     )
     messages.success(request, "Review submitted successfully ")
-    return redirect('product_detail', product_id=product.id)
+    return redirect('product_detail', slug=product.slug)
