@@ -89,13 +89,13 @@ def add_to_cart(request):
         }, status=200)
 
     except Exception as e:
-        print("ADD TO CART ERROR:", e)
         return JsonResponse({
             "status": "error",
             "message": "Server error"
         }, status=500)
 
-
+@login_required
+@never_cache
 def cart(request):
     if not request.user.is_authenticated:
         messages.info(request, "Please log in to view your shopping cart.")
@@ -410,7 +410,7 @@ def handle_razorpay_payment(request, selected_address, subtotal, total_discount,
     }
     return render(request, "cart/razorpay_checkout.html", razorpay_context)
 
-
+@never_cache
 @login_required
 def checkout(request):
     cart = get_object_or_404(Cart, user=request.user, is_active=True)
