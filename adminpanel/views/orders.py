@@ -104,22 +104,15 @@ def update_order_status(request, order_id):
                     is_full_cancellation = (cancelled_items_count == total_items_count)
                     
                     if can_refund and is_full_cancellation:
-                        total_refunded_now += order.delivery_charge
-
-                    
-                    if total_refunded_now > 0:
-                        # to prevent over refund
                         already_refunded = WalletTransaction.objects.filter(
                             wallet__user=order.user,
                             description__icontains=order.orderid,
                             transaction_type="REFUND"
                         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
                         
-                        remaining_allowed = order.total - already_refunded
-                        if remaining_allowed <= 0:
-                            total_refunded_now = Decimal('0.00') 
-                        elif total_refunded_now > remaining_allowed: 
-                            total_refunded_now = remaining_allowed
+                        remaining_to_refund = order.total - already_refunded
+                        if remaining_to_refund > 0:
+                            total_refunded_now = remaining_to_refund
                     
                     if total_refunded_now > 0:
                         wallet, _ = Wallet.objects.get_or_create(user=order.user)
@@ -173,21 +166,15 @@ def update_order_status(request, order_id):
                     is_completely_done = (finished_items_count == total_items_count)
                     
                     if can_refund and is_completely_done:
-                        total_refunded_now += order.delivery_charge
-
-                    # to prevent over refund
-                    if total_refunded_now > 0:
                         already_refunded = WalletTransaction.objects.filter(
                             wallet__user=order.user,
                             description__icontains=order.orderid,
                             transaction_type="REFUND"
                         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
                         
-                        remaining_allowed = order.total - already_refunded
-                        if remaining_allowed <= 0:
-                            total_refunded_now = Decimal('0.00') 
-                        elif total_refunded_now > remaining_allowed: 
-                            total_refunded_now = remaining_allowed
+                        remaining_to_refund = order.total - already_refunded
+                        if remaining_to_refund > 0:
+                            total_refunded_now = remaining_to_refund
 
                     if total_refunded_now > 0:
                         wallet, _ = Wallet.objects.get_or_create(user=order.user)
