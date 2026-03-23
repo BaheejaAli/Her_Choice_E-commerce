@@ -38,11 +38,29 @@ It goes beyond basic CRUD by implementing advanced features like a referral rewa
 
 
 ##  📸 Screenshots
-🏠 Home Page
-🛍️ Product Listing & Filters
-🛒 Shopping Cart
+
+### 🏠 Home Page
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b9eee88d-a497-420b-acd4-ceb1ef82c89d" width="80%" alt="Home Page Screenshot"/>
+</p>
+
+<br>
+
+---
+
+### 🛍️ Product Listing & Filters
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b44ddb02-c707-4911-a213-8eb6a14e57e0" width="80%" alt="Home Page Screenshot"/>
+</p>
 
 
+### 🛒 Shopping Cart
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2bc05557-154f-40c9-bd58-718720287d86" width="80%" alt="Home Page Screenshot"/>
+</p>
+
+---
 ## 📂 Architecture & Workflow
 The project is structured to remain modular and scalable as the application grows. Each feature (Accounts, Products, Referrals) is isolated into its own Django app.
 ```
