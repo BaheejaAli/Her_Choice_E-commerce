@@ -184,6 +184,10 @@ def add_review(request, product_id):
     rating = request.POST.get('rating')
     comment = request.POST.get('comment')
 
+    if not rating:
+        messages.error(request, "Please select a rating ")
+        return redirect('product_detail', product_id=product.id)
+
     Review.objects.update_or_create(
         user=request.user,
         product=product,
@@ -192,4 +196,5 @@ def add_review(request, product_id):
             'comment': comment
         }
     )
+    messages.success(request, "Review submitted successfully ")
     return redirect('product_detail', product_id=product.id)
