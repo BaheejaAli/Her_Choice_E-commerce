@@ -425,10 +425,14 @@ def add_to_wishlist(request):
         wishlist_item, created = WishlistItem.objects.get_or_create(wishlist=wishlist, variant=variant)
 
     if not created:
+        wishlist_item.delete()
         return JsonResponse({
-             "status" : "error",
-            "message" : "Already in wishlist"
-        },status=400)
+            "status": "removed",
+            "message": "Removed from wishlist",
+            "data": {
+                "wishlist_count": wishlist.items.count()
+            }
+        })
     
     return JsonResponse({
         "status": "success",

@@ -92,7 +92,7 @@ Home | Her Choice
       .then(res => res.json())
       .then(data => {
         Toast.fire({
-          icon: data.status === "success" ? "success" : "warning",
+          icon: (data.status === "success" || data.status === "removed") ? "success" : "warning",
           title: data.message
         });
         if (data.status === "success") {
@@ -108,6 +108,19 @@ Home | Her Choice
             icon.style.color = "#ff3366";
           }
           button.classList.add('active');
+        } else if (data.status === "removed" && button) {
+          // Update navbar
+          if (typeof updateNavbarCounts === "function") {
+            updateNavbarCounts(data.data);
+          }
+
+          const icon = button.querySelector('i');
+          if (icon) {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+            icon.style.color = "";
+          }
+          button.classList.remove('active');
         }
       })
       .catch(() => {

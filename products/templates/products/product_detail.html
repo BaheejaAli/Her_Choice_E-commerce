@@ -306,7 +306,7 @@
   }
 
   // add to wishlist
-  function addToWishlist(variantId) {
+  function addToWishlist(variantId, button) {
     fetch("{% url 'add_to_wishlist' %}", {
       method: "POST",
       headers: {
@@ -318,23 +318,33 @@
       .then(res => res.json())
       .then(data => {
         Toast.fire({
-          icon: data.status === "success" ? "success" : "info",
+          icon: (data.status === "success" || data.status === "removed") ? "success" : "info",
           title: data.message
         });
 
-        if (data.status === "success") {
+        if (data.status === "success" || data.status === "removed") {
           // Update navbar
           if (typeof updateNavbarCounts === "function") {
             updateNavbarCounts(data.data);
           }
 
-          const btn = document.querySelector(".btn-detail-wishlist");
-          if (btn) {
-            btn.classList.add("active");
-            const icon = btn.querySelector("i");
-            if (icon) {
-              icon.classList.remove("far");
-              icon.classList.add("fas");
+          const targetBtn = button || document.querySelector(".btn-detail-wishlist");
+          if (targetBtn) {
+            const icon = targetBtn.querySelector("i");
+            if (data.status === "success") {
+              targetBtn.classList.add("active");
+              if (icon) {
+                icon.classList.remove("far", "fa-regular");
+                icon.classList.add("fas", "fa-solid");
+                if (button) icon.style.color = "#ff3366";
+              }
+            } else {
+              targetBtn.classList.remove("active");
+              if (icon) {
+                icon.classList.remove("fas", "fa-solid");
+                icon.classList.add("far", "fa-regular");
+                if (button) icon.style.color = "";
+              }
             }
           }
         }
