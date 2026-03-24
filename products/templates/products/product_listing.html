@@ -90,7 +90,11 @@
             {% include "products/product_card.html" %}
             {% empty %}
             <div class="no-results">
+                {% if query %}
                 <p>No results found for "<strong>{{ query }}</strong>".</p>
+                {% else %}
+                <p>No products found matching your criteria.</p>
+                {% endif %}
                 <a href="{% url 'product_listing' %}" class="btn-clear">View All Products</a>
             </div>
             {% endfor %}

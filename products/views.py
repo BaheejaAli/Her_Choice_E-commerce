@@ -104,6 +104,7 @@ def product_listing(request):
             on_ends=1
         ),
         "query": search_query,
+        "search_query": search_query,
         "sort": sort_by,
 
         "categories": categories,
