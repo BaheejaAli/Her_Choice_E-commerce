@@ -169,6 +169,7 @@
       {% empty %}
         <p>No reviews yet</p>
       {% endfor %}
+      {% if can_add_review %}
       <div class="review-form">
         <h4>Write a Review</h4>
         <form method="POST" action="{% url 'add_review' product.id %}">
@@ -186,6 +187,7 @@
           <button type="submit">Submit Review</button>
         </form>
       </div>
+      {% endif %}
     </div>
   </div>
   <!-- RELATED PRODUCTS -->

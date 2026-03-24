@@ -402,9 +402,14 @@ def wishlist_view(request):
     return render(request,"user_section/wishlist.html",context)
 
 @never_cache
-@login_required
 @require_POST
 def add_to_wishlist(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status" : "error",
+            "message" : "Please login to use wishlist"
+        },status=401)
+    
     variant_id = request.POST.get("variant_id")
     if not variant_id:
         return JsonResponse({

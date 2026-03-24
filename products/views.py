@@ -164,13 +164,21 @@ def product_detail_view(request, slug, sku=None):
 
 
     is_in_wishlist = False
+    can_add_review = False
     if request.user.is_authenticated:
         is_in_wishlist = WishlistItem.objects.filter(
             wishlist__user=request.user, 
             variant=selected_variant
         ).exists()
+        from orders.models import OrderItem
+        can_add_review = OrderItem.objects.filter(
+            order__user=request.user,
+            variant__product=product,
+            status='delivered'
+        ).exists()
 
     context = {
+        "can_add_review": can_add_review,
         "product": product,
         "variants": variants,
         "selected_variant": selected_variant,  
@@ -185,8 +193,19 @@ def product_detail_view(request, slug, sku=None):
 @login_required
 @require_POST
 def add_review(request, product_id):
-    
+    from orders.models import OrderItem
     product = get_object_or_404(Product, id=product_id)
+    
+    has_purchased = OrderItem.objects.filter(
+        order__user=request.user,
+        variant__product=product,
+        status='delivered'
+    ).exists()
+
+    if not has_purchased:
+        messages.error(request, "You can only review products you have purchased and received.")
+        return redirect('product_detail', slug=product.slug)
+
     rating = request.POST.get('rating')
     comment = request.POST.get('comment', '').strip()
 

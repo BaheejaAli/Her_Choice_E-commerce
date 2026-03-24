@@ -263,6 +263,40 @@
         btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
     });
+
+    // Login modal for cart/wishlist
+    document.addEventListener('DOMContentLoaded', function () {
+      const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+      if (isAuthenticated) return;
+
+      function showLoginModal() {
+        Swal.fire({
+          title: 'Login required',
+          text: 'Please login to access your wishlist or cart.',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Login',
+          cancelButtonText: 'Stay here',
+          confirmButtonColor: '#ff1493'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const next = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = "{% url 'user_login' %}?next=" + next;
+          }
+        });
+      }
+
+      const wishlistIcon = document.getElementById('wishlist-icon');
+      const cartIcon = document.getElementById('cart-icon');
+
+      [wishlistIcon, cartIcon].forEach((el) => {
+        if (!el) return;
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          showLoginModal();
+        });
+      });
+    });
     </script>
     {% block extra_js %}
     {% endblock %}

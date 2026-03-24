@@ -23,8 +23,12 @@ from django.db.models import F
 
 @require_POST
 @never_cache
-@login_required
 def add_to_cart(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": "error",
+            "message": "Please login to add items to cart"
+        }, status=401)
     try:
         variant_id = request.POST.get("variant_id")
 
