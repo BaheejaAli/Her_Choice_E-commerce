@@ -76,6 +76,12 @@ def homepage(request):
 class AboutPageView(TemplateView):
     template_name = "user_section/about.html"
 
+class PrivacyPolicyView(TemplateView):
+    template_name = "user_section/privacy_policy.html"
+
+class TermsOfServiceView(TemplateView):
+    template_name = "user_section/terms_of_service.html"
+
 def contact_page(request):
     if request.method == "POST":
         name = request.POST.get("name")

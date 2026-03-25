@@ -1,131 +1,119 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>
-      {% block title %}Her Choice{% endblock %}
-    </title>
-    <link rel="stylesheet"
-          href="{% static 'user_section/css/base.css' %}?v=1.6" />
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
-    {% block extra_css %}{% endblock %}
-  </head>
-  <body>
-    <!-- ====================== NAVBAR ====================== -->
-    <header class="header">
-      <nav class="nav-container">
-        <!-- Mobile menu toggle -->
-        <button class="nav-toggle"
-                type="button"
-                aria-label="Toggle navigation"
-                aria-controls="primary-menu"
-                aria-expanded="false"
-                id="nav-toggle-btn">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-        <!-- Logo -->
-        <div class="logo">
-          <a href="/" class="logo-text"><span class="logo-her">Her</span> <span class="logo-choice">Choice</span></a>
-        </div>
-        <!-- Menu -->
-        <ul class="menu" id="primary-menu">
-          {% if user.is_authenticated %}
-            <li class="mobile-only menu-user-header">
-              <a href="{% url 'profile_info' %}">
-                Hi, {{ user.get_full_name|default:user.email }}
-              </a>
-            </li>
-            <li class="menu-divider mobile-only" aria-hidden="true"></li>
-          {% endif %}
-          <li>
-            <a href="/">Home</a>
-          </li>
-          <li>
-            <a href="{% url 'product_listing' %}">Shop</a>
-          </li>
-          <li>
-            <a href="{% url 'about' %}">About</a>
-          </li>
-          <li>
-            <a href="{% url 'contact' %}">Contact</a>
-          </li>
-          <!-- Mobile-only auth -->
-          {% if user.is_authenticated %}
-            <li class="mobile-only">
-              <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
-                {% csrf_token %}
-                <button type="button" onclick="confirmLogout()" class="menu-logout-btn">
-                  Logout
-                </button>
-              </form>
-            </li>
-          {% else %}
-            <li class="mobile-only">
-              <a href="{% url 'user_login' %}" class="menu-login-link">Login / Signup</a>
-            </li>
-          {% endif %}
-        </ul>
-        <!-- Search box -->
-        <div class="nav-search">
-          <form action="{% url 'product_listing' %}"
-                method="GET"
-                class="nav-search-form">
-            <div class="search-row">
-              <div class="search-box">
-                <input type="text"
-                       name="search"
-                       placeholder="Search for products..."
-                       value="{{ search_query|default:'' }}" />
-                <button type="submit" class="btn-search">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-              {% if search_query %}
-                <a href="{% url 'product_listing' %}"
-                   class="btn-clear-outside"
-                   title="Clear Search">
-                  <i class="fa-solid fa-xmark"></i>
-                </a>
-              {% endif %}
-            </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>
+    {% block title %}Her Choice{% endblock %}
+  </title>
+  <link rel="stylesheet" href="{% static 'user_section/css/base.css' %}?v=1.6" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <!-- ====================== NAVBAR ====================== -->
+  <header class="header">
+    <nav class="nav-container">
+      <!-- Mobile menu toggle -->
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="primary-menu"
+        aria-expanded="false" id="nav-toggle-btn">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <!-- Logo -->
+      <div class="logo">
+        <a href="/" class="logo-text"><span class="logo-her">Her</span> <span class="logo-choice">Choice</span></a>
+      </div>
+      <!-- Menu -->
+      <ul class="menu" id="primary-menu">
+        {% if user.is_authenticated %}
+        <li class="mobile-only menu-user-header">
+          <a href="{% url 'profile_info' %}">
+            Hi, {{ user.get_full_name|default:user.email }}
+          </a>
+        </li>
+        <li class="menu-divider mobile-only" aria-hidden="true"></li>
+        {% endif %}
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="{% url 'product_listing' %}">Shop</a>
+        </li>
+        <li>
+          <a href="{% url 'about' %}">About</a>
+        </li>
+        <li>
+          <a href="{% url 'contact' %}">Contact</a>
+        </li>
+        <!-- Mobile-only auth -->
+        {% if user.is_authenticated %}
+        <li class="mobile-only">
+          <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
+            {% csrf_token %}
+            <button type="button" onclick="confirmLogout()" class="menu-logout-btn">
+              Logout
+            </button>
           </form>
-        </div>
-        <!-- Icons + Auth -->
-        <div class="icons">
-          {% if user.is_authenticated %}
-            <a href="{% url 'profile_info' %}" class="btn-profile">
-              <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
-            <form action="{% url 'user_logout' %}" method="post" id="logout-form">
-              {% csrf_token %}
-              <button type="button" onclick="confirmLogout()" class="logout-btn">Logout</button>
-            </form>
-          {% else %}
-            <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
-          {% endif %}
-          <a href="{% url 'wishlist_view' %}"
-             class="icon-btn"
-             title="Wishlist"
-             id="wishlist-icon">
-            <i class="fa-regular fa-heart"></i>
-            <span class="count-badge wishlist-count" id="wishlist-badge">{{ wishlist_count|default:0 }}</span>
-          </a>
-          <a href="{% url 'cart' %}" class="icon-btn" title="Cart" id="cart-icon">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="count-badge cart-count" id="cart-badge">{{ cart_count|default:0 }}</span>
-          </a>
-        </div>
-      </nav>
-    </header>
-    <!-- ====================== CONTENT ====================== -->
-    <main>
-      {% if messages %}
-        <script>
+        </li>
+        {% else %}
+        <li class="mobile-only">
+          <a href="{% url 'user_login' %}" class="menu-login-link">Login / Signup</a>
+        </li>
+        {% endif %}
+      </ul>
+      <!-- Search box -->
+      <div class="nav-search">
+        <form action="{% url 'product_listing' %}" method="GET" class="nav-search-form">
+          <div class="search-row">
+            <div class="search-box">
+              <input type="text" name="search" placeholder="Search for products..."
+                value="{{ search_query|default:'' }}" />
+              <button type="submit" class="btn-search">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            {% if search_query %}
+            <a href="{% url 'product_listing' %}" class="btn-clear-outside" title="Clear Search">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+      <!-- Icons + Auth -->
+      <div class="icons">
+        {% if user.is_authenticated %}
+        <a href="{% url 'profile_info' %}" class="btn-profile">
+          <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
+        <form action="{% url 'user_logout' %}" method="post" id="logout-form">
+          {% csrf_token %}
+          <button type="button" onclick="confirmLogout()" class="logout-btn">Logout</button>
+        </form>
+        {% else %}
+        <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
+        {% endif %}
+        <a href="{% url 'wishlist_view' %}" class="icon-btn" title="Wishlist" id="wishlist-icon">
+          <i class="fa-regular fa-heart"></i>
+          <span class="count-badge wishlist-count" id="wishlist-badge">{{ wishlist_count|default:0 }}</span>
+        </a>
+        <a href="{% url 'cart' %}" class="icon-btn" title="Cart" id="cart-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="count-badge cart-count" id="cart-badge">{{ cart_count|default:0 }}</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+  <!-- ====================== CONTENT ====================== -->
+  <main>
+    {% if messages %}
+    <script>
       document.addEventListener('DOMContentLoaded', function () {
         {% for message in messages %}
         Toast.fire({
@@ -134,84 +122,74 @@
         });
         {% endfor %}
       });
-        </script>
-      {% endif %}
-      {% block content %}
-      {% endblock content %}
-    </main>
-    <!-- ====================== FOOTER ====================== -->
-    <footer class="footer">
-      <div class="footer-top">
-        <!-- Column 1: Brand -->
-        <div class="footer-col">
-          <h3 class="footer-logo">
-            <span class="logo-her">Her</span> <span class="logo-choice">Choice</span>
-          </h3>
-          <p class="footer-text">Discover curated apparel loved by every woman with our certified customer service.</p>
-        </div>
-        <!-- Column 2: Shop -->
-        <div class="footer-col">
-          <h4>Shop</h4>
-          <ul>
-            <li>
-              <a href="#">All Products</a>
-            </li>
-            <li>
-              <a href="#">New Arrivals</a>
-            </li>
-            <li>
-              <a href="#">Best Sellers</a>
-            </li>
-            <li>
-              <a href="#">Accessories</a>
-            </li>
-            <li>
-              <a href="#">Sale</a>
-            </li>
-          </ul>
-        </div>
-        <!-- Column 3: Customer Service -->
-        <div class="footer-col">
-          <h4>Customer Service</h4>
-          <ul>
-            <li>
-              <a href="#">Contact Us</a>
-            </li>
-            <li>
-              <a href="#">Shipping & Returns</a>
-            </li>
-            <li>
-              <a href="#">Gift Cards</a>
-            </li>
-            <li>
-              <a href="#">Track Order</a>
-            </li>
-          </ul>
-        </div>
-        <!-- Column 4: Newsletter -->
-        <div class="footer-col">
-          <h4>Newsletter</h4>
-          <p>Subscribe to get special offers & insider info</p>
-          <form class="newsletter-form">
-            <input type="email" placeholder="Your email" required />
-            <button type="submit">Subscribe</button>
-          </form>
-        </div>
+    </script>
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
+  </main>
+  <!-- ====================== FOOTER ====================== -->
+  <footer class="footer">
+    <div class="footer-top">
+      <!-- Column 1: Brand -->
+      <div class="footer-col">
+        <h3 class="footer-logo">
+          <span class="logo-her">Her</span> <span class="logo-choice">Choice</span>
+        </h3>
+        <p class="footer-text">Discover curated apparel loved by every woman with our certified customer service.</p>
       </div>
-      <hr />
-      <div class="footer-bottom">
-        <p>© 2025 Her Choice. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Settings</a>
-        </div>
+      <!-- Column 2: Shop -->
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li>
+            <a href="{% url 'product_listing' %}">All Products</a>
+          </li>
+          <li>
+            <a href="{% url 'product_listing' %}?sort=date_added">New Arrivals</a>
+          </li>
+          <li>
+            <a href="{% url 'product_listing' %}">Featured</a>
+          </li>
+          <li>
+            <a href="{% url 'product_listing' %}">Trending</a>
+          </li>
+        </ul>
       </div>
-    </footer>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+      <!-- Column 3: Customer Service -->
+      <div class="footer-col">
+        <h4>Customer Service</h4>
+        <ul>
+          <li>
+            <a href="{% url 'contact' %}">Contact Us</a>
+          </li>
+          <li>
+            <a href="{% url 'order_history' %}">Track Order</a>
+          </li>
+        </ul>
+      </div>
+      <!-- Column 4: Newsletter -->
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p>Subscribe to get special offers & insider info</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Your email" required />
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <hr />
+    <div class="footer-bottom">
+      <p>© 2025 Her Choice. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+        <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
     const Toast = Swal.mixin({
       toast: true,
       position: 'top-end',
@@ -266,39 +244,41 @@
 
     // Login modal for cart/wishlist
     document.addEventListener('DOMContentLoaded', function () {
-      const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
-      if (isAuthenticated) return;
+      const isAuthenticated = {{ user.is_authenticated| yesno: "true,false"
+    }};
+    if (isAuthenticated) return;
 
-      function showLoginModal() {
-        Swal.fire({
-          title: 'Login required',
-          text: 'Please login to access your wishlist or cart.',
-          icon: 'info',
-          showCancelButton: true,
-          confirmButtonText: 'Login',
-          cancelButtonText: 'Stay here',
-          confirmButtonColor: '#ff1493'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const next = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = "{% url 'user_login' %}?next=" + next;
-          }
-        });
-      }
+    function showLoginModal() {
+      Swal.fire({
+        title: 'Login required',
+        text: 'Please login to access your wishlist or cart.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Login',
+        cancelButtonText: 'Stay here',
+        confirmButtonColor: '#ff1493'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = "{% url 'user_login' %}?next=" + next;
+        }
+      });
+    }
 
-      const wishlistIcon = document.getElementById('wishlist-icon');
-      const cartIcon = document.getElementById('cart-icon');
+    const wishlistIcon = document.getElementById('wishlist-icon');
+    const cartIcon = document.getElementById('cart-icon');
 
-      [wishlistIcon, cartIcon].forEach((el) => {
-        if (!el) return;
-        el.addEventListener('click', function (e) {
-          e.preventDefault();
-          showLoginModal();
-        });
+    [wishlistIcon, cartIcon].forEach((el) => {
+      if (!el) return;
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        showLoginModal();
       });
     });
-    </script>
-    {% block extra_js %}
-    {% endblock %}
-  </body>
+    });
+  </script>
+  {% block extra_js %}
+  {% endblock %}
+</body>
+
 </html>

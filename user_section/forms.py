@@ -62,7 +62,7 @@ class UserAddressForm(forms.ModelForm):
             raise ValidationError("Address Line 1 cannot be empty.")
         if len(address) < 5:
             raise ValidationError("Address must be at least 5 characters long.")
-        if not re.match(r'^[A-Za-z\s,.-]+$', address):
+        if not re.match(r'^[A-Za-z\s,.\-()]+$', address):
             raise ValidationError(
                 "Address can contain only letters, spaces, comma, dot or hyphen."
             )

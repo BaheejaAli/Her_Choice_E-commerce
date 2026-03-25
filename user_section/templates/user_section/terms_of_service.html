@@ -1,0 +1,143 @@
+{% extends 'user_section/base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - Her Choice{% endblock %}
+
+{% block extra_css %}
+<style>
+    .terms-hero {
+        padding: 100px 20px;
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .terms-hero h1 {
+        font-size: 3rem;
+        color: #ff3f6c;
+        margin-bottom: 12px;
+    }
+
+    .terms-subtitle {
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: 1.05rem;
+        color: #555;
+    }
+
+    .terms-container {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 20px 80px;
+        line-height: 1.9;
+        color: #444;
+        min-height: 100vh;
+    }
+
+    .terms-section {
+        margin-bottom: 40px;
+    }
+
+    .terms-section h2 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #ffe0eb;
+    }
+
+    .terms-section p,
+    .terms-section ul {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .terms-section ul {
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+
+    .terms-section ul li {
+        margin-bottom: 8px;
+    }
+
+    .terms-updated {
+        text-align: center;
+        color: #999;
+        font-size: 0.9rem;
+        margin-top: 40px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="terms-hero">
+    <h1>Terms of Service</h1>
+    <p class="terms-subtitle">Please read these terms carefully before using our website and services.</p>
+</section>
+
+<div class="terms-container">
+    <div class="terms-section">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing and using the Her Choice website, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>2. Account Registration</h2>
+        <p>To make purchases, you must create an account with accurate and complete information. You are responsible for:</p>
+        <ul>
+            <li>Maintaining the confidentiality of your account credentials</li>
+            <li>All activities that occur under your account</li>
+            <li>Notifying us immediately of any unauthorized use</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h2>3. Products & Pricing</h2>
+        <p>We strive to display accurate product descriptions, images, and pricing. However:</p>
+        <ul>
+            <li>Colors may vary slightly due to screen differences</li>
+            <li>Prices are subject to change without prior notice</li>
+            <li>We reserve the right to limit order quantities</li>
+            <li>In case of pricing errors, we may cancel affected orders</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h2>4. Orders & Payments</h2>
+        <p>By placing an order, you agree that:</p>
+        <ul>
+            <li>All information provided is accurate and complete</li>
+            <li>You authorize us to charge the selected payment method</li>
+            <li>We reserve the right to refuse or cancel any order</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h2>5. Shipping & Delivery</h2>
+        <p>We aim to deliver orders within the estimated timeframe. Delivery times may vary based on location and availability. We are not responsible for delays caused by shipping carriers or unforeseen circumstances.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>6. Returns & Refunds</h2>
+        <p>We accept returns within the specified return window. Items must be unused, unworn, and in their original packaging. Refunds will be processed to the original payment method or your wallet, as applicable.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>7. Intellectual Property</h2>
+        <p>All content on this website, including text, images, logos, and design, is the property of Her Choice and is protected by copyright laws. Unauthorized reproduction or distribution is prohibited.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>8. Limitation of Liability</h2>
+        <p>Her Choice shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products, to the fullest extent permitted by law.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>9. Contact Us</h2>
+        <p>For any questions regarding these Terms of Service, please <a href="{% url 'contact' %}" style="color: #ff3f6c; text-decoration: underline;">contact us</a>.</p>
+    </div>
+
+    <p class="terms-updated">Last updated: March 2025</p>
+</div>
+{% endblock %}

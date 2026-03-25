@@ -5,6 +5,8 @@ urlpatterns = [
     path("", views.homepage, name="user_homepage"),
     path("about/", views.AboutPageView.as_view(), name="about"),
     path("contact/", views.contact_page, name="contact"),
+    path("privacy-policy/", views.PrivacyPolicyView.as_view(), name="privacy_policy"),
+    path("terms-of-service/", views.TermsOfServiceView.as_view(), name="terms_of_service"),
     path("product/", include('products.urls')),
     # path('product/<slug:slug>/', product_detail_view, name='product_detail'),
     
