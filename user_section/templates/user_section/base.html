@@ -202,26 +202,30 @@
       }
     });
 
-    document.querySelectorAll('.logout-btn, .menu-logout-btn').forEach(btn => {
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const form = this.closest('form');
+  document.querySelectorAll('.logout-btn, .menu-logout-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You will be logged out of your account!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ff1493',
-      cancelButtonColor: '#333',
-      confirmButtonText: 'Yes, logout!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        form.submit();
-      }
+      const form = this.closest('form');
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You will be logged out of your account!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff1493',
+        cancelButtonColor: '#333',
+        confirmButtonText: 'Yes, logout!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
     });
   });
+
 });
 
     function updateNavbarCounts(data) {
