@@ -20,6 +20,11 @@
     <!-- ====================== NAVBAR ====================== -->
     <header class="header">
       <nav class="nav-container">
+        <!-- Mobile Toggle -->
+        <button class="nav-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+
         <!-- Logo -->
         <div class="logo">
           <a href="/" class="logo-text"><span class="logo-her">Her</span> <span class="logo-choice">Choice</span></a>
@@ -38,6 +43,26 @@
           <li>
             <a href="{% url 'contact' %}">Contact</a>
           </li>
+
+          <!-- Mobile-only Auth Links -->
+          <li class="menu-divider mobile-only"></li>
+          {% if user.is_authenticated %}
+            <li class="mobile-only menu-user-header">
+              <a href="{% url 'profile_info' %}">Hi, {{ user.get_full_name }}</a>
+            </li>
+            <li class="mobile-only">
+              <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
+                {% csrf_token %}
+                <button type="button" onclick="confirmLogout()" class="menu-logout-btn">
+                  <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+              </form>
+            </li>
+          {% else %}
+            <li class="mobile-only" style="padding: 10px;">
+              <a href="{% url 'user_login' %}" class="btn-login" style="display: block; text-align: center;">Login/Signup</a>
+            </li>
+          {% endif %}
         </ul>
         <!-- Search box -->
         <div class="nav-search">
@@ -210,6 +235,35 @@
         if (wishlistBadge) wishlistBadge.textContent = data.wishlist_count;
       }
     }
+
+    /* =========================
+       Mobile Menu Toggle
+    ========================= */
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggle = document.getElementById('mobile-menu-toggle');
+      const menu = document.querySelector('.menu');
+
+      if (toggle && menu) {
+        toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          menu.classList.toggle('menu-open');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+            menu.classList.remove('menu-open');
+          }
+        });
+
+        // Close menu when resizing beyond mobile
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 768) {
+            menu.classList.remove('menu-open');
+          }
+        });
+      }
+    });
     </script>
     {% block extra_js %}
     {% endblock %}
