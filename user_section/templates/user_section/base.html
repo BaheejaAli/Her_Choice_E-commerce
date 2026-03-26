@@ -122,20 +122,18 @@
           <h4>Shop</h4>
           <ul>
             <li>
-              <a href="#">All Products</a>
+              <a href="{% url 'product_listing' %}">All Products</a>
             </li>
             <li>
-              <a href="#">New Arrivals</a>
+              <a href="{% url 'product_listing' %}?sort=newest">New Arrivals</a>
             </li>
             <li>
-              <a href="#">Best Sellers</a>
+              <a href="{% url 'product_listing' %}?filter=featured">Featured</a>
             </li>
             <li>
-              <a href="#">Accessories</a>
+              <a href="{% url 'product_listing' %}?filter=trending">Trending</a>
             </li>
-            <li>
-              <a href="#">Sale</a>
-            </li>
+           
           </ul>
         </div>
         <!-- Column 3: Customer Service -->
@@ -143,16 +141,10 @@
           <h4>Customer Service</h4>
           <ul>
             <li>
-              <a href="#">Contact Us</a>
+              <a href="{% url 'contact' %}">Contact Us</a>
             </li>
             <li>
-              <a href="#">Shipping & Returns</a>
-            </li>
-            <li>
-              <a href="#">Gift Cards</a>
-            </li>
-            <li>
-              <a href="#">Track Order</a>
+              <a href="{% url 'order_history' %}">Track Order</a>
             </li>
           </ul>
         </div>
@@ -170,9 +162,8 @@
       <div class="footer-bottom">
         <p>© 2025 Her Choice. All rights reserved.</p>
         <div class="footer-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Settings</a>
+          <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+          <a href="{% url 'terms_of_service' %}">Terms of Service</a>
         </div>
       </div>
     </footer>

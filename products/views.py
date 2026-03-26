@@ -41,6 +41,12 @@ def product_listing(request):
             Q(category__name__icontains=search_query)
         ).distinct()
 
+    filter_by = request.GET.get('filter', '')
+    if filter_by in ['trending']:
+        queryset = queryset.filter(is_most_demanded=True)
+    elif filter_by == 'featured':
+        queryset = queryset.filter(is_featured=True)
+
     sort_by = request.GET.get('sort', 'date_added')
     if sort_by == 'name_az':
         queryset = queryset.order_by('name')
