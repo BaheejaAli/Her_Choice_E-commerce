@@ -57,7 +57,7 @@
         <li class="mobile-only">
           <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
             {% csrf_token %}
-            <button type="submit" class="menu-logout-btn">
+            <button type="button" class="menu-logout-btn">
               Logout
             </button>
           </form>
@@ -94,7 +94,7 @@
           <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
         <form action="{% url 'user_logout' %}" method="post" id="logout-form">
           {% csrf_token %}
-          <button type="submit" class="logout-btn">Logout</button>
+          <button type="button" class="logout-btn">Logout</button>
         </form>
         {% else %}
         <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
@@ -201,14 +201,13 @@
         toast.addEventListener('mouseleave', Swal.resumeTimer)
       }
     });
-
-    document.addEventListener('DOMContentLoaded', function () {
-
+document.addEventListener('DOMContentLoaded', function () {
+  // Selects all buttons with these classes
   document.querySelectorAll('.logout-btn, .menu-logout-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
-      e.preventDefault();
+      e.preventDefault(); // Extra safety to stop default action
 
-      const form = this.closest('form');
+      const form = this.closest('form'); // Finds the specific form for the clicked button
 
       Swal.fire({
         title: 'Are you sure?',
@@ -220,12 +219,11 @@
         confirmButtonText: 'Yes, logout!'
       }).then((result) => {
         if (result.isConfirmed) {
-          form.submit();
+          form.submit(); // Only submits here
         }
       });
     });
   });
-
 });
 
     function updateNavbarCounts(data) {
