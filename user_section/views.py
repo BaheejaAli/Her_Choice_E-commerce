@@ -35,21 +35,21 @@ def homepage(request):
         Product.objects
         .filter(is_active=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
-        .order_by("-created_at")[:16]
+        .order_by("-created_at")[:12]
     )
 
     featured_products = (
         Product.objects
         .filter(is_active=True, is_featured=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
-        .order_by("?")[:8]
+        .order_by("?")[:12]
     )
 
     trending_products = (
         Product.objects
         .filter(is_active=True, is_most_demanded=True, id__in=active_product_ids)
         .prefetch_related("variants__images")
-        .order_by("?")[:8]
+        .order_by("?")[:12]
     )
     prepare_products_for_display(new_arrivals)
     prepare_products_for_display(featured_products)
@@ -355,25 +355,28 @@ def profile_delete_address(request, address_id):
 @never_cache
 @login_required
 def profile_change_password(request):
+    user = request.user
+    is_google_user = not user.has_usable_password()
+    context = {'is_google_user': is_google_user}
+
     if request.method == "POST":
-        old_password = request.POST.get('old_password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
 
-        user = request.user
-
-        # Check old password
-        if not user.check_password(old_password):
-            messages.error(request, 'Current password is incorrect')
-            return render(request, 'user_section/profile_change_password.html')
+        # Only verify current password for non-Google users
+        if not is_google_user:
+            old_password = request.POST.get('old_password')
+            if not user.check_password(old_password):
+                messages.error(request, 'Current password is incorrect')
+                return render(request, 'user_section/profile_change_password.html', context)
 
         if new_password != confirm_password:
             messages.error(request, 'New passwords do not match')
-            return render(request, 'user_section/profile_change_password.html')
+            return render(request, 'user_section/profile_change_password.html', context)
 
         if len(new_password) < 8:
             messages.error(request, 'Password must be at least 8 characters')
-            return render(request, 'user_section/profile_change_password.html')
+            return render(request, 'user_section/profile_change_password.html', context)
 
         user.set_password(new_password)
         user.save()
@@ -382,7 +385,7 @@ def profile_change_password(request):
         update_session_auth_hash(request, user)
         messages.success(request, 'Password updated successfully')
         return redirect('profile_info')
-    return render(request, "user_section/profile_change_password.html")
+    return render(request, "user_section/profile_change_password.html", context)
 
 @never_cache
 @login_required
