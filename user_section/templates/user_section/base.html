@@ -57,7 +57,7 @@
         <li class="mobile-only">
           <form action="{% url 'user_logout' %}" method="post" class="menu-logout-form">
             {% csrf_token %}
-            <button type="button" onclick="confirmLogout()" class="menu-logout-btn">
+            <button type="submit" class="menu-logout-btn">
               Logout
             </button>
           </form>
@@ -94,7 +94,7 @@
           <span class="user-name">Hi, {{ user.get_full_name }}</span></a>
         <form action="{% url 'user_logout' %}" method="post" id="logout-form">
           {% csrf_token %}
-          <button type="button" onclick="confirmLogout()" class="logout-btn">Logout</button>
+          <button type="submit" class="logout-btn">Logout</button>
         </form>
         {% else %}
         <a href="{% url 'user_login' %}" class="btn-login">Login/Signup</a>
@@ -202,21 +202,27 @@
       }
     });
 
-    function confirmLogout() {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You will be logged out of your account!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ff1493',
-        cancelButtonColor: '#333',
-        confirmButtonText: 'Yes, logout!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          document.getElementById('logout-form').submit();
-        }
-      });
-    }
+    document.querySelectorAll('.logout-btn, .menu-logout-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const form = this.closest('form');
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of your account!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ff1493',
+      cancelButtonColor: '#333',
+      confirmButtonText: 'Yes, logout!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+});
 
     function updateNavbarCounts(data) {
       if (!data) return;
