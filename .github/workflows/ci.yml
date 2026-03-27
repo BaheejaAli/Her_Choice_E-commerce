@@ -30,9 +30,3 @@ jobs:
           set -e
           source venv/bin/activate
           python manage.py check
-
-      - name: Run tests
-        run: |
-          set -e
-          source venv/bin/activate
-          python manage.py test

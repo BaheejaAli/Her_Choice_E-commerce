@@ -108,7 +108,7 @@ def verify_payment(request):
             messages.error(request, "Payment verification failed: Signature mismatch.")
         except Exception as e:
             messages.error(request, "An unexpected error occurred.")
-            print(f"Error: {e}")
+           
 
     return redirect('wallet_dashboard')
 

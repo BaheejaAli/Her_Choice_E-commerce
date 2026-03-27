@@ -27,8 +27,6 @@ from django.conf import settings
 
 @never_cache
 def homepage(request):
-    # Get IDs of products that have at least one active variant
-    # This prevents duplicates and ensures we only show available items
     active_product_ids = ProductVariant.objects.filter(is_active=True).values_list('product_id', flat=True)
 
     new_arrivals = (
