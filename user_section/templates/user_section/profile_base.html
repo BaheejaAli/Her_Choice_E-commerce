@@ -51,7 +51,7 @@
         </a>
       </li>
       <li>
-        <a href="{% url "order_history" %}"
+        <a href="{% url 'order_history' %}"
           class="{% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">
           <span class="menu-icon"><i class="far fa-clock"></i></span>
           My Orders
@@ -65,7 +65,7 @@
         </a>
       </li>
       <li>
-        <a href="{% url "profile_change_password" %}"
+        <a href="{% url 'profile_change_password' %}"
           class="{% if request.resolver_match.url_name == 'profile_change_password' %}active{% endif %}">
           <span class="menu-icon"><i class="fa-solid fa-key"></i></span>
           Change Password
