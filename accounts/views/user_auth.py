@@ -27,13 +27,23 @@ def user_register(request):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            try:
-                user = form.save(commit=False)
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
 
-                user.is_active = False
-                user.is_staff = False
-                user.set_password(form.cleaned_data['password'])
-                user.save()
+            try:
+                existing_user = CustomUser.objects.filter(email=email, is_active=False).first()
+                if existing_user:
+                    user = existing_user
+                    user.set_password(password)
+                    user.first_name = form.cleaned_data.get('first_name', user.first_name)
+                    user.save()
+                
+                else:
+                    user = form.save(commit=False)
+                    user.is_active = False
+                    user.is_staff = False
+                    user.set_password(form.cleaned_data['password'])
+                    user.save()
 
                 otp = random.randint(100000, 999999)
                 request.session['verification_email'] = user.email

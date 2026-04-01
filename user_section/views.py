@@ -23,6 +23,8 @@ from offer.models import Referral, ReferralReward
 from wallet.models import Wallet
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 @never_cache
@@ -372,6 +374,12 @@ def profile_change_password(request):
             messages.error(request, 'New passwords do not match')
             return render(request, 'user_section/profile_change_password.html', context)
 
+        try:
+            validate_password(new_password, user=user)
+        except ValidationError as e:
+            for error in e.messages:
+                messages.error(request, error)
+            return render(request, 'user_section/profile_change_password.html')
         if len(new_password) < 8:
             messages.error(request, 'Password must be at least 8 characters')
             return render(request, 'user_section/profile_change_password.html', context)
