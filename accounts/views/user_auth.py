@@ -25,25 +25,23 @@ OTP_EXPIRY_SECONDS = 100
 @logout_required(redirect_to="user_homepage")
 def user_register(request):
     if request.method == "POST":
-        form = UserRegistrationForm(request.POST)
+        email = request.POST.get('email')
+        existing_user = CustomUser.objects.filter(email=email, is_active=False).first()
+        
+        if existing_user:
+            form = UserRegistrationForm(request.POST, instance=existing_user)
+        else:
+            form = UserRegistrationForm(request.POST)
+
         if form.is_valid():
-            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
             try:
-                existing_user = CustomUser.objects.filter(email=email, is_active=False).first()
-                if existing_user:
-                    user = existing_user
-                    user.set_password(password)
-                    user.first_name = form.cleaned_data.get('first_name', user.first_name)
-                    user.save()
-                
-                else:
-                    user = form.save(commit=False)
-                    user.is_active = False
-                    user.is_staff = False
-                    user.set_password(form.cleaned_data['password'])
-                    user.save()
+                user = form.save(commit=False)
+                user.is_active = False
+                user.is_staff = False
+                user.set_password(password)
+                user.save()
 
                 otp = random.randint(100000, 999999)
                 request.session['verification_email'] = user.email
