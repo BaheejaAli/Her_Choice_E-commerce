@@ -84,7 +84,6 @@ def add_to_cart(request):
         }, status=200)
 
     except Exception as e:
-        print("ADD TO CART ERROR:", e)
         return JsonResponse({
             "status": "error",
             "message": "Server error"
