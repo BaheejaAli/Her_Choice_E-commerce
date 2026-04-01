@@ -31,10 +31,8 @@ class UserProfileUpdateForm(forms.ModelForm):
     def clean_phone(self):
         phone = self.cleaned_data.get("phone")
         if phone:
-            if not phone.isdigit():
-                raise ValidationError("Phone number must contain only digits.")
-            if len(phone) != 10:
-                raise ValidationError("Phone number must be 10 digits.")
+            if not re.match(r'^[6-9]\d{9}$', phone):
+                raise ValidationError("Enter a valid 10-digit Indian phone number.")
         return phone
 
 class UserAddressForm(forms.ModelForm):
