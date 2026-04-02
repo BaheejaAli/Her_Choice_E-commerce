@@ -18,8 +18,8 @@ class OfferForm(forms.ModelForm):
             'discount_percentage': forms.NumberInput(attrs={'class': 'form-control'}),
             'product': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'category': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'start_at': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
-            'end_at': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
+            'start_at': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'}),
+            'end_at': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
@@ -95,13 +95,13 @@ class CouponForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'e.g., 1000',
             }),
-            'valid_from': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
+            'valid_from': forms.DateInput(format='%d-%m-%Y', attrs={
+                'class': 'form-control date-picker',
+                'type': 'text'
             }),
-            'valid_to': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
+            'valid_to': forms.DateInput(format='%d-%m-%Y', attrs={
+                'class': 'form-control date-picker',
+                'type': 'text'
             }),
             'limit': forms.NumberInput(attrs={
                 'class': 'form-control',
