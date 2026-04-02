@@ -1,11 +1,21 @@
 from django import forms
-from .models import Offer
+from .models import Offer, Coupon
 from products.models import Product
 from brandsandcategories.models import Category
-from .models import Coupon
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+from datetime import datetime
 
 class OfferForm(forms.ModelForm):
+    start_at = forms.DateField(
+        input_formats=['%d-%m-%Y', '%d/%m/%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'})
+    )
+    end_at = forms.DateField(
+        input_formats=['%d-%m-%Y', '%d/%m/%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'})
+    )
+
     class Meta:
         model = Offer
         fields = [
@@ -18,13 +28,20 @@ class OfferForm(forms.ModelForm):
             'discount_percentage': forms.NumberInput(attrs={'class': 'form-control'}),
             'product': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'category': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'start_at': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'}),
-            'end_at': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def clean(self):
         cleaned_data = super().clean()
+        start_at_date = cleaned_data.get('start_at')
+        end_at_date = cleaned_data.get('end_at')
+
+        # Convert Date objects back to aware DateTime objects if they are valid
+        if start_at_date:
+            cleaned_data['start_at'] = timezone.make_aware(datetime.combine(start_at_date, datetime.min.time()))
+        if end_at_date:
+            cleaned_data['end_at'] = timezone.make_aware(datetime.combine(end_at_date, datetime.max.time()))
+
         name = cleaned_data.get('name')
         discount = cleaned_data.get('discount_percentage')
         offer_type = cleaned_data.get('offer_type')
@@ -52,19 +69,26 @@ class OfferForm(forms.ModelForm):
                 errors['category'] = "Please select at least one category."
             cleaned_data['product'] = Product.objects.none()
 
-        start_at = cleaned_data.get('start_at')
-        end_at = cleaned_data.get('end_at')
         if not end_at:
             errors['end_at'] = "End date is required."
-        if start_at and end_at and end_at < start_at:
+        elif start_at and end_at and end_at < start_at:
             errors['end_at'] = "End date must be after start date."
 
         if errors:
             raise ValidationError(errors)
         
         return cleaned_data
-    
+
 class CouponForm(forms.ModelForm):
+    valid_from = forms.DateField(
+        input_formats=['%d-%m-%Y', '%d/%m/%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'})
+    )
+    valid_to = forms.DateField(
+        input_formats=['%d-%m-%Y', '%d/%m/%Y', '%Y-%m-%d'],
+        widget=forms.DateInput(format='%d-%m-%Y', attrs={'class': 'form-control date-picker', 'type': 'text'})
+    )
+
     class Meta:
         model = Coupon
         fields = [
@@ -95,14 +119,6 @@ class CouponForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'e.g., 1000',
             }),
-            'valid_from': forms.DateInput(format='%d-%m-%Y', attrs={
-                'class': 'form-control date-picker',
-                'type': 'text'
-            }),
-            'valid_to': forms.DateInput(format='%d-%m-%Y', attrs={
-                'class': 'form-control date-picker',
-                'type': 'text'
-            }),
             'limit': forms.NumberInput(attrs={
                 'class': 'form-control',
             }),
@@ -112,11 +128,17 @@ class CouponForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
             })
-
         }
 
     def clean(self):
         cleaned_data = super().clean()
+        valid_from_date = cleaned_data.get('valid_from')
+        valid_to_date = cleaned_data.get('valid_to')
+
+        if valid_from_date:
+            cleaned_data['valid_from'] = timezone.make_aware(datetime.combine(valid_from_date, datetime.min.time()))
+        if valid_to_date:
+            cleaned_data['valid_to'] = timezone.make_aware(datetime.combine(valid_to_date, datetime.max.time()))
 
         code = cleaned_data.get('code')
         valid_from = cleaned_data.get('valid_from')
@@ -140,7 +162,7 @@ class CouponForm(forms.ModelForm):
             raise ValidationError(errors)
 
         return cleaned_data
-    
+
 
 
 
