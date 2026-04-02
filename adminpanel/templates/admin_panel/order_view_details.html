@@ -25,7 +25,7 @@ Order Details | Her Choice Admin
             </a>
             <div class="header-info">
                 <h1>Order #{{ order.orderid }}</h1>
-                <span class="order-id">Placed on {{ order.created_at|date:"F d, Y at h:i A" }}</span>
+                <span class="order-id">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</span>
             </div>
         </div>
     </div>
@@ -173,7 +173,7 @@ Order Details | Her Choice Admin
                     </div>
                     <div class="summary-row">
                         <span class="label">Order Date</span>
-                        <span class="value">{{ order.created_at|date:"M d, Y" }}</span>
+                        <span class="value">{{ order.created_at|date:"d-m-Y" }}</span>
                     </div>
                     <div class="divider"></div>
                     <div class="summary-row">

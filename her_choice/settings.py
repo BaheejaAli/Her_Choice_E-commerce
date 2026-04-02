@@ -193,6 +193,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+USE_L10N = False
+DATE_FORMAT = 'd-m-Y'
+DATETIME_FORMAT = 'd-m-Y H:i'
+
+
 
 
 # Static files (CSS, JavaScript, Images)

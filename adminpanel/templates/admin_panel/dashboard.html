@@ -142,7 +142,7 @@
                     <tr>
                         <td><span class="fw-bold"># {{ order.id }}</span></td>
                         <td>{{ order.user.get_full_name }}</td>
-                        <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                        <td>{{ order.created_at|date:"d-m-Y H:i" }}</td>
                         <td><span class="fw-bold">₹ {{ order.total }}</span></td>
                         <td>
                             <span class="badge-status {{ order.status|lower }}">{{ order.get_status_display }}</span>

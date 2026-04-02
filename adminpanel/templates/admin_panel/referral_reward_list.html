@@ -38,7 +38,7 @@
                             {{ reward.is_active|yesno:"Active,Inactive" }}
                         </button>
                     </td>
-                    <td>{{ reward.created_at|date:"d M Y" }}</td>
+                    <td>{{ reward.created_at|date:"d-m-Y" }}</td>
                     <td class="action-buttons">
                         <a href="{% url 'referral_reward_edit' reward.id %}" class="action-btn">
                             <i class="fa-solid fa-pen"></i>

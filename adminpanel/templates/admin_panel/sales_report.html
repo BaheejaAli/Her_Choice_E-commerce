@@ -90,7 +90,7 @@
                 {% for order in page_obj %}
                 <tr>
                     <td># {{ order.orderid }}</td>
-                    <td>{{ order.created_at|date:"Y-m-d" }}</td>
+                    <td>{{ order.created_at|date:"d-m-Y" }}</td>
                     <td>{{ order.user.get_full_name }}</td>
                     <td>{{ order.subtotal }}</td>
                     <td>- {{ order.calculated_coupon_discount }}</td>

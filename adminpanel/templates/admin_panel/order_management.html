@@ -73,7 +73,7 @@
                         <tr data-status="{{ order.status }}">
                             <td class="order-id">{{ order.orderid }}</td>
                             <td class="customer-name">{{ order.user.get_full_name }}</td>
-                            <td class="order-date">{{ order.created_at|date:"Y-m-d" }}</td>
+                            <td class="order-date">{{ order.created_at|date:"d-m-Y" }}</td>
                             <td>
                                 <span class="badge badge-payment badge-payment-{{ order.payment_method|lower }}">
                                     {{ order.get_payment_method_display }}

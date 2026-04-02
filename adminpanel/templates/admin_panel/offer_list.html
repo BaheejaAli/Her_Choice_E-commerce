@@ -80,10 +80,10 @@ Offer Management | Her Choice
                         <span class="text-success fw-bold">{{ item.offer.discount_percentage }}% Off</span>
                     </td>
                     <td>
-                        {{ item.offer.start_at|date:"Y-m-d" }}
+                        {{ item.offer.start_at|date:"d-m-Y" }}
                         →
                         {% if item.offer.end_at %}
-                        {{ item.offer.end_at|date:"Y-m-d" }}
+                        {{ item.offer.end_at|date:"d-m-Y" }}
                         {% else %}
                         Never
                         {% endif %}
