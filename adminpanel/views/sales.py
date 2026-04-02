@@ -48,8 +48,8 @@ def get_filtered_orders(request):
 
     elif date_range == 'custom' and start_date and end_date:
         try:
-            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
-            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+            start_date_obj = datetime.strptime(start_date, "%d-%m-%Y").date()
+            end_date_obj = datetime.strptime(end_date, "%d-%m-%Y").date()
             
             if start_date_obj > end_date_obj:
                 messages.error(request, "Start date cannot be after end date.")
@@ -174,7 +174,7 @@ def export_excel(request):
     # Add data rows
     for row_num, order in enumerate(orders, 2):
         sheet.cell(row=row_num, column=1).value = order.orderid
-        sheet.cell(row=row_num, column=2).value = order.created_at.strftime("%Y-%m-%d")
+        sheet.cell(row=row_num, column=2).value = order.created_at.strftime("%d-%m-%Y")
         sheet.cell(row=row_num, column=3).value = order.user.get_full_name if order.user else "Guest"
         sheet.cell(row=row_num, column=4).value = float(order.subtotal)
         sheet.cell(row=row_num, column=5).value = float(order.calculated_coupon_discount or 0)
