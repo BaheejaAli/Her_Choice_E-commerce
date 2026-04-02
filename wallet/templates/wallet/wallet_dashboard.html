@@ -31,7 +31,7 @@
             </div>
             <div class="transaction-info">
                 <p>{{ transaction.description }}</p>
-                <small>{{ transaction.created_at|date:"d M Y" }}</small>
+                <small>{{ transaction.created_at|date:"d-m-Y" }}</small>
             </div>
             <div class="transaction-amount">
                 {% if transaction.transaction_type == 'PAYMENT' %}

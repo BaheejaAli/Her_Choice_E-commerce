@@ -46,7 +46,7 @@ Order History | Her Choice
             <div class="order-header-left">
                 <div class="order-info">
                     <span class="order-number">Order #{{ order.orderid }}</span>
-                    <span class="order-date">{{ order.created_at|date:"F d, Y" }}</span>
+                    <span class="order-date">{{ order.created_at|date:"d-m-Y" }}</span>
                 </div>
                 <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
             </div>
@@ -83,13 +83,13 @@ Order History | Her Choice
             <div class="delivery-info">
                 {% if order.status == 'delivered' %}
                 <i class="fas fa-check-circle"></i>
-                <span>Delivered on {{ order.items.delivered_at|date:"F d, Y" }}</span>
+                <span>Delivered on {{ order.items.delivered_at|date:"d-m-Y" }}</span>
                 {% elif order.status == 'shipped' %}
                 <i class="fas fa-shipping-fast"></i>
-                <span>Expected delivery by {{ order.expected_delivery|date:"F d, Y" }}</span>
+                <span>Expected delivery by {{ order.expected_delivery|date:"d-m-Y" }}</span>
                 {% elif order.status == 'cancelled' %}
                 <i class="fas fa-times-circle"></i>
-                <span>Cancelled on {{ order.updated_at|date:"F d, Y" }}</span>
+                <span>Cancelled on {{ order.updated_at|date:"d-m-Y" }}</span>
                 {% else %}
                 <i class="fas fa-clock"></i>
                 <span>Processing order</span>

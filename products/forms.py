@@ -68,6 +68,13 @@ class ProductForm(forms.ModelForm):
         if not name:
             raise forms.ValidationError("Product name is required.")
 
+        if len(name) < 3:
+            raise forms.ValidationError("Product name must be at least 3 characters long.")
+        
+        import re
+        if not re.match(r'^[a-zA-Z0-9\s-]+$', name):
+            raise forms.ValidationError("Product name can only contain letters, numbers, spaces, and hyphens.")
+
         qs = Product.objects.filter(name__iexact=name)
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)

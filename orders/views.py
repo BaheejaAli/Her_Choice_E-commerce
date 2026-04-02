@@ -84,24 +84,28 @@ def download_invoice_pdf(request, order_id):
 @login_required
 @require_POST
 def cancel_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    if order.status not in ["pending", "processing", "partially_cancelled"]:
-        messages.error(request, "This order cannot be cancelled anymore.")
-        return redirect("order_details", order_id=order.id)
-    
-    if request.method == "POST":
-        selected_item_ids = request.POST.getlist('selected_items')
-        cancel_reason = request.POST.get("cancel_reason", "").strip()
-
-        if not selected_item_ids:
-            messages.error(request, "No items were selected for cancellation.")
-            return redirect("order_details", order_id=order.id)
-
+    try:
         with transaction.atomic():
+            order = Order.objects.select_for_update().get(id=order_id, user=request.user)
+            if order.status not in ["pending", "processing", "partially_cancelled"]:
+                messages.error(request, "This order cannot be cancelled anymore.")
+                return redirect("order_details", order_id=order.id)
+        
+            selected_item_ids = request.POST.getlist('selected_items')
+            cancel_reason = request.POST.get("cancel_reason", "").strip()
+
+            if not selected_item_ids:
+                messages.error(request, "No items were selected for cancellation.")
+                return redirect("order_details", order_id=order.id)
+
             all_items = order.items.all()
             total_items_count = all_items.count()
             
             items_to_cancel = all_items.filter(id__in=selected_item_ids).exclude(status="cancelled")
+            
+            if not items_to_cancel.exists():
+                messages.error(request, "Items are already cancelled.")
+                return redirect("order_details", order_id=order.id)
             
             total_refund_amount = Decimal('0.00')
             can_refund = order.payment_status in ["paid", "partially_refunded"] and order.payment_method in ["razorpay", "wallet"]
@@ -109,7 +113,8 @@ def cancel_order(request, order_id):
             for item in items_to_cancel:
                 # Update Inventory Atomically
                 from products.models import ProductVariant
-                ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + item.quantity)
+                if order.payment_status != 'pending':
+                    ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + item.quantity)
 
                 # Update Item Status
                 item.status = "cancelled"
@@ -133,7 +138,7 @@ def cancel_order(request, order_id):
                 
                 max_refundable_amount = order.total - order.delivery_charge
                 remaining_to_refund = max_refundable_amount - already_refunded
-              
+                
                 if items_to_cancel.exists():
                     total_refund_amount = max(remaining_to_refund, Decimal('0.00'))
 
@@ -160,9 +165,12 @@ def cancel_order(request, order_id):
                 order.status = "partially_cancelled"
                 messages.success(request, f"Successfully cancelled {items_to_cancel.count()} item(s).")
             
-            order.save(update_fields=["status", "payment_status", "updated_at"])          
-        return redirect("order_details", order_id=order.id)
-    
+            order.save(update_fields=["status", "payment_status", "updated_at"])  
+    except Order.DoesNotExist:
+        messages.error(request, "Order not found.")
+        return redirect("order_history")
+
+    return redirect("order_details", order_id=order_id)            
 
 @never_cache
 @login_required

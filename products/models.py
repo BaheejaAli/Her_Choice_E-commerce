@@ -82,6 +82,15 @@ class Product(models.Model):
             super(Product, self).save(update_fields=["is_active", "auto_disabled"])
 
     def clean(self):
+        # Name Validation
+        if self.name:
+            name = self.name.strip()
+            if len(name) < 3:
+                raise ValidationError({"name": "Product name must be at least 3 characters long."})
+            import re
+            if not re.match(r'^[a-zA-Z0-9\s-]+$', name):
+                raise ValidationError({"name": "Product name can only contain letters, numbers, spaces, and hyphens."})
+
         if self.is_active:
             has_active_variant = self.variants.filter(is_active=True).exists()
             if not has_active_variant:
@@ -165,9 +174,9 @@ class ProductVariant(models.Model):
         if (
             self.sales_price is not None and
             self.base_price is not None and
-            self.sales_price >= self.base_price
+            self.sales_price > self.base_price
         ):
-            errors['sales_price'] = "Sales price must be less than base price."
+            errors['sales_price'] = "Sales price cannot be greater than base price."
 
         if errors:
             raise ValidationError(errors)

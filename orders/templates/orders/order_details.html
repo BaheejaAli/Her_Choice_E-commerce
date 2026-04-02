@@ -15,7 +15,7 @@ Order Details | Her Choice
         </a>
         <div class="header-info">
             <h1>{{ order.orderid }}</h1>
-            <p class="order-number">Placed on {{ order.created_at|date:"F d, Y at h:i A" }}</p>
+            <p class="order-number">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</p>
         </div>
     </div>
     <div class="header-right">
@@ -33,7 +33,7 @@ Order Details | Her Choice
         </div>
         <div class="cancelled-info">
             <h2>Order Cancelled</h2>
-            <p>This order was cancelled on {{ order.updated_at|date:"F d, Y" }}</p>
+            <p>This order was cancelled on {{ order.updated_at|date:"d-m-Y" }}</p>
             {% if order.cancel_reason %}
             <p class="cancel-reason-text">
                 <strong>Reason:</strong> {{ order.cancel_reason }}
@@ -72,7 +72,7 @@ Order Details | Her Choice
             </div>
             <div class="step-content">
                 <h4 class="step-title">Order Placed</h4>
-                <p class="step-time">{{ order.created_at|date:"M d, g:i A" }}</p>
+                <p class="step-time">{{ order.created_at|date:"d-m-Y H:i" }}</p>
             </div>
         </div>
         <div class="timeline-step {% if order.status == 'pending' %}active{% else %}completed{% endif %}">
@@ -116,7 +116,7 @@ Order Details | Her Choice
                 <h4 class="step-title">Delivered</h4>
                 <p class="step-time">
                     {% if order.status == 'delivered' %}
-                    {{ order.delivered_at|date:"M d, g:i A"|default:"Completed" }}
+                    {{ order.delivered_at|date:"d-m-Y H:i"|default:"Completed" }}
                     {% else %}
                     Pending
                     {% endif %}
