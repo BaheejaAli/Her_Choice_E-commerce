@@ -459,8 +459,8 @@ def checkout(request):
         selected_address = get_object_or_404(UserAddress, id=address_id, user=request.user)
 
         if payment_method == "cod":
-            if grand_total > Decimal('1000'):
-                messages.error(request, "Cash on Delivery is only available for orders up to ₹1000. Please use online payment.")
+            if grand_total > Decimal('1500'):
+                messages.error(request, "Cash on Delivery is only available for orders up to ₹1500. Please use online payment.")
                 return redirect("checkout")
             return handle_cod_payment(request, selected_address, subtotal, total_discount, coupon_discount, tax, grand_total, delivery_charge, cart_items, cart, applied_coupon)
 
