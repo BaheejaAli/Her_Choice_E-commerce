@@ -110,21 +110,50 @@ def cancel_order(request, order_id):
             total_refund_amount = Decimal('0.00')
             can_refund = order.payment_status in ["paid", "partially_refunded"] and order.payment_method in ["razorpay", "wallet"]
 
-            for item in items_to_cancel:
+            for item in items_to_cancel: 
+                cancel_qty = int(request.POST.get(f"cancel_qty_{item.id}",0))
+                if cancel_qty <= 0:
+                    continue
+                if cancel_qty > item.quantity:
+                   messages.error(request, "Invalid cancel quantity.")
+                   return redirect("order_details", order_id=order.id)
+
                 # Update Inventory Atomically
                 from products.models import ProductVariant
                 if order.payment_status != 'pending':
-                    ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + item.quantity)
+                    ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + cancel_qty)
 
                 # Update Item Status
-                item.status = "cancelled"
-                item.cancel_reason = cancel_reason 
-                item.cancelled_at = timezone.now()
-                item.save()
+                if cancel_qty == item.quantity:
+                    item.status = "cancelled"
+                    item.cancel_reason = cancel_reason 
+                    item.cancelled_at = timezone.now()
+                    item.save()
 
-                if can_refund:
-                    item_refund = order.calculate_item_refund(item)
-                    total_refund_amount += item_refund
+                    if can_refund:
+                        item_refund = order.calculate_item_refund(item)
+                        total_refund_amount += item_refund
+
+                else:
+                    # reduce original item
+                    item.quantity -= cancel_qty
+                    item.save()
+
+                    # create cancelled item
+                    cancelled_item = OrderItem.objects.create(
+                        order=item.order,
+                        variant=item.variant,
+                        quantity=cancel_qty,
+                        price=item.price,
+                        status="cancelled",
+                        cancel_reason=cancel_reason,
+                        cancelled_at=timezone.now()
+                    )
+
+                    if can_refund:
+                        # refund only cancelled qty
+                        unit_price = item.price
+                        total_refund_amount += unit_price * cancel_qty
 
             finished_items_count = all_items.filter(Q(return_status='returned') | Q(status='cancelled')).count()
             is_full_completion = (finished_items_count == total_items_count)

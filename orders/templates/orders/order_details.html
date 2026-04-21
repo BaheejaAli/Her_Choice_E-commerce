@@ -297,6 +297,65 @@ Order Details | Her Choice
     {% endif %}
     {% comment %} Cancel Modal {% endcomment %}
     <div id="cancelModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Select Items to Cancel</h3>
+            <button class="close-modal" onclick="closeCancelModal()">&times;</button>
+        </div>
+
+        <form method="POST" action="{% url 'cancel_order' order.id %}">
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <p>Select items and quantity:</p>
+
+                <div class="variant-selection-list">
+                    {% for item in order.items.all %}
+                    {% if item.status != 'cancelled' and item.status != 'delivered' %}
+
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+
+                        <!-- Checkbox -->
+                        <input type="checkbox"
+                               name="selected_items"
+                               value="{{ item.id }}"
+                               onchange="toggleQty('{{ item.id }}')">
+
+                        <!-- Product Info -->
+                        <div style="flex:1;">
+                            <strong>{{ item.variant.product.name }}</strong><br>
+                            {{ item.variant.color }} | Size: {{ item.variant.size }} | Qty: {{ item.quantity }}
+                        </div>
+
+                        <!-- Quantity Input -->
+                        <input type="number"
+                               name="cancel_qty_{{ item.id }}"
+                               id="qty_{{ item.id }}"
+                               min="1"
+                               max="{{ item.quantity }}"
+                               placeholder="Qty"
+                               disabled
+                               style="width:70px;">
+                    </div>
+
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="reason-section">
+                    <label>Reason:</label>
+                    <textarea name="cancel_reason" required></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" onclick="closeCancelModal()">Cancel</button>
+                <button type="submit">Confirm</button>
+            </div>
+        </form>
+    </div>
+</div>
+    {% comment %} <div id="cancelModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
                 <h3>Select Items to Cancel</h3>
@@ -305,6 +364,7 @@ Order Details | Her Choice
             <form id="cancelForm" method="POST" action="{% url 'cancel_order' order.id %}">
                 {% csrf_token %}
                 <div class="modal-body">
+                    <p>Select items and quantity:</p>
                     <p class="modal-instruction">Please select the items you wish to remove:</p>
                     <div class="variant-selection-list">
                         {% for item in order.items.all %}
@@ -334,7 +394,7 @@ Order Details | Her Choice
                 </div>
             </form>
         </div>
-    </div>
+    </div> {% endcomment %}
     {% comment %} Return Modal {% endcomment %}
     <div id="returnModal" class="modal-overlay">
         <div class="modal-card">
@@ -404,5 +464,21 @@ Order Details | Her Choice
         if (event.target.id === 'cancelModal') closeCancelModal();
         if (event.target.id === 'returnModal') closeReturnModal();
     }
+    
+    function toggleQty(itemId) {
+        const checkbox = document.querySelector(`input[value="${itemId}"]`);
+        const qtyInput = document.getElementById(`qty_${itemId}`);
+
+        if (qtyInput) {
+            qtyInput.disabled = !checkbox.checked;
+
+            if (checkbox.checked) {
+                qtyInput.value = 1; // default
+            } else {
+                qtyInput.value = "";
+            }
+        }
+    }
+
 </script>
 {% endblock extra_js %}
