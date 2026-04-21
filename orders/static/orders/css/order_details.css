@@ -714,6 +714,102 @@ body {
 #cancelModal .modal-card {
   border-top: 6px solid #e11d48;
 }
+/* ============================================
+   CANCEL MODAL - CUSTOM (ONLY THIS MODAL)
+   ============================================ */
+
+/* Modal card styling */
+#cancelModal .modal-card {
+  border-top: 6px solid #e11d48;
+  max-width: 650px;
+}
+
+/* Header */
+#cancelModal .modal-header {
+  background: #fff5f5;
+}
+
+/* Item list */
+#cancelModal .variant-selection-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Each item row (your new structure) */
+#cancelModal .variant-selection-list > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #f3f4f6;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+/* Hover effect */
+#cancelModal .variant-selection-list > div:hover {
+  background: #fff1f2;
+  border-color: #fda4af;
+}
+
+/* Checkbox */
+#cancelModal input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #e11d48;
+  cursor: pointer;
+}
+
+/* Quantity input */
+#cancelModal input[type="number"] {
+  width: 70px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Disabled input */
+#cancelModal input[type="number"]:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+/* Selected item highlight */
+#cancelModal input[type="checkbox"]:checked + div {
+  background: #ffe4e6;
+  border-radius: 8px;
+}
+
+/* Reason textarea */
+#cancelModal textarea {
+  border: 2px solid #fca5a5 !important;
+}
+
+/* Footer buttons */
+#cancelModal .modal-footer button {
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Cancel button */
+#cancelModal .modal-footer button:first-child {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Confirm button */
+#cancelModal .modal-footer button:last-child {
+  background: #e11d48;
+  color: white;
+}
+
+/* Hover effect */
+#cancelModal .modal-footer button:last-child:hover {
+  background: #be123c;
+}
 
 .modal-instruction {
   color: #6b7280;
