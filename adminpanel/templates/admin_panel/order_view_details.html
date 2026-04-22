@@ -1,234 +1,246 @@
 {% extends "admin_panel/admin_base.html" %}
 {% load static %}
 {% block title %}
-Order Details | Her Choice Admin
+    Order Details | Her Choice Admin
 {% endblock title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'adminpanel/css/order_view_details.css' %}?v=1.1" />
+    <link rel="stylesheet"
+          href="{% static 'adminpanel/css/order_view_details.css' %}?v=1.1" />
 {% endblock extra_css %}
 {% block content %}
-
-<div class="order-detail-wrapper">
-    <!-- Breadcrumbs -->
-    <nav class="breadcrumbs">
-        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
-        <i class="fas fa-chevron-right separator"></i>
-        <a href="{% url 'order_management' %}">Orders</a>
-        <i class="fas fa-chevron-right separator"></i>
-        <span class="current">{{ order.orderid }}</span>
-    </nav>
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="header-left">
-            <a href="{% url 'order_management' %}" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div class="header-info">
-                <h1>Order #{{ order.orderid }}</h1>
-                <span class="order-id">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</span>
+    <div class="order-detail-wrapper">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs">
+            <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+            <i class="fas fa-chevron-right separator"></i>
+            <a href="{% url 'order_management' %}">Orders</a>
+            <i class="fas fa-chevron-right separator"></i>
+            <span class="current">{{ order.orderid }}</span>
+        </nav>
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <a href="{% url 'order_management' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-info">
+                    <h1>Order #{{ order.orderid }}</h1>
+                    <span class="order-id">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</span>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- Main Content Grid -->
-    <div class="content-grid">
-        <!-- Left Column -->
-        <div class="left-column">
-            <!-- Products -->
-            <div class="card">
-                <h2 class="card-title">Ordered Items</h2>
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Variant</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in order.items.all %}
-                        <tr>
-                            <td>
-                                <div class="product-info">
-                                    <div class="product-image">
-                                        {% if item.variant.images.first %}
-                                        <img src="{{ item.variant.images.first.image.url }}"
-                                            alt="{{ item.variant.product.name }}">
-                                        {% else %}
-                                        <div class="avatar-placeholder">{{ user.first_name|first }}{{
-                                            user.last_name|first }}</div>
-                                        {% endif %}
-                                    </div>
-                                    <span class="product-name">{{ item.variant.product.name }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="variant-info">
-                                    {% if item.variant.size %}<span>Size: {{ item.variant.size }}</span>{% endif %}
-                                    {% if item.variant.color %}<span>Color: {{ item.variant.color }}</span>{% endif %}
-                                </div>
-                            </td>
-                            <td>{{ item.quantity }}</td>
-                            <td>₹ {{ item.price }}</td>
-                            <td>₹ {{ item.total_price }}</td>
-                            <td>
-                                {% if item.return_status != 'none' %}
-                                <span class="item-badge status-{{ item.return_status|lower }}">
-                                    {{ item.get_return_status_display }}</span>
-                                {% if item.return_reason %}
-                                <div class="return-reason-text" style="font-size: 0.8rem;
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Products -->
+                <div class="card">
+                    <h2 class="card-title">Ordered Items</h2>
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Variant</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <div class="product-image">
+                                                {% if item.variant.images.first %}
+                                                    <img src="{{ item.variant.images.first.image.url }}"
+                                                         alt="{{ item.variant.product.name }}">
+                                                {% else %}
+                                                    <div class="avatar-placeholder">
+                                                        {{ user.first_name|first }}{{
+                                                        user.last_name|first }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <span class="product-name">{{ item.variant.product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="variant-info">
+                                            {% if item.variant.size %}<span>Size: {{ item.variant.size }}</span>{% endif %}
+                                            {% if item.variant.color %}<span>Color: {{ item.variant.color }}</span>{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹ {{ item.price }}</td>
+                                    <td>₹ {{ item.total_price }}</td>
+                                    <td>
+                                        {% if item.return_status != 'none' %}
+                                            <span class="item-badge status-{{ item.return_status|lower }}">{{ item.get_return_status_display }}</span>
+                                            {% if item.return_reason %}
+                                                <div class="return-reason-text"
+                                                     style="font-size: 0.8rem;
                                                             color: #666;
                                                             margin-top: 5px">
-                                    <strong>Reason:</strong> {{ item.return_reason|truncatechars:30 }}
-                                </div>
-                                {% endif %}
-                                {% else %}
-                                <span class="item-badge status-{{ item.status|lower }}">
-                                    {{ item.get_status_display }}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" style="text-align:center;">No items found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <!-- Details Row (Customer + Shipping) -->
-            <div class="details-row-grid">
-                <!-- Customer Details -->
-                <div class="card">
-                    <h2 class="card-title">Customer Details</h2>
-                    <div class="customer-profile-header">
-                        <div class="user-avatar">
-                            {% if order.user.profile_pic %}
-                            <img src="{{ order.user.profile_pic.url }}" alt="{{ order.user.first_name }}"
-                                class="avatar-img" width="" height="">
-                            {% else %}
-                            <div class="avatar-placeholder">
-                                {{ order.user.first_name|first }}{{
-                                order.user.last_name|first
-                                }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="customer-name-group">
-                            <label>Customer Name</label>
-                            <p>{{ order.user.get_full_name }}</p>
-                        </div>
-                    </div>
-                    <div class="customer-grid">
-                        <div class="customer-field">
-                            <label>Email</label>
-                            <p>{{ order.user.email }}</p>
-                        </div>
-                        <div class="customer-field">
-                            <label>Phone</label>
-                            <p>{{ order.user.phone }}</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Shipping Address -->
-                <div class="card">
-                    <h2 class="card-title">Shipping Address</h2>
-                    <div class="customer-field">
-                        <p>
-                            {{ order.address.address_line_1 }}
-                            <br>
-                            {% if order.address.address_line_2 %}
-                            {{ order.address.address_line_2 }}
-                            <br>
-                            {% endif %}
-                            {{ order.address.city }},
-                            {{ order.address.state }} - {{ order.address.pincode }}
-                            <br>
-                            {{ order.address.country }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Right Column -->
-        <div class="right-column">
-            <!-- Order Summary -->
-            <div class="card">
-                <h2 class="card-title">Order Summary</h2>
-                <div class="summary-content">
-                    <div class="summary-row">
-                        <span class="label">Payment Method</span>
-                        <span class="value">{{ order.get_payment_method_display }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="label">Payment Status</span>
-                        <span class="status-badge status-{{ order.payment_status|lower }}">
-                            {{ order.get_payment_status_display }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="label">Order Status</span>
-                        <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="label">Order Date</span>
-                        <span class="value">{{ order.created_at|date:"d-m-Y" }}</span>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="summary-row">
-                        <span class="label">Subtotal</span>
-                        <span class="value">₹ {{ order.effective_subtotal }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="label">Tax</span>
-                        <span class="value">₹ {{ order.effective_tax }}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="label">Shipping</span>
-                        <span class="value">₹ {{ order.delivery_charge }}</span>
-                    </div>
-                    {% if order.coupon_discount > 0 %}
-                    <div class="summary-row" style="color: #28a745;">
-                        <span class="label">Coupon Discount</span>
-                        <span class="value">- ₹ {{ order.effective_discount }}</span>
-                    </div>
-                    {% endif %}
-                    {% if order.removed_subtotal > 0 %}
-                    <div class="summary-row" style="color: #dc3545;">
-                        <span class="label">Cancelled/Returned</span>
-                        <span class="value">- ₹ {{ order.removed_subtotal }}</span>
-                    </div>
-                    {% endif %}
-                    <div class="summary-row total-row">
-                        <span class="label">Effective Total</span>
-                        <span class="value">₹ {{ order.effective_total }}</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Manage Order -->
-            <div class="card">
-                <h2 class="card-title">Manage Order</h2>
-                <form action="{% url 'update_order_status' order.id %}" method="POST" class="manage-order-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="order_id" value="{{ order.id }}">
-                    <div class="manage-field">
-                        <label>Order Status</label>
-                        <select name="status" class="form-select">
-                            {% for value, label in order_statuses %}
-                            {% if value in allowed_statuses %}
-                            <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}
-                            </option>
-                            {% endif %}
+                                                    <strong>Reason:</strong> {{ item.return_reason|truncatechars:30 }}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="item-badge status-{{ item.status|lower }}">{{ item.get_status_display }}</span>
+                                            {% if item.status == 'cancelled' and item.cancel_reason %}
+                                                <div class="return-reason-text"
+                                                     style="font-size: 0.8rem;
+                                                            color: #666;
+                                                            margin-top: 5px">
+                                                    <strong>Cancel Reason:</strong> {{ item.cancel_reason }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" style="text-align:center;">No items found</td>
+                                </tr>
                             {% endfor %}
-                        </select>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Details Row (Customer + Shipping) -->
+                <div class="details-row-grid">
+                    <!-- Customer Details -->
+                    <div class="card">
+                        <h2 class="card-title">Customer Details</h2>
+                        <div class="customer-profile-header">
+                            <div class="user-avatar">
+                                {% if order.user.profile_pic %}
+                                    <img src="{{ order.user.profile_pic.url }}"
+                                         alt="{{ order.user.first_name }}"
+                                         class="avatar-img"
+                                         width=""
+                                         height="">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        {{ order.user.first_name|first }}{{
+                                        order.user.last_name|first
+                                        }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="customer-name-group">
+                                <label>Customer Name</label>
+                                <p>{{ order.user.get_full_name }}</p>
+                            </div>
+                        </div>
+                        <div class="customer-grid">
+                            <div class="customer-field">
+                                <label>Email</label>
+                                <p>{{ order.user.email }}</p>
+                            </div>
+                            <div class="customer-field">
+                                <label>Phone</label>
+                                <p>{{ order.user.phone }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="action-btn btn-pink mt-3">
-                        <i class="fas fa-save"></i> Update Order
-                    </button>
-                </form>
+                    <!-- Shipping Address -->
+                    <div class="card">
+                        <h2 class="card-title">Shipping Address</h2>
+                        <div class="customer-field">
+                            <p>
+                                {{ order.address.address_line_1 }}
+                                <br>
+                                {% if order.address.address_line_2 %}
+                                    {{ order.address.address_line_2 }}
+                                    <br>
+                                {% endif %}
+                                {{ order.address.city }},
+                                {{ order.address.state }} - {{ order.address.pincode }}
+                                <br>
+                                {{ order.address.country }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Order Summary -->
+                <div class="card">
+                    <h2 class="card-title">Order Summary</h2>
+                    <div class="summary-content">
+                        <div class="summary-row">
+                            <span class="label">Payment Method</span>
+                            <span class="value">{{ order.get_payment_method_display }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Payment Status</span>
+                            <span class="status-badge status-{{ order.payment_status|lower }}">{{ order.get_payment_status_display }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Order Status</span>
+                            <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Order Date</span>
+                            <span class="value">{{ order.created_at|date:"d-m-Y" }}</span>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="summary-row">
+                            <span class="label">Subtotal</span>
+                            <span class="value">₹ {{ order.effective_subtotal }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Tax</span>
+                            <span class="value">₹ {{ order.effective_tax }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Shipping</span>
+                            <span class="value">₹ {{ order.delivery_charge }}</span>
+                        </div>
+                        {% if order.coupon_discount > 0 %}
+                            <div class="summary-row" style="color: #28a745;">
+                                <span class="label">Coupon Discount</span>
+                                <span class="value">- ₹ {{ order.effective_discount }}</span>
+                            </div>
+                        {% endif %}
+                        {% if order.removed_subtotal > 0 %}
+                            <div class="summary-row" style="color: #dc3545;">
+                                <span class="label">Cancelled/Returned</span>
+                                <span class="value">- ₹ {{ order.removed_subtotal }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="summary-row total-row">
+                            <span class="label">Effective Total</span>
+                            <span class="value">₹ {{ order.effective_total }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Manage Order -->
+                <div class="card">
+                    <h2 class="card-title">Manage Order</h2>
+                    <form action="{% url 'update_order_status' order.id %}"
+                          method="POST"
+                          class="manage-order-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <div class="manage-field">
+                            <label>Order Status</label>
+                            <select name="status" class="form-select">
+                                {% for value, label in order_statuses %}
+                                    {% if value in allowed_statuses %}
+                                        <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>{{ label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="action-btn btn-pink mt-3">
+                            <i class="fas fa-save"></i> Update Order
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock content %}
