@@ -1,361 +1,374 @@
 {% extends "user_section/profile_base.html" %}
 {% load static %}
 {% block title %}
-Order Details | Her Choice
+    Order Details | Her Choice
 {% endblock title %}
 {% block extra_css %}
-{{ block.super }}
-<link rel="stylesheet" href="{% static 'orders/css/order_details.css' %}?v=1.3" />
+    {{ block.super }}
+    <link rel="stylesheet"
+          href="{% static 'orders/css/order_details.css' %}?v=1.3" />
 {% endblock extra_css %}
 {% block profile_content %}
-<div class="page-header">
-    <div class="header-left">
-        <a href="{% url 'order_history' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <div class="header-info">
-            <h1>{{ order.orderid }}</h1>
-            <p class="order-number">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</p>
+    <div class="page-header">
+        <div class="header-left">
+            <a href="{% url 'order_history' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="header-info">
+                <h1>{{ order.orderid }}</h1>
+                <p class="order-number">Placed on {{ order.created_at|date:"d-m-Y H:i" }}</p>
+            </div>
         </div>
-    </div>
-    <div class="header-right">
-        <a href="{% url 'download_invoice_pdf' order.id %}" class="action-btn secondary invoice-header-btn" download>
-            <i class="fas fa-download"></i>
-            <span>Download Invoice</span>
-        </a>
-    </div>
-</div>
-{% if order.status == 'cancelled' %}
-<div class="cancelled-section">
-    <div class="cancelled-content">
-        <div class="cancelled-icon">
-            <i class="fas fa-ban"></i>
-        </div>
-        <div class="cancelled-info">
-            <h2>Order Cancelled</h2>
-            <p>This order was cancelled on {{ order.updated_at|date:"d-m-Y" }}</p>
-            {% if order.cancel_reason %}
-            <p class="cancel-reason-text">
-                <strong>Reason:</strong> {{ order.cancel_reason }}
-            </p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-{% elif order.status == 'failed' and order.payment_method == 'razorpay' %}
-<div class="cancelled-section" style="border-color: #dc3545;">
-    <div class="cancelled-content">
-        <div class="cancelled-icon" style="color: #dc3545;">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="cancelled-info">
-            <h2>Payment Failed</h2>
-            <p>The payment for this order could not be completed. You can retry the payment below.</p>
-            <a href="{% url 'retry_payment' order.id %}" class="action-btn" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
-                          padding: 10px 24px; background: #ff3f6c; color: #fff; border-radius: 8px;
-                          text-decoration: none; font-weight: 600; font-size: 14px;">
-                <i class="fas fa-redo"></i> Retry Payment
+        <div class="header-right">
+            <a href="{% url 'download_invoice_pdf' order.id %}"
+               class="action-btn secondary invoice-header-btn"
+               download>
+                <i class="fas fa-download"></i>
+                <span>Download Invoice</span>
             </a>
         </div>
     </div>
-</div>
-{% else %}
-<div class="tracking-section">
-    <div class="tracking-header">
-        <h2>Track Your Order</h2>
-        <p>Follow your package journey from warehouse to doorstep</p>
-    </div>
-    <div class="timeline status-{{ order.status }}">
-        <div class="timeline-step completed">
-            <div class="step-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="step-content">
-                <h4 class="step-title">Order Placed</h4>
-                <p class="step-time">{{ order.created_at|date:"d-m-Y H:i" }}</p>
-            </div>
-        </div>
-        <div class="timeline-step {% if order.status == 'pending' %}active{% else %}completed{% endif %}">
-            <div class="step-icon">
-                <i class="fas fa-box"></i>
-            </div>
-            <div class="step-content">
-                <h4 class="step-title">Processing</h4>
-                <p class="step-time">
-                    {% if order.status != 'pending' %}
-                    Completed
-                    {% else %}
-                    Pending
+    {% if order.status == 'cancelled' %}
+        <div class="cancelled-section">
+            <div class="cancelled-content">
+                <div class="cancelled-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="cancelled-info">
+                    <h2>Order Cancelled</h2>
+                    <p>This order was cancelled on {{ order.updated_at|date:"d-m-Y" }}</p>
+                    {% if order.cancel_reason %}
+                        <p class="cancel-reason-text">
+                            <strong>Reason:</strong> {{ order.cancel_reason }}
+                        </p>
                     {% endif %}
-                </p>
+                </div>
             </div>
         </div>
-        <div
-            class="timeline-step {% if order.status in 'pending processing' %}pending{% elif order.status == 'shipped' %}active{% else %}completed{% endif %}">
-            <div class="step-icon">
-                <i class="fas fa-shipping-fast"></i>
-            </div>
-            <div class="step-content">
-                <h4 class="step-title">Shipped</h4>
-                <p class="step-time">
-                    {% if order.status == 'shipped' %}
-                    In Dispatch
-                    {% elif order.status == 'delivered' or order.status == 'returned' %}
-                    Completed
-                    {% else %}
-                    Pending
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-        <div class="timeline-step {% if order.status == 'delivered' %}completed active{% else %}pending{% endif %}">
-            <div class="step-icon">
-                <i class="fas fa-home"></i>
-            </div>
-            <div class="step-content">
-                <h4 class="step-title">Delivered</h4>
-                <p class="step-time">
-                    {% if order.status == 'delivered' %}
-                    {{ order.delivered_at|date:"d-m-Y H:i"|default:"Completed" }}
-                    {% else %}
-                    Pending
-                    {% endif %}
-                </p>
+    {% elif order.status == 'failed' and order.payment_method == 'razorpay' %}
+        <div class="cancelled-section" style="border-color: #dc3545;">
+            <div class="cancelled-content">
+                <div class="cancelled-icon" style="color: #dc3545;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="cancelled-info">
+                    <h2>Payment Failed</h2>
+                    <p>The payment for this order could not be completed. You can retry the payment below.</p>
+                    <a href="{% url 'retry_payment' order.id %}"
+                       class="action-btn"
+                       style="display: inline-flex;
+                              align-items: center;
+                              gap: 8px;
+                              margin-top: 12px;
+                              padding: 10px 24px;
+                              background: #ff3f6c;
+                              color: #fff;
+                              border-radius: 8px;
+                              text-decoration: none;
+                              font-weight: 600;
+                              font-size: 14px">
+                        <i class="fas fa-redo"></i> Retry Payment
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-{% endif %}
-<div class="content-grid">
-    <div class="section-card">
-        <h3 class="section-title">Product Details</h3>
-        <div class="order-items">
-            {% for item in order.items.all %}
-            <div class="order-item">
-                <div class="item-image">
-                    {% if item.variant.images.first %}
-                    <img src="{{ item.variant.images.first.image.url }}" alt="{{ item.variant.product.name }}">
-                    {% else %}
-                    <div class="no-image">
-                        <i class="fas fa-image"></i>
+    {% else %}
+        <div class="tracking-section">
+            <div class="tracking-header">
+                <h2>Track Your Order</h2>
+                <p>Follow your package journey from warehouse to doorstep</p>
+            </div>
+            <div class="timeline status-{{ order.status }}">
+                <div class="timeline-step completed">
+                    <div class="step-icon">
+                        <i class="fas fa-shopping-cart"></i>
                     </div>
-                    {% endif %}
+                    <div class="step-content">
+                        <h4 class="step-title">Order Placed</h4>
+                        <p class="step-time">{{ order.created_at|date:"d-m-Y H:i" }}</p>
+                    </div>
                 </div>
-                <div class="item-details">
-                    <h4 class="item-name">{{ item.variant.product.name }}</h4>
-                    <p class="item-meta">
-                        {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{ item.quantity}}
-                    </p>
-                    <p class="item-price">₹{{ item.price }}</p>
+                <div class="timeline-step {% if order.status == 'pending' %}active{% else %}completed{% endif %}">
+                    <div class="step-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4 class="step-title">Processing</h4>
+                        <p class="step-time">
+                            {% if order.status != 'pending' %}
+                                Completed
+                            {% else %}
+                                Pending
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
-                <div class="item-status-container">
-                    {% if item.status == 'cancelled' %}
-                    <span class="badge badge-cancelled">Cancelled</span>
-                    {% elif item.return_status == 'returned' %}
-                    <span class="badge badge-returned">Returned</span>
-                    {% elif item.return_status == 'return_approved' %}
-                    <span class="badge badge-return-approved">Return Approved</span>
-                    {% elif item.return_status == 'return_rejected' %}
-                    <span class="badge badge-return-rejected">Return Rejected</span>
-                    {% elif item.return_status == 'return_requested' %}
-                    <span class="badge badge-return-requested">Return Requested</span>
-                    {% endif %}
-                    {% if item.status == 'delivered' and item.return_status == 'none' %}
-                    <button type="button" class="return-btn-small"
-                        onclick="openReturnModal('{{ item.id }}', '{{ item.variant.product.name|escapejs }}')">
-                        <i class="fas fa-undo"></i> Return Item
-                    </button>
-                    {% endif %}
+                <div class="timeline-step {% if order.status in 'pending processing' %}pending{% elif order.status == 'shipped' %}active{% else %}completed{% endif %}">
+                    <div class="step-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4 class="step-title">Shipped</h4>
+                        <p class="step-time">
+                            {% if order.status == 'shipped' %}
+                                In Dispatch
+                            {% elif order.status == 'delivered' or order.status == 'returned' %}
+                                Completed
+                            {% else %}
+                                Pending
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-step {% if order.status == 'delivered' %}completed active{% else %}pending{% endif %}">
+                    <div class="step-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4 class="step-title">Delivered</h4>
+                        <p class="step-time">
+                            {% if order.status == 'delivered' %}
+                                {{ order.delivered_at|date:"d-m-Y H:i"|default:"Completed" }}
+                            {% else %}
+                                Pending
+                            {% endif %}
+                        </p>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-    </div>
-    <div class="address-row">
-        <div class="section-card">
-            <h3 class="section-title">Delivery Address</h3>
-            <div class="address-content">
-                {% if order.address %}
-                <h4 class="address-name">{{ order.address.user.get_full_name }}</h4>
-                <p class="address-line">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>
-                        {{ order.address.address_line_1 }}
-                        <br>
-                        {% if order.address.address_line_2 %}
-                        {{ order.address.address_line_2 }}
-                        <br>
-                        {% endif %}
-                        {{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode }}
-                        <br>
-                        {{ order.address.country }}
-                    </span>
-                </p>
-                <p class="address-phone">
-                    <i class="fas fa-phone"></i>
-                    <span>{{ order.address.user.phone|default:"Not available" }}</span>
-                </p>
-                {% else %}
-                <p class="address-line">
-                    <i class="fas fa-exclamation-circle text-muted"></i>
-                    <span class="text-muted">Delivery address information is no longer available.</span>
-                </p>
-                {% endif %}
-            </div>
-        </div>
-        <div class="section-card">
-            <h3 class="section-title">Billing Address</h3>
-            <div class="address-content">
-                {% if order.billing_address %}
-                <h4 class="address-name">{{ order.billing_address.user.get_full_name }}</h4>
-                <p class="address-line">
-                    <i class="fas fa-file-invoice"></i>
-                    <span>
-                        {{ order.billing_address.address_line_1 }}
-                        <br>
-                        {% if order.billing_address.address_line_2 %}
-                        {{ order.billing_address.address_line_2 }}
-                        <br>
-                        {% endif %}
-                        {{ order.billing_address.city }}, {{ order.billing_address.state }}
-                        {{ order.billing_address.pincode }}
-                        <br>
-                        {{ order.billing_address.country }}
-                    </span>
-                </p>
-                <p class="address-phone">
-                    <i class="fas fa-phone"></i>
-                    <span>{{ order.user.phone|default:"Not available" }}</span>
-                </p>
-                {% else %}
-                <p class="address-line">
-                    <i class="fas fa-exclamation-circle text-muted"></i>
-                    <span class="text-muted">Billing address information is no longer available.</span>
-                </p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="section-card">
-        <h3 class="section-title">Payment Details</h3>
-        <div class="summary-list">
-            <div class="summary-row">
-                <span>Payment Method</span>
-                <span>{{ order.get_payment_method_display }}</span>
-            </div>
-            <div class="summary-row">
-                <span>Payment Status</span>
-                <span class="badge payment-status-{{ order.payment_status }}">
-                    {{ order.get_payment_status_display }}
-                </span>
-            </div>
-        </div>
-    </div>
-    <div class="section-card">
-        <h3 class="section-title">Order Summary</h3>
-        <div class="summary-list">
-            <div class="summary-row">
-                <span>Subtotal</span><span>₹{{ order.effective_subtotal }}</span>
-            </div>
-            <div class="summary-row">
-                <span>Delivery Charge</span><span>
-                    {% if order.delivery_charge|floatformat:"2" == "0.00" or not order.delivery_charge %}
-                    <span class="free-tag">Free</span>
-                    {% else %}
-                    ₹{{ order.delivery_charge|floatformat:"2" }}
-                    {% endif %}
-                </span>
-            </div>
-            <div class="summary-row">
-                <span>Tax (Estimated)</span><span>₹{{ order.effective_tax }}</span>
-            </div>
-            {% if order.effective_discount > 0 %}
-            <div class="summary-row discount">
-                <span>Coupon Discount</span>
-                <span>- ₹ {{ order.effective_discount }}</span>
-            </div>
-            {% endif %}
-            {% if order.removed_subtotal > 0 %}
-            <div class="summary-row" style="color: #dc3545;">
-                <span>Cancelled/Returned</span>
-                <span>- ₹ {{ order.removed_subtotal }}</span>
-            </div>
-            {% endif %}
-            <div class="summary-row total-row">
-                <span>Effective Total</span><span>₹{{ order.effective_total }}</span>
-            </div>
-        </div>
-    </div>
-    {% if order.status == "pending" or order.status == "processing" or order.status == 'partially_cancelled' %}
-    {% if order.has_cancellable_items %}
-    <div class="bottom-actions">
-        <button type="button" class="action-btn danger-light" onclick="openCancelModal()">
-            <i class="fas fa-times-circle"></i> <span>Cancel Items from Order</span>
-        </button>
-    </div>
     {% endif %}
-    {% endif %}
-    {% comment %} Cancel Modal {% endcomment %}
-    <div id="cancelModal" class="modal-overlay">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3>Select Items to Cancel</h3>
-            <button class="close-modal" onclick="closeCancelModal()">&times;</button>
-        </div>
-
-        <form method="POST" action="{% url 'cancel_order' order.id %}">
-            {% csrf_token %}
-
-            <div class="modal-body">
-                <p>Select items and quantity:</p>
-
-                <div class="variant-selection-list">
-                    {% for item in order.items.all %}
-                    {% if item.status != 'cancelled' and item.status != 'delivered' %}
-
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-
-                        <!-- Checkbox -->
-                        <input type="checkbox"
-                               name="selected_items"
-                               value="{{ item.id }}"
-                               onchange="toggleQty('{{ item.id }}')">
-
-                        <!-- Product Info -->
-                        <div style="flex:1;">
-                            <strong>{{ item.variant.product.name }}</strong><br>
-                            {{ item.variant.color }} | Size: {{ item.variant.size }} | Qty: {{ item.quantity }}
+    <div class="content-grid">
+        <div class="section-card">
+            <h3 class="section-title">Product Details</h3>
+            <div class="order-items">
+                {% for item in order.items.all %}
+                    <div class="order-item">
+                        <div class="item-image">
+                            {% if item.variant.images.first %}
+                                <img src="{{ item.variant.images.first.image.url }}"
+                                     alt="{{ item.variant.product.name }}">
+                            {% else %}
+                                <div class="no-image">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            {% endif %}
                         </div>
-
-                        <!-- Quantity Input -->
-                        <input type="number"
-                               name="cancel_qty_{{ item.id }}"
-                               id="qty_{{ item.id }}"
-                               min="1"
-                               max="{{ item.quantity }}"
-                               placeholder="Qty"
-                               disabled
-                               style="width:70px;">
+                        <div class="item-details">
+                            <h4 class="item-name">{{ item.variant.product.name }}</h4>
+                            <p class="item-meta">
+                                {{ item.variant.color }} • Size: {{ item.variant.size|default:"N/A" }} • Qty: {{ item.quantity }}
+                            </p>
+                            <p class="item-price">₹{{ item.price }}</p>
+                        </div>
+                        <div class="item-status-container">
+                            {% if item.status == 'cancelled' %}
+                                <span class="badge badge-cancelled">Cancelled</span>
+                            {% elif item.return_status == 'returned' %}
+                                <span class="badge badge-returned">Returned</span>
+                            {% elif item.return_status == 'return_approved' %}
+                                <span class="badge badge-return-approved">Return Approved</span>
+                            {% elif item.return_status == 'return_rejected' %}
+                                <span class="badge badge-return-rejected">Return Rejected</span>
+                            {% elif item.return_status == 'return_requested' %}
+                                <span class="badge badge-return-requested">Return Requested</span>
+                            {% endif %}
+                            {% if item.status == 'delivered' and item.return_status == 'none' %}
+                                <button type="button"
+                                        class="return-btn-small"
+                                        onclick="openReturnModal('{{ item.id }}', '{{ item.variant.product.name|escapejs }}', '{{ item.quantity }}')">
+                                    <i class="fas fa-undo"></i> Return Item
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
-
+                {% endfor %}
+            </div>
+        </div>
+        <div class="address-row">
+            <div class="section-card">
+                <h3 class="section-title">Delivery Address</h3>
+                <div class="address-content">
+                    {% if order.address %}
+                        <h4 class="address-name">{{ order.address.user.get_full_name }}</h4>
+                        <p class="address-line">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>
+                                {{ order.address.address_line_1 }}
+                                <br>
+                                {% if order.address.address_line_2 %}
+                                    {{ order.address.address_line_2 }}
+                                    <br>
+                                {% endif %}
+                                {{ order.address.city }}, {{ order.address.state }} {{ order.address.pincode }}
+                                <br>
+                                {{ order.address.country }}
+                            </span>
+                        </p>
+                        <p class="address-phone">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ order.address.user.phone|default:"Not available" }}</span>
+                        </p>
+                    {% else %}
+                        <p class="address-line">
+                            <i class="fas fa-exclamation-circle text-muted"></i>
+                            <span class="text-muted">Delivery address information is no longer available.</span>
+                        </p>
                     {% endif %}
-                    {% endfor %}
-                </div>
-
-                <div class="reason-section">
-                    <label>Reason:</label>
-                    <textarea name="cancel_reason" required></textarea>
                 </div>
             </div>
-
-            <div class="modal-footer">
-                <button type="button" onclick="closeCancelModal()">Cancel</button>
-                <button type="submit">Confirm</button>
+            <div class="section-card">
+                <h3 class="section-title">Billing Address</h3>
+                <div class="address-content">
+                    {% if order.billing_address %}
+                        <h4 class="address-name">{{ order.billing_address.user.get_full_name }}</h4>
+                        <p class="address-line">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>
+                                {{ order.billing_address.address_line_1 }}
+                                <br>
+                                {% if order.billing_address.address_line_2 %}
+                                    {{ order.billing_address.address_line_2 }}
+                                    <br>
+                                {% endif %}
+                                {{ order.billing_address.city }}, {{ order.billing_address.state }}
+                                {{ order.billing_address.pincode }}
+                                <br>
+                                {{ order.billing_address.country }}
+                            </span>
+                        </p>
+                        <p class="address-phone">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ order.user.phone|default:"Not available" }}</span>
+                        </p>
+                    {% else %}
+                        <p class="address-line">
+                            <i class="fas fa-exclamation-circle text-muted"></i>
+                            <span class="text-muted">Billing address information is no longer available.</span>
+                        </p>
+                    {% endif %}
+                </div>
             </div>
-        </form>
-    </div>
-</div>
-    {% comment %} <div id="cancelModal" class="modal-overlay">
+        </div>
+        <div class="section-card">
+            <h3 class="section-title">Payment Details</h3>
+            <div class="summary-list">
+                <div class="summary-row">
+                    <span>Payment Method</span>
+                    <span>{{ order.get_payment_method_display }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Payment Status</span>
+                    <span class="badge payment-status-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-card">
+            <h3 class="section-title">Order Summary</h3>
+            <div class="summary-list">
+                <div class="summary-row">
+                    <span>Subtotal</span><span>₹{{ order.effective_subtotal }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Charge</span><span>
+                        {% if order.delivery_charge|floatformat:"2" == "0.00" or not order.delivery_charge %}
+                            <span class="free-tag">Free</span>
+                        {% else %}
+                            ₹{{ order.delivery_charge|floatformat:"2" }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax (Estimated)</span><span>₹{{ order.effective_tax }}</span>
+                </div>
+                {% if order.effective_discount > 0 %}
+                    <div class="summary-row discount">
+                        <span>Coupon Discount</span>
+                        <span>- ₹ {{ order.effective_discount }}</span>
+                    </div>
+                {% endif %}
+                {% if order.removed_subtotal > 0 %}
+                    <div class="summary-row" style="color: #dc3545;">
+                        <span>Cancelled/Returned</span>
+                        <span>- ₹ {{ order.removed_subtotal }}</span>
+                    </div>
+                {% endif %}
+                <div class="summary-row total-row">
+                    <span>Effective Total</span><span>₹{{ order.effective_total }}</span>
+                </div>
+            </div>
+        </div>
+        {% if order.status == "pending" or order.status == "processing" or order.status == 'partially_cancelled' %}
+            {% if order.has_cancellable_items %}
+                <div class="bottom-actions">
+                    <button type="button"
+                            class="action-btn danger-light"
+                            onclick="openCancelModal()">
+                        <i class="fas fa-times-circle"></i> <span>Cancel Items from Order</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% comment %} Cancel Modal {% endcomment %}
+        <div id="cancelModal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Select Items to Cancel</h3>
+                    <button class="close-modal" onclick="closeCancelModal()">&times;</button>
+                </div>
+                <form method="POST" action="{% url 'cancel_order' order.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <p>Select items and quantity:</p>
+                        <div class="variant-selection-list">
+                            {% for item in order.items.all %}
+                                {% if item.status != 'cancelled' and item.status != 'delivered' %}
+                                    <div style="display:flex;
+                                                align-items:center;
+                                                gap:10px;
+                                                margin-bottom:10px">
+                                        <!-- Checkbox -->
+                                        <input type="checkbox"
+                                               name="selected_items"
+                                               value="{{ item.id }}"
+                                               onchange="toggleQty('{{ item.id }}')">
+                                        <!-- Product Info -->
+                                        <div style="flex:1;">
+                                            <strong>{{ item.variant.product.name }}</strong>
+                                            <br>
+                                            {{ item.variant.color }} | Size: {{ item.variant.size }} | Qty: {{ item.quantity }}
+                                        </div>
+                                        <!-- Quantity Input -->
+                                        <input type="number"
+                                               name="cancel_qty_{{ item.id }}"
+                                               id="qty_{{ item.id }}"
+                                               min="1"
+                                               max="{{ item.quantity }}"
+                                               placeholder="Qty"
+                                               disabled
+                                               style="width:70px">
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="reason-section">
+                            <label for="cancel_reason">Reason for cancellation:</label>
+                            <textarea name="cancel_reason"
+                                      id="cancel_reason"
+                                      placeholder="Tell us why..."
+                                      required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn-cancel-secondary"
+                                onclick="closeCancelModal()">Go Back</button>
+                        <button type="submit" class="btn-confirm-cancel">Confirm Cancellation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% comment %} <div id="cancelModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
                 <h3>Select Items to Cancel</h3>
@@ -382,61 +395,68 @@ Order Details | Her Choice
                         {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="reason-section">
-                        <label for="cancel_reason">Reason for cancellation:</label>
-                        <textarea name="cancel_reason" id="cancel_reason" placeholder="Tell us why..."
-                            required></textarea>
-                    </div>
+                    
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel-secondary" onclick="closeCancelModal()">Go Back</button>
-                    <button type="submit" class="btn-confirm-cancel">Confirm Cancellation</button>
-                </div>
+                
             </form>
         </div>
-    </div> {% endcomment %}
-    {% comment %} Return Modal {% endcomment %}
-    <div id="returnModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>Request Return</h3>
-                <button class="close-modal" onclick="closeReturnModal()">&times;</button>
+        </div> {% endcomment %}
+        {% comment %} Return Modal {% endcomment %}
+        <div id="returnModal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Request Return</h3>
+                    <button class="close-modal" onclick="closeReturnModal()">&times;</button>
+                </div>
+                <form id="returnForm"
+                      method="POST"
+                      action="{% url 'return_request' order.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" id="return_item_id">
+                    <div class="modal-body">
+                        <p>
+                            Requesting return for: <strong id="return_product_name"></strong>
+                        </p>
+                        <div class="reason-section mt-3">
+                            <label for="return_qty">Quantity to return:</label>
+                            <input type="number"
+                                   name="return_qty"
+                                   id="return_qty"
+                                   min="1"
+                                   value="1"
+                                   required>
+                        </div>
+                        <div class="reason-section">
+                            <label for="return_reason">Reason for return:</label>
+                            <select name="return_reason" id="return_reason" required>
+                                <option value="">Select a reason</option>
+                                <option value="size_issue">Size issue (too big/small)</option>
+                                <option value="damaged">Product is damaged</option>
+                                <option value="wrong_item">Received wrong item</option>
+                                <option value="not_matching">Not matching description</option>
+                                <option value="quality_issue">Quality not as expected</option>
+                            </select>
+                        </div>
+                        <div class="reason-section mt-3">
+                            <label for="return_comment">Additional comments (Optional):</label>
+                            <textarea name="return_comment"
+                                      id="return_comment"
+                                      placeholder="Provide more details..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn-cancel-secondary"
+                                onclick="closeReturnModal()">Go Back</button>
+                        <button type="submit" class="btn-confirm-return">Confirm Return</button>
+                    </div>
+                </form>
             </div>
-            <form id="returnForm" method="POST" action="{% url 'return_request' order.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="item_id" id="return_item_id">
-                <div class="modal-body">
-                    <p>
-                        Requesting return for: <strong id="return_product_name"></strong>
-                    </p>
-                    <div class="reason-section">
-                        <label for="return_reason">Reason for return:</label>
-                        <select name="return_reason" id="return_reason" required>
-                            <option value="">Select a reason</option>
-                            <option value="size_issue">Size issue (too big/small)</option>
-                            <option value="damaged">Product is damaged</option>
-                            <option value="wrong_item">Received wrong item</option>
-                            <option value="not_matching">Not matching description</option>
-                            <option value="quality_issue">Quality not as expected</option>
-                        </select>
-                    </div>
-                    <div class="reason-section mt-3">
-                        <label for="return_comment">Additional comments (Optional):</label>
-                        <textarea name="return_comment" id="return_comment"
-                            placeholder="Provide more details..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel-secondary" onclick="closeReturnModal()">Go Back</button>
-                    <button type="submit" class="btn-confirm-return">Confirm Return</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 {% endblock profile_content %}
 {% block extra_js %}
-<script>
+    <script>
     function toggleModal(modalId, show) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -448,14 +468,19 @@ Order Details | Her Choice
     function openCancelModal() { toggleModal('cancelModal', true); }
     function closeCancelModal() { toggleModal('cancelModal', false); }
 
-    function openReturnModal(itemId, productName) {
+    function openReturnModal(itemId, productName, maxQty) {
         const input = document.getElementById('return_item_id');
         const text = document.getElementById('return_product_name');
-        if (input && text) {
-            input.value = itemId;
-            text.innerText = productName;
-            toggleModal('returnModal', true);
-        }
+        const qtyInput = document.getElementById('return_qty');
+        if (input && text && qtyInput) {
+        input.value = itemId;
+        text.innerText = productName;
+
+        qtyInput.max = parseInt(maxQty); 
+        qtyInput.value = 1;
+
+        toggleModal('returnModal', true);
+    }
     }
 
     function closeReturnModal() { toggleModal('returnModal', false); }
@@ -480,5 +505,5 @@ Order Details | Her Choice
         }
     }
 
-</script>
+    </script>
 {% endblock extra_js %}

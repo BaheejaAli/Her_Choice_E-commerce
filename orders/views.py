@@ -110,20 +110,23 @@ def cancel_order(request, order_id):
             total_refund_amount = Decimal('0.00')
             can_refund = order.payment_status in ["paid", "partially_refunded"] and order.payment_method in ["razorpay", "wallet"]
 
+            from products.models import ProductVariant
+
             for item in items_to_cancel: 
                 cancel_qty = int(request.POST.get(f"cancel_qty_{item.id}",0))
+
                 if cancel_qty <= 0:
                     continue
                 if cancel_qty > item.quantity:
                    messages.error(request, "Invalid cancel quantity.")
                    return redirect("order_details", order_id=order.id)
 
-                # Update Inventory Atomically
-                from products.models import ProductVariant
+                unit_price = item.price/item.quantity
+                
                 if order.payment_status != 'pending':
                     ProductVariant.objects.filter(id=item.variant.id).update(stock=F("stock") + cancel_qty)
 
-                # Update Item Status
+                # -------- FULL CANCEL --------
                 if cancel_qty == item.quantity:
                     item.status = "cancelled"
                     item.cancel_reason = cancel_reason 
@@ -134,29 +137,42 @@ def cancel_order(request, order_id):
                         item_refund = order.calculate_item_refund(item)
                         total_refund_amount += item_refund
 
+                # -------- PARTIAL CANCEL --------
                 else:
                     # reduce original item
-                    item.quantity -= cancel_qty
+                    item.quantity -= cancel_qty 
+                    item.price = unit_price * item.quantity
                     item.save()
 
-                    # create cancelled item
-                    cancelled_item = OrderItem.objects.create(
-                        order=item.order,
-                        variant=item.variant,
-                        quantity=cancel_qty,
-                        price=item.price,
-                        status="cancelled",
-                        cancel_reason=cancel_reason,
-                        cancelled_at=timezone.now()
-                    )
+                    cancelled_item = OrderItem.objects.filter(
+                        order = item.order,
+                        variant = item.variant,
+                        status = "cancelled"
+                    ).first()
+
+                    if cancelled_item:
+                        cancelled_item.quantity += cancel_qty
+                        cancelled_item.price += unit_price * cancel_qty
+                        cancelled_item.cancel_reason = cancel_reason
+                        cancelled_item.cancelled_at = timezone.now()
+                        cancelled_item.save()
+
+                    else:
+                        OrderItem.objects.create(
+                            order=item.order,
+                            variant=item.variant,
+                            quantity=cancel_qty,
+                            price=unit_price * cancel_qty,
+                            status="cancelled",
+                            cancel_reason=cancel_reason,
+                            cancelled_at=timezone.now()
+                        )
 
                     if can_refund:
-                        # refund only cancelled qty
-                        unit_price = item.price
                         total_refund_amount += unit_price * cancel_qty
 
-            finished_items_count = all_items.filter(Q(return_status='returned') | Q(status='cancelled')).count()
-            is_full_completion = (finished_items_count == total_items_count)
+            remaining_items = order.items.exclude(status='cancelled').count()
+            is_full_completion = (remaining_items == 0)
 
             if can_refund and is_full_completion:
                 already_refunded = WalletTransaction.objects.filter(
@@ -192,7 +208,7 @@ def cancel_order(request, order_id):
                 messages.success(request, "Your order items have been cancelled successfully.")
             else:
                 order.status = "partially_cancelled"
-                messages.success(request, f"Successfully cancelled {items_to_cancel.count()} item(s).")
+                messages.success(request, "Items cancelled successfully.")
             
             order.save(update_fields=["status", "payment_status", "updated_at"])  
     except Order.DoesNotExist:
@@ -201,23 +217,96 @@ def cancel_order(request, order_id):
 
     return redirect("order_details", order_id=order_id)            
 
+# @never_cache
+# @login_required
+# @require_POST
+# def return_request(request, order_id):
+#     if request.method == "POST":
+#         item_id = request.POST.get("item_id")
+#         reason = request.POST.get("return_reason")
+#         comment = request.POST.get("return_comment")
+
+#         item = get_object_or_404(OrderItem, id=item_id, order__id=order_id, order__user=request.user)
+
+#         if item.status == 'delivered' and item.return_status == 'none':
+#             item.return_status = 'return_requested'
+#             item.save()
+#             messages.success(request, f"Return request for {item.variant.product.name} has been submitted.")
+#         else:
+#             messages.error(request, "This item is not eligible for return.")
+
+#     return redirect("order_details", order_id=order_id)
+
 @never_cache
 @login_required
 @require_POST
 def return_request(request, order_id):
-    if request.method == "POST":
-        item_id = request.POST.get("item_id")
-        reason = request.POST.get("return_reason")
-        comment = request.POST.get("return_comment")
+    try:
+        with transaction.atomic():
+            item_id = request.POST.get("item_id")
+            return_qty = int(request.POST.get("return_qty", 0))
+            reason = request.POST.get("return_reason")
+            comment = request.POST.get("return_comment")
 
-        item = get_object_or_404(OrderItem, id=item_id, order__id=order_id, order__user=request.user)
+            item = get_object_or_404(
+                OrderItem,
+                id=item_id,
+                order__id=order_id,
+                order__user=request.user
+            )
 
-        if item.status == 'delivered' and item.return_status == 'none':
-            item.return_status = 'return_requested'
-            item.save()
-            messages.success(request, f"Return request for {item.variant.product.name} has been submitted.")
-        else:
-            messages.error(request, "This item is not eligible for return.")
+            # eligibility
+            if item.status != 'delivered' or item.return_status != 'none':
+                messages.error(request, "This item is not eligible for return.")
+                return redirect("order_details", order_id=order_id)
+
+            if return_qty <= 0 or return_qty > item.quantity:
+                messages.error(request, "Invalid return quantity.")
+                return redirect("order_details", order_id=order_id)
+
+            # per-unit price
+            unit_price = item.price / item.quantity
+
+            # -------- FULL RETURN --------
+            if return_qty == item.quantity:
+                item.return_status = 'return_requested'
+                item.return_reason = f"{reason} - {comment}" if comment else reason
+                item.save()
+
+            # -------- PARTIAL RETURN --------
+            else:
+                # reduce original
+                item.quantity -= return_qty
+                item.price = unit_price * item.quantity
+                item.save()
+
+                # merge into existing return_requested row
+                return_item = OrderItem.objects.filter(
+                    order=item.order,
+                    variant=item.variant,
+                    return_status='return_requested'
+                ).first()
+
+                if return_item:
+                    return_item.quantity += return_qty
+                    return_item.price += unit_price * return_qty
+                    return_item.return_reason = f"{reason} - {comment}" if comment else reason
+                    return_item.save()
+                else:
+                    OrderItem.objects.create(
+                        order=item.order,
+                        variant=item.variant,
+                        quantity=return_qty,
+                        price=unit_price * return_qty,
+                        status='delivered',
+                        return_status='return_requested',
+                        return_reason=f"{reason} - {comment}" if comment else reason
+                    )
+
+            messages.success(request, f"Return request submitted for {return_qty} item(s).")
+
+    except Exception:
+        messages.error(request, "Something went wrong.")
 
     return redirect("order_details", order_id=order_id)
 
